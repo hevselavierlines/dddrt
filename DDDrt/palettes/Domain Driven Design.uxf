@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.3">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>DDDEntity</id>
+    <coordinates>
+      <x>16</x>
+      <y>16</y>
+      <w>250</w>
+      <h>400</h>
+    </coordinates>
+        <panel_attributes>User
+prop;-;int;userId
+prop;#;String;username
+meth;+;void;setUsername</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
