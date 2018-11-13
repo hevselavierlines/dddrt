@@ -7,23 +7,37 @@ import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
-public class EntityProperty extends JLayeredPane {
+import org.json.JSONObject;
+
+public class FieldProperty extends JLayeredPane {
 
 	private static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 	private final JTextField propertyName;
 	private final JComboBox<String> propertyType;
 	private final JComboBox<String> propertyVisibility;
-	private final int HEIGHT = 40;
+	private final static String UNIQUE_ID = "UUID";
+	public final static int HEIGHT = 30;
 	private final int[] WIDTHS = { 40, 70, -1 };
 
-	public static EntityProperty createFromString(String line) {
+	public static FieldProperty createFromString(String line) {
 		String[] split = line.split(";");
 		if (split.length == 4) {
-			return new EntityProperty(split[1], split[2], split[3]);
+			return new FieldProperty(split[1], split[2], split[3]);
 		}
 		else {
 			return null;
+		}
+	}
+
+	public static FieldProperty createFromJSON(JSONObject property) {
+		try {
+			String visibility = property.getString("visibility");
+			String type = property.getString("type");
+			String name = property.getString("name");
+			return new FieldProperty(visibility, type, name);
+		} catch (Exception ex) {
+			return new FieldProperty();
 		}
 	}
 
@@ -37,7 +51,15 @@ public class EntityProperty extends JLayeredPane {
 		return stringBuilder.toString();
 	}
 
-	public EntityProperty() {
+	public JSONObject exportToJSON() {
+		JSONObject ret = new JSONObject();
+		ret.put("visibility", getPropertyVisibility());
+		ret.put("type", getPropertyType());
+		ret.put("name", getPropertyName());
+		return ret;
+	}
+
+	public FieldProperty() {
 		propertyVisibility = new JComboBox<String>();
 		propertyVisibility.addItem("-");
 		propertyVisibility.addItem(" ");
@@ -62,7 +84,7 @@ public class EntityProperty extends JLayeredPane {
 		add(propertyName);
 	}
 
-	public EntityProperty(String propertyVisibility, String propertyType, String propertyName) {
+	public FieldProperty(String propertyVisibility, String propertyType, String propertyName) {
 		this();
 		setPropertyVisibility(propertyVisibility);
 		setPropertyType(propertyType);
@@ -82,6 +104,9 @@ public class EntityProperty extends JLayeredPane {
 	}
 
 	public void setPropertyType(String propertyType) {
+		if (UNIQUE_ID.equals(propertyType)) {
+			this.propertyType.addItem("UUID");
+		}
 		this.propertyType.setSelectedItem(propertyType);
 	}
 

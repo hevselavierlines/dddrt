@@ -8,14 +8,14 @@ import com.baselet.control.enums.ElementId;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
-public class EntityComposite extends FieldComposite {
+public class ValueObjectComposite extends FieldComposite {
 
 	@Override
 	public ElementId getId() {
-		return ElementId.DDDEntity;
+		return ElementId.DDDValueObject;
 	}
 
-	public EntityComposite() {
+	public ValueObjectComposite() {
 		super();
 	}
 
@@ -26,7 +26,7 @@ public class EntityComposite extends FieldComposite {
 
 	@Override
 	protected String getTitle() {
-		return "<<Entity>>";
+		return "<<Value Object>>";
 	}
 
 	@Override
@@ -35,14 +35,14 @@ public class EntityComposite extends FieldComposite {
 		jProperties = new JSONArray();
 		JSONObject property = new JSONObject();
 		property.put("visibility", "-");
-		property.put("type", "UUID");
-		property.put("name", "unqueId");
+		property.put("type", "String");
+		property.put("name", "value1");
 		jProperties.put(property);
 
 		jMethods = new JSONArray();
 		JSONObject method = new JSONObject();
 		method.put("visibility", "+");
-		method.put("type", "int");
+		method.put("type", "void");
 		method.put("name", "testMethod");
 		method.put("parameters", "(Object inputParam)");
 		jMethods.put(method);

@@ -9,10 +9,21 @@
       <w>250</w>
       <h>400</h>
     </coordinates>
-        <panel_attributes>User
-prop;-;int;userId
-prop;#;String;username
-meth;+;void;setUsername</panel_attributes>
-    <additional_attributes/>
+        <panel_attributes>
+        </panel_attributes>
+    <additional_attributes></additional_attributes>
+  </element>
+  
+    <element>
+    <id>DDDValueObject</id>
+    <coordinates>
+      <x>300</x>
+      <y>16</y>
+      <w>250</w>
+      <h>400</h>
+    </coordinates>
+        <panel_attributes>
+        </panel_attributes>
+    <additional_attributes></additional_attributes>
   </element>
 </diagram>

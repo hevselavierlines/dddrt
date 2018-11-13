@@ -46,12 +46,8 @@ public class PropertiesParser {
 	private static void parseFacets(NewGridElement element, PropertiesParserState state, List<String> propertiesText, boolean drawMetaDrawer) {
 		List<String> propertiesAfterFirstRun = parseFacets(state.getSettings().getFacetsForFirstRun(), propertiesText, state); // must be before element.drawCommonContent (because bg=... and other settings are set here)
 		element.resetMetaDrawerAndDrawCommonContent(state, drawMetaDrawer); // draw common content like border around classes
-		if (element instanceof EntityComposite) {
-			// do not parse DDD stuff as it will be handled in a different way.
-		}
-		else {
-			parseFacets(state.getSettings().getFacetsForSecondRun(), propertiesAfterFirstRun, state); // iterate over propertiestext and draw text and resolve second-run facets
-		}
+
+		parseFacets(state.getSettings().getFacetsForSecondRun(), propertiesAfterFirstRun, state); // iterate over propertiestext and draw text and resolve second-run facets
 	}
 
 	private static List<String> parseFacets(List<? extends Facet> facets, List<String> properties, PropertiesParserState state) {

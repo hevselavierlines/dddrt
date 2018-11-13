@@ -3,6 +3,7 @@ package com.baselet.element.elementnew;
 import com.baselet.control.enums.ElementId;
 import com.baselet.element.EntityComposite;
 import com.baselet.element.NewGridElement;
+import com.baselet.element.ValueObjectComposite;
 import com.baselet.element.elementnew.plot.PlotGrid;
 import com.baselet.element.elementnew.uml.ActivityObject;
 import com.baselet.element.elementnew.uml.Actor;
@@ -66,6 +67,8 @@ public abstract class ElementFactory {
 				return new Hierarchy();
 			case DDDEntity:
 				return new EntityComposite();
+			case DDDValueObject:
+				return new ValueObjectComposite();
 			default:
 				throw new RuntimeException("Unknown class id: " + id);
 		}
