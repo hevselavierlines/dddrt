@@ -1,10 +1,12 @@
 package com.baselet.element;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -32,24 +34,38 @@ public abstract class FieldComposite extends NewGridElement {
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
 	private final JTextField fieldName;
+	private final JLayeredPane propertiesPane;
+	private final JLayeredPane methodsPane;
 	protected JSONObject jsonAttributes;
 	protected JSONArray jProperties;
 	protected JSONArray jMethods;
+	private int totalHeight;
 
 	public FieldComposite() {
 		fieldName = new JTextField("Name");
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
+		propertiesPane = new JLayeredPane();
+		propertiesPane.setLayout(new GridLayout(0, 1));
+		methodsPane = new JLayeredPane();
+		methodsPane.setLayout(new GridLayout(0, 1));
 		propertyAddButton = new JButton("+");
 		propertyAddButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FieldProperty newProperty = new FieldProperty();
-				component.addComponent(newProperty);
+				propertiesPane.add(newProperty);
 				jsonAttributes.getJSONObject("entities")
 						.getJSONArray("properties")
 						.put(newProperty.exportToJSON());
+
+				if (getRectangle().height < totalHeight + FieldProperty.HEIGHT) {
+					Rectangle newRect = getRectangle();
+					newRect.height = totalHeight + FieldProperty.HEIGHT;
+					setRectangle(newRect);
+				}
+
 				updateModelFromText();
 			}
 		});
@@ -60,7 +76,14 @@ public abstract class FieldComposite extends NewGridElement {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FieldMethod newMethod = new FieldMethod();
-				component.addComponent(newMethod);
+				methodsPane.add(newMethod);
+
+				if (getRectangle().height < totalHeight + FieldMethod.HEIGHT) {
+					Rectangle newRect = getRectangle();
+					newRect.height = totalHeight + FieldMethod.HEIGHT;
+					setRectangle(newRect);
+				}
+
 				updateModelFromText();
 			}
 		});
@@ -71,12 +94,14 @@ public abstract class FieldComposite extends NewGridElement {
 		jsonAttributes.getJSONObject("entities").put("name", fieldName.getText());
 		jProperties.clear();
 		jMethods.clear();
-		for (java.awt.Component property : component.getAllComponents()) {
+		for (java.awt.Component property : propertiesPane.getComponents()) {
 			if (property instanceof FieldProperty) {
 				jProperties.put(((FieldProperty) property).exportToJSON());
 			}
-			else if (property instanceof FieldMethod) {
-				jMethods.put(((FieldMethod) property).exportToJSON());
+		}
+		for (java.awt.Component method : methodsPane.getComponents()) {
+			if (method instanceof FieldMethod) {
+				jMethods.put(((FieldMethod) method).exportToJSON());
 			}
 		}
 		return jsonAttributes.toString(1);
@@ -98,16 +123,19 @@ public abstract class FieldComposite extends NewGridElement {
 		}
 
 		component.addComponent(fieldName);
+
+		component.addComponent(propertiesPane);
+		component.addComponent(methodsPane);
 		for (int i = 0; i < jProperties.length(); i++) {
 			JSONObject property = jProperties.getJSONObject(i);
 			FieldProperty newProperty = FieldProperty.createFromJSON(property);
-			component.addComponent(newProperty);
+			propertiesPane.add(newProperty);
 		}
 
 		for (int i = 0; i < jMethods.length(); i++) {
 			JSONObject method = jMethods.getJSONObject(i);
 			FieldMethod newMethod = FieldMethod.createFromJSON(method);
-			component.addComponent(newMethod);
+			methodsPane.add(newMethod);
 		}
 
 		component.addComponent(propertyAddButton);
@@ -137,38 +165,44 @@ public abstract class FieldComposite extends NewGridElement {
 		int startHeight = 60;
 		int addHeight = 0;
 		// properties
-		for (java.awt.Component comp : component.getAllComponents()) {
-			if (comp instanceof FieldProperty) {
-				comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldProperty.HEIGHT);
-				addHeight += FieldProperty.HEIGHT;
-			}
-		}
+
+		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT;
+		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
+		// for (java.awt.Component comp : component.getAllComponents()) {
+		// if (comp instanceof FieldProperty) {
+		// comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldProperty.HEIGHT);
+		// addHeight += FieldProperty.HEIGHT;
+		// }
+		// }
 		double originalLineWidth = drawer.getLineWidth();
-		propertyAddButton.setBounds(2, startHeight + addHeight, elementWidth - 4, 30);
+		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
 		drawer.setLineType(LineType.DASHED);
 		drawer.setLineWidth(2.0);
 		drawer.drawRectangle(0, 45, elementWidth, addHeight + 15 + 30);
 
 		// methods
-		startHeight += addHeight + 50;
-		addHeight = 5;
+		startHeight += addHeight + 60;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT;
+		methodsPane.setBounds(0, startHeight, elementWidth, addHeight);
 		drawer.setFontSize(12.0);
-		drawer.print("Methods", new PointDouble(5, startHeight), AlignHorizontal.LEFT);
+		drawer.print("Methods", new PointDouble(2, startHeight - 2), AlignHorizontal.LEFT);
 		for (java.awt.Component comp : component.getAllComponents()) {
 			if (comp instanceof FieldMethod) {
 				comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldMethod.HEIGHT);
 				addHeight += FieldMethod.HEIGHT;
 			}
 		}
-		methodAddButton.setBounds(2, startHeight + addHeight, elementWidth - 4, 30);
+		methodAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
 		drawer.setLineType(LineType.DASHED);
 		drawer.setLineWidth(2.0);
-		drawer.drawRectangle(0, startHeight - 12, elementWidth, addHeight + 12 + 30);
+		drawer.drawRectangle(0, startHeight - 15, elementWidth, addHeight + 15 + 30);
 
 		drawer.setLineWidth(originalLineWidth);
 		drawer.setLineType(LineType.SOLID);
 		drawer.setFontSize(originalFontSize);
 		drawer.drawRectangle(0, 0, elementWidth, elementHeight);
+
+		totalHeight = startHeight + addHeight + 30;
 	}
 
 	protected abstract String getTitle();

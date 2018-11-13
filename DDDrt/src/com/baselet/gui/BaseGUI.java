@@ -1,6 +1,5 @@
 package com.baselet.gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.util.Collection;
@@ -10,8 +9,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.InsetsUIResource;
 
 import org.apache.log4j.Logger;
 
@@ -106,10 +103,10 @@ public abstract class BaseGUI {
 	}
 
 	protected void initGUIParameters() {
-		UIManager.put("TabbedPane.selected", Color.white);
-		UIManager.put("TabbedPane.tabInsets", new InsetsUIResource(0, 4, 1, 0));
-		UIManager.put("TabbedPane.contentBorderInsets", new InsetsUIResource(0, 0, 0, 0));
-		UIManager.put("ComboBox.background", new ColorUIResource(Color.orange));
+		// UIManager.put("TabbedPane.selected", Color.white);
+		// UIManager.put("TabbedPane.tabInsets", new InsetsUIResource(0, 4, 1, 0));
+		// UIManager.put("TabbedPane.contentBorderInsets", new InsetsUIResource(0, 0, 0, 0));
+		// UIManager.put("ComboBox.background", new ColorUIResource(Color.orange));
 	}
 
 	public void setPaletteEdited(boolean isEdited) {
