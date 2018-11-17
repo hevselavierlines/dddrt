@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -29,13 +28,13 @@ import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.settings.SettingsManualResizeTop;
 
-public abstract class FieldComposite extends NewGridElement {
+public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener {
 
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
 	private final JTextField fieldName;
-	private final JLayeredPane propertiesPane;
-	private final JLayeredPane methodsPane;
+	private final CollapsiblePanel propertiesPane;
+	private final CollapsiblePanel methodsPane;
 	protected JSONObject jsonAttributes;
 	protected JSONArray jProperties;
 	protected JSONArray jMethods;
@@ -45,48 +44,17 @@ public abstract class FieldComposite extends NewGridElement {
 		fieldName = new JTextField("Name");
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
-		propertiesPane = new JLayeredPane();
+		propertiesPane = new CollapsiblePanel("Properties");
+		propertiesPane.addCollapseListener(this);
 		propertiesPane.setLayout(new GridLayout(0, 1));
-		methodsPane = new JLayeredPane();
+		methodsPane = new CollapsiblePanel("Methods");
 		methodsPane.setLayout(new GridLayout(0, 1));
+		methodsPane.addCollapseListener(this);
 		propertyAddButton = new JButton("+");
-		propertyAddButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				FieldProperty newProperty = new FieldProperty();
-				propertiesPane.add(newProperty);
-				jsonAttributes.getJSONObject("entities")
-						.getJSONArray("properties")
-						.put(newProperty.exportToJSON());
-
-				if (getRectangle().height < totalHeight + FieldProperty.HEIGHT) {
-					Rectangle newRect = getRectangle();
-					newRect.height = totalHeight + FieldProperty.HEIGHT;
-					setRectangle(newRect);
-				}
-
-				updateModelFromText();
-			}
-		});
+		propertyAddButton.addActionListener(this);
 
 		methodAddButton = new JButton("+");
-		methodAddButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				FieldMethod newMethod = new FieldMethod();
-				methodsPane.add(newMethod);
-
-				if (getRectangle().height < totalHeight + FieldMethod.HEIGHT) {
-					Rectangle newRect = getRectangle();
-					newRect.height = totalHeight + FieldMethod.HEIGHT;
-					setRectangle(newRect);
-				}
-
-				updateModelFromText();
-			}
-		});
+		methodAddButton.addActionListener(this);
 	}
 
 	@Override
@@ -129,6 +97,7 @@ public abstract class FieldComposite extends NewGridElement {
 		for (int i = 0; i < jProperties.length(); i++) {
 			JSONObject property = jProperties.getJSONObject(i);
 			FieldProperty newProperty = FieldProperty.createFromJSON(property);
+			newProperty.addRemovedListener(this);
 			propertiesPane.add(newProperty);
 		}
 
@@ -154,19 +123,22 @@ public abstract class FieldComposite extends NewGridElement {
 		drawer.print(getTitle(), new PointDouble(getRealSize().width / 2, 15), AlignHorizontal.CENTER);
 
 		drawer.setFontSize(20.0);
-		fieldName.setBounds(2, 15, getRealRectangle().getWidth() - 4, 30);
+		fieldName.setBounds(10, 15, getRealRectangle().getWidth() - 20, 30);
 
 		drawer.setLineType(LineType.DOTTED);
 		drawer.drawLine(0, 45, getRealSize().width, 45);
 
 		drawer.setFontSize(12.0);
-		drawer.print("Properties", new PointDouble(5, 56), AlignHorizontal.LEFT);
+		// drawer.print("Properties", new PointDouble(5, 56), AlignHorizontal.LEFT);
 
-		int startHeight = 60;
+		int startHeight = 45;
 		int addHeight = 0;
 		// properties
 
-		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT;
+		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight();
+		if (propertiesPane.isCollapsed()) {
+			addHeight = propertiesPane.getTitleHeight();
+		}
 		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
 		// for (java.awt.Component comp : component.getAllComponents()) {
 		// if (comp instanceof FieldProperty) {
@@ -176,16 +148,16 @@ public abstract class FieldComposite extends NewGridElement {
 		// }
 		double originalLineWidth = drawer.getLineWidth();
 		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
-		drawer.setLineType(LineType.DASHED);
-		drawer.setLineWidth(2.0);
-		drawer.drawRectangle(0, 45, elementWidth, addHeight + 15 + 30);
 
 		// methods
-		startHeight += addHeight + 60;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT;
+		startHeight += addHeight + 45;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight();
+		if (methodsPane.isCollapsed()) {
+			addHeight = methodsPane.getTitleHeight();
+		}
 		methodsPane.setBounds(0, startHeight, elementWidth, addHeight);
 		drawer.setFontSize(12.0);
-		drawer.print("Methods", new PointDouble(2, startHeight - 2), AlignHorizontal.LEFT);
+		// drawer.print("Methods", new PointDouble(2, startHeight - 2), AlignHorizontal.LEFT);
 		for (java.awt.Component comp : component.getAllComponents()) {
 			if (comp instanceof FieldMethod) {
 				comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldMethod.HEIGHT);
@@ -193,16 +165,21 @@ public abstract class FieldComposite extends NewGridElement {
 			}
 		}
 		methodAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
-		drawer.setLineType(LineType.DASHED);
-		drawer.setLineWidth(2.0);
-		drawer.drawRectangle(0, startHeight - 15, elementWidth, addHeight + 15 + 30);
 
 		drawer.setLineWidth(originalLineWidth);
 		drawer.setLineType(LineType.SOLID);
 		drawer.setFontSize(originalFontSize);
 		drawer.drawRectangle(0, 0, elementWidth, elementHeight);
 
-		totalHeight = startHeight + addHeight + 30;
+		totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
+		updateCompositeHeight();
+	}
+
+	protected void updateCompositeHeight() {
+		Rectangle newRect = getRectangle();
+		newRect.height = totalHeight;
+		setRectangle(newRect);
+
 	}
 
 	protected abstract String getTitle();
@@ -217,4 +194,31 @@ public abstract class FieldComposite extends NewGridElement {
 		};
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == propertyAddButton) {
+			FieldProperty newProperty = new FieldProperty();
+			newProperty.addRemovedListener(this);
+			propertiesPane.add(newProperty);
+
+			updateModelFromText();
+
+		}
+		else if (e.getSource() == methodAddButton) {
+			FieldMethod newMethod = new FieldMethod();
+			methodsPane.add(newMethod);
+
+			updateModelFromText();
+		}
+		else if ("removed".equals(e.getActionCommand())) {
+			propertiesPane.remove((java.awt.Component) e.getSource());
+
+			updateModelFromText();
+		}
+	}
+
+	@Override
+	public void collapseStateChange(boolean collapsed) {
+		updateModelFromText();
+	}
 }

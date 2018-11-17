@@ -2,23 +2,28 @@ package com.baselet.element;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
 import org.json.JSONObject;
 
-public class FieldProperty extends JLayeredPane {
+public class FieldProperty extends JLayeredPane implements ActionListener {
 
 	private static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 	private final JTextField propertyName;
 	private final JComboBox<String> propertyType;
 	private final JComboBox<String> propertyVisibility;
+	private final JButton removeButton;
 	private final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 30;
-	private final int[] WIDTHS = { 40, 70, -1 };
+	private final int[] WIDTHS = { 40, 70, -1, 40 };
+	private ActionListener removeListener;
 
 	public static FieldProperty createFromString(String line) {
 		String[] split = line.split(";");
@@ -82,6 +87,10 @@ public class FieldProperty extends JLayeredPane {
 
 		propertyName = new JTextField("newProperty");
 		add(propertyName);
+
+		removeButton = new JButton("x");
+		removeButton.addActionListener(this);
+		add(removeButton);
 	}
 
 	public FieldProperty(String propertyVisibility, String propertyType, String propertyName) {
@@ -122,7 +131,19 @@ public class FieldProperty extends JLayeredPane {
 	public void paint(Graphics g) {
 		propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT);
 		propertyType.setBounds(WIDTHS[0], 0, WIDTHS[1], HEIGHT);
-		propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[1] + WIDTHS[2]) : WIDTHS[2], HEIGHT);
+		propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HEIGHT);
+		removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
 		super.paint(g);
+	}
+
+	public void addRemovedListener(ActionListener actionListener) {
+		removeListener = actionListener;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (removeListener != null) {
+			removeListener.actionPerformed(new ActionEvent(this, 0, "removed"));
+		}
 	}
 }
