@@ -37,6 +37,7 @@ public class ValueObjectComposite extends FieldComposite {
 		property.put("visibility", "-");
 		property.put("type", "String");
 		property.put("name", "value1");
+		property.put("idproperty", false);
 		jProperties.put(property);
 
 		jMethods = new JSONArray();

@@ -1,6 +1,5 @@
 package com.baselet.element;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,35 +11,34 @@ import javax.swing.JTextField;
 
 import org.json.JSONObject;
 
+import com.baselet.design.metal.MetalComboBox;
+import com.baselet.design.metal.VisibilityComboBox;
+
 public class FieldProperty extends JLayeredPane implements ActionListener {
 
+	private static final String JSON_IDPROPERTY = "idproperty";
+	private static final String JSON_NAME = "name";
+	private static final String JSON_TYPE = "type";
+	private static final String JSON_VISIBILITY = "visibility";
 	private static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 	private final JTextField propertyName;
 	private final JComboBox<String> propertyType;
-	private final JComboBox<String> propertyVisibility;
+	private final VisibilityComboBox propertyVisibility;
 	private final JButton removeButton;
+	private boolean idProperty;
 	private final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 30;
-	private final int[] WIDTHS = { 40, 70, -1, 40 };
+	private final int[] WIDTHS = { 40, 80, -1, 40 };
 	private ActionListener removeListener;
-
-	public static FieldProperty createFromString(String line) {
-		String[] split = line.split(";");
-		if (split.length == 4) {
-			return new FieldProperty(split[1], split[2], split[3]);
-		}
-		else {
-			return null;
-		}
-	}
 
 	public static FieldProperty createFromJSON(JSONObject property) {
 		try {
-			String visibility = property.getString("visibility");
-			String type = property.getString("type");
-			String name = property.getString("name");
-			return new FieldProperty(visibility, type, name);
+			String visibility = property.getString(JSON_VISIBILITY);
+			String type = property.getString(JSON_TYPE);
+			String name = property.getString(JSON_NAME);
+			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
+			return new FieldProperty(visibility, type, name, idProperty);
 		} catch (Exception ex) {
 			return new FieldProperty();
 		}
@@ -58,22 +56,18 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 
 	public JSONObject exportToJSON() {
 		JSONObject ret = new JSONObject();
-		ret.put("visibility", getPropertyVisibility());
-		ret.put("type", getPropertyType());
-		ret.put("name", getPropertyName());
+		ret.put(JSON_VISIBILITY, getPropertyVisibility());
+		ret.put(JSON_TYPE, getPropertyType());
+		ret.put(JSON_NAME, getPropertyName());
+		ret.put(JSON_IDPROPERTY, idProperty);
 		return ret;
 	}
 
 	public FieldProperty() {
-		propertyVisibility = new JComboBox<String>();
-		propertyVisibility.addItem("-");
-		propertyVisibility.addItem(" ");
-		propertyVisibility.addItem("#");
-		propertyVisibility.addItem("+");
-		propertyVisibility.setBackground(Color.ORANGE);
+		propertyVisibility = new VisibilityComboBox();
 		add(propertyVisibility);
 
-		propertyType = new JComboBox<String>();
+		propertyType = new MetalComboBox();
 		propertyType.addItem("String");
 		propertyType.addItem("int");
 		propertyType.addItem("long");
@@ -81,8 +75,8 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 		propertyType.addItem("char");
 		propertyType.addItem("short");
 		propertyType.addItem("Object");
-		propertyType.setEditable(false);
-		propertyType.getEditor().getEditorComponent().setBackground(Color.orange);
+		propertyType.addItem("List");
+		propertyType.setEditable(true);
 		add(propertyType);
 
 		propertyName = new JTextField("newProperty");
@@ -93,8 +87,15 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 		add(removeButton);
 	}
 
-	public FieldProperty(String propertyVisibility, String propertyType, String propertyName) {
+	public FieldProperty(String propertyVisibility,
+			String propertyType,
+			String propertyName,
+			boolean idProperty) {
 		this();
+		if (idProperty) {
+			this.remove(removeButton);
+		}
+		this.idProperty = idProperty;
 		setPropertyVisibility(propertyVisibility);
 		setPropertyType(propertyType);
 		setPropertyName(propertyName);
@@ -113,8 +114,8 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 	}
 
 	public void setPropertyType(String propertyType) {
-		if (UNIQUE_ID.equals(propertyType)) {
-			this.propertyType.addItem("UUID");
+		if (idProperty) {
+			this.propertyType.addItem(UNIQUE_ID);
 		}
 		this.propertyType.setSelectedItem(propertyType);
 	}
@@ -124,7 +125,7 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 	}
 
 	public void setPropertyVisibility(String propertyVisibility) {
-		this.propertyVisibility.setSelectedItem(propertyVisibility);
+		this.propertyVisibility.setSelection(propertyVisibility);
 	}
 
 	@Override
@@ -132,7 +133,9 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 		propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT);
 		propertyType.setBounds(WIDTHS[0], 0, WIDTHS[1], HEIGHT);
 		propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HEIGHT);
-		removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		if (!idProperty) {
+			removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		}
 		super.paint(g);
 	}
 

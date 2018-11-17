@@ -130,7 +130,7 @@ public class CollapsiblePanel extends JLayeredPane {
 		updateBorderTitle();
 	}
 
-	protected void updateBorderTitle() {
+	public void updateBorderTitle() {
 		String arrow = "";
 		if (getComponentCount() > 0) {
 			arrow = hasInvisibleComponent() ? "▽" : "△";

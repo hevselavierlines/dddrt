@@ -1,6 +1,5 @@
 package com.baselet.element;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.JComboBox;
@@ -9,27 +8,24 @@ import javax.swing.JTextField;
 
 import org.json.JSONObject;
 
+import com.baselet.design.metal.MetalComboBox;
+import com.baselet.design.metal.VisibilityComboBox;
+
 public class FieldMethod extends JLayeredPane {
-	private static String IDENTIFIER = "meth";
 	private static final long serialVersionUID = -6900199799847961884L;
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
-	private final JComboBox<String> methodVisibility;
+	private final VisibilityComboBox methodVisibility;
 	public final static int HEIGHT = 50;
 	public final static int HALF_HEIGHT = HEIGHT / 2;
 	private final int[] WIDTHS = { 40, 70, -1 };
 	private final JTextField textParameters;
 
 	public FieldMethod() {
-		methodVisibility = new JComboBox<String>();
-		methodVisibility.addItem("-");
-		methodVisibility.addItem(" ");
-		methodVisibility.addItem("#");
-		methodVisibility.addItem("+");
-		methodVisibility.setBackground(Color.ORANGE);
+		methodVisibility = new VisibilityComboBox();
 		add(methodVisibility);
 
-		methodType = new JComboBox<String>();
+		methodType = new MetalComboBox();
 		methodType.addItem("void");
 		methodType.addItem("String");
 		methodType.addItem("int");
@@ -38,8 +34,7 @@ public class FieldMethod extends JLayeredPane {
 		methodType.addItem("char");
 		methodType.addItem("short");
 		methodType.addItem("Object");
-		methodType.setEditable(false);
-		methodType.getEditor().getEditorComponent().setBackground(Color.orange);
+		methodType.setEditable(true);
 		add(methodType);
 
 		methodName = new JTextField("newmethod");
@@ -109,7 +104,7 @@ public class FieldMethod extends JLayeredPane {
 	}
 
 	public void setMethodVisibility(String methodVisibility) {
-		this.methodVisibility.setSelectedItem(methodVisibility);
+		this.methodVisibility.setSelection(methodVisibility);
 	}
 
 	public String getMethodParameters() {

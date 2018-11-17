@@ -16,6 +16,7 @@ import com.baselet.control.basics.geom.PointDouble;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.AlignHorizontal;
 import com.baselet.control.enums.LineType;
+import com.baselet.design.metal.MetalButton;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
@@ -50,10 +51,10 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		methodsPane = new CollapsiblePanel("Methods");
 		methodsPane.setLayout(new GridLayout(0, 1));
 		methodsPane.addCollapseListener(this);
-		propertyAddButton = new JButton("+");
+		propertyAddButton = new MetalButton("+");
 		propertyAddButton.addActionListener(this);
 
-		methodAddButton = new JButton("+");
+		methodAddButton = new MetalButton("+");
 		methodAddButton.addActionListener(this);
 	}
 
@@ -212,7 +213,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		}
 		else if ("removed".equals(e.getActionCommand())) {
 			propertiesPane.remove((java.awt.Component) e.getSource());
-
+			propertiesPane.updateBorderTitle();
 			updateModelFromText();
 		}
 	}

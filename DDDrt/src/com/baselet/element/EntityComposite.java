@@ -37,6 +37,7 @@ public class EntityComposite extends FieldComposite {
 		property.put("visibility", "-");
 		property.put("type", "UUID");
 		property.put("name", "unqueId");
+		property.put("idproperty", true);
 		jProperties.put(property);
 
 		jMethods = new JSONArray();
