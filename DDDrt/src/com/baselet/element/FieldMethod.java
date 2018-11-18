@@ -21,7 +21,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 	private final VisibilityComboBox methodVisibility;
 	public final static int HEIGHT = 50;
 	public final static int HALF_HEIGHT = HEIGHT / 2;
-	private final int[] WIDTHS = { 40, 80, -1, 40 };
+	private final int[] WIDTHS = { 40, -1, 80, 40 };
 	private final JTextField textParameters;
 	private final JButton removeButton;
 	private ActionListener removeListener;
@@ -63,11 +63,10 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 
 	@Override
 	public void paint(Graphics g) {
-		/* propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT); propertyType.setBounds(WIDTHS[0], 0, WIDTHS[1], HEIGHT); propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HEIGHT); if (!idProperty) { removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT); } */
-
 		methodVisibility.setBounds(0, 0, WIDTHS[0], HALF_HEIGHT);
-		methodType.setBounds(WIDTHS[0], 0, WIDTHS[1], HALF_HEIGHT);
-		methodName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HALF_HEIGHT);
+		int nameWidth = getBounds().width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
+		methodName.setBounds(WIDTHS[0], 0, nameWidth, HALF_HEIGHT);
+		methodType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2], 0, WIDTHS[2], HALF_HEIGHT);
 		removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HALF_HEIGHT);
 
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
@@ -134,7 +133,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (removeListener != null) {
-			removeListener.actionPerformed(new ActionEvent(this, 0, "removed"));
+			removeListener.actionPerformed(new ActionEvent(this, 0, FieldProperty.REMOVED_COMMAND));
 		}
 	}
 }

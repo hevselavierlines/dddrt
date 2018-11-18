@@ -48,9 +48,6 @@ class ItemRenderer extends BasicComboBoxRenderer {
 		if (value != null) {
 			Item item = (Item) value;
 			setText(item.getId() + " " + item.getDescription());
-			java.awt.Rectangle rect = this.getBounds();
-			rect.width = 300;
-			this.setBounds(rect);
 		}
 		if (index == -1) {
 			Item item = (Item) value;
@@ -93,7 +90,7 @@ class StyledComboBoxUI extends MetalComboBoxUI {
 			@Override
 			protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
 				return super.computePopupBounds(
-						px, py, Math.max(200, pw), ph);
+						px, py, Math.max(100, pw), ph);
 			}
 		};
 		popup.getAccessibleContext().setAccessibleParent(comboBox);

@@ -130,36 +130,26 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		drawer.setLineType(LineType.DOTTED);
 		drawer.drawLine(0, 45, getRealSize().width, 45);
 
-		drawer.setFontSize(12.0);
-		// drawer.print("Properties", new PointDouble(5, 56), AlignHorizontal.LEFT);
-
 		int startHeight = 45;
 		int addHeight = 0;
-		// properties
 
+		// properties
 		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight();
 		if (propertiesPane.isCollapsed()) {
 			addHeight = propertiesPane.getTitleHeight();
 		}
 		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
-		// for (java.awt.Component comp : component.getAllComponents()) {
-		// if (comp instanceof FieldProperty) {
-		// comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldProperty.HEIGHT);
-		// addHeight += FieldProperty.HEIGHT;
-		// }
-		// }
+
 		double originalLineWidth = drawer.getLineWidth();
 		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
 
 		// methods
-		startHeight += addHeight + 45;
+		startHeight += addHeight + 35;
 		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight();
 		if (methodsPane.isCollapsed()) {
 			addHeight = methodsPane.getTitleHeight();
 		}
 		methodsPane.setBounds(0, startHeight, elementWidth, addHeight);
-		drawer.setFontSize(12.0);
-		// drawer.print("Methods", new PointDouble(2, startHeight - 2), AlignHorizontal.LEFT);
 		for (java.awt.Component comp : component.getAllComponents()) {
 			if (comp instanceof FieldMethod) {
 				comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldMethod.HEIGHT);
@@ -181,7 +171,6 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		Rectangle newRect = getRectangle();
 		newRect.height = totalHeight;
 		setRectangle(newRect);
-
 	}
 
 	protected abstract String getTitle();
@@ -213,7 +202,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 			updateModelFromText();
 		}
-		else if ("removed".equals(e.getActionCommand())) {
+		else if (FieldProperty.REMOVED_COMMAND.equals(e.getActionCommand())) {
 			Object source = e.getSource();
 			if (source instanceof java.awt.Component) {
 				java.awt.Component deleteComponent = (java.awt.Component) source;
@@ -230,5 +219,9 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	@Override
 	public void collapseStateChange(boolean collapsed) {
 		updateModelFromText();
+	}
+
+	public String getName() {
+		return fieldName.getText();
 	}
 }

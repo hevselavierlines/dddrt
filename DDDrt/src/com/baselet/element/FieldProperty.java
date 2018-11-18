@@ -16,6 +16,7 @@ import com.baselet.design.metal.VisibilityComboBox;
 
 public class FieldProperty extends JLayeredPane implements ActionListener {
 
+	protected static final String REMOVED_COMMAND = "removed";
 	private static final String JSON_IDPROPERTY = "idproperty";
 	private static final String JSON_NAME = "name";
 	private static final String JSON_TYPE = "type";
@@ -29,7 +30,7 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 	private boolean idProperty;
 	private final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 30;
-	private final int[] WIDTHS = { 40, 80, -1, 40 };
+	private final int[] WIDTHS = { 40, -1, 80, 40 };
 	private ActionListener removeListener;
 
 	public static FieldProperty createFromJSON(JSONObject property) {
@@ -131,8 +132,11 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 	@Override
 	public void paint(Graphics g) {
 		propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT);
-		propertyType.setBounds(WIDTHS[0], 0, WIDTHS[1], HEIGHT);
-		propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HEIGHT);
+
+		int nameWidth = getBounds().width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
+		propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
+
+		propertyType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2], 0, WIDTHS[2], HEIGHT);
 		if (!idProperty) {
 			removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
 		}
@@ -146,7 +150,7 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (removeListener != null) {
-			removeListener.actionPerformed(new ActionEvent(this, 0, "removed"));
+			removeListener.actionPerformed(new ActionEvent(this, 0, REMOVED_COMMAND));
 		}
 	}
 }
