@@ -139,7 +139,7 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 		super.paint(g);
 	}
 
-	public void addRemovedListener(ActionListener actionListener) {
+	public void setRemovedListener(ActionListener actionListener) {
 		removeListener = actionListener;
 	}
 

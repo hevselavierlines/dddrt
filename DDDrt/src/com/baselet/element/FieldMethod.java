@@ -1,7 +1,10 @@
 package com.baselet.element;
 
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
@@ -11,15 +14,17 @@ import org.json.JSONObject;
 import com.baselet.design.metal.MetalComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
 
-public class FieldMethod extends JLayeredPane {
+public class FieldMethod extends JLayeredPane implements ActionListener {
 	private static final long serialVersionUID = -6900199799847961884L;
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
 	private final VisibilityComboBox methodVisibility;
 	public final static int HEIGHT = 50;
 	public final static int HALF_HEIGHT = HEIGHT / 2;
-	private final int[] WIDTHS = { 40, 70, -1 };
+	private final int[] WIDTHS = { 40, 80, -1, 40 };
 	private final JTextField textParameters;
+	private final JButton removeButton;
+	private ActionListener removeListener;
 
 	public FieldMethod() {
 		methodVisibility = new VisibilityComboBox();
@@ -42,6 +47,10 @@ public class FieldMethod extends JLayeredPane {
 
 		textParameters = new JTextField("()");
 		add(textParameters);
+
+		removeButton = new JButton("x");
+		removeButton.addActionListener(this);
+		add(removeButton);
 	}
 
 	public FieldMethod(String methodVisibility, String methodType, String methodName, String parameters) {
@@ -54,11 +63,14 @@ public class FieldMethod extends JLayeredPane {
 
 	@Override
 	public void paint(Graphics g) {
+		/* propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT); propertyType.setBounds(WIDTHS[0], 0, WIDTHS[1], HEIGHT); propertyName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HEIGHT); if (!idProperty) { removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT); } */
+
 		methodVisibility.setBounds(0, 0, WIDTHS[0], HALF_HEIGHT);
 		methodType.setBounds(WIDTHS[0], 0, WIDTHS[1], HALF_HEIGHT);
-		methodName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[1] + WIDTHS[2]) : WIDTHS[2], HALF_HEIGHT);
-		textParameters.setBounds(0, 20, (int) getBounds().getWidth(), 30);
+		methodName.setBounds(WIDTHS[0] + WIDTHS[1], 0, WIDTHS[2] == -1 ? getBounds().width - (WIDTHS[0] + WIDTHS[1] + WIDTHS[3]) : WIDTHS[2], HALF_HEIGHT);
+		removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HALF_HEIGHT);
 
+		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
 		super.paint(g);
 	}
 
@@ -113,5 +125,16 @@ public class FieldMethod extends JLayeredPane {
 
 	public void setMethodParameters(String parameters) {
 		textParameters.setText(parameters);
+	}
+
+	public void setRemovedListener(ActionListener actionListener) {
+		removeListener = actionListener;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (removeListener != null) {
+			removeListener.actionPerformed(new ActionEvent(this, 0, "removed"));
+		}
 	}
 }

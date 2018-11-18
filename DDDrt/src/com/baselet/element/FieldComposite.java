@@ -98,13 +98,14 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		for (int i = 0; i < jProperties.length(); i++) {
 			JSONObject property = jProperties.getJSONObject(i);
 			FieldProperty newProperty = FieldProperty.createFromJSON(property);
-			newProperty.addRemovedListener(this);
+			newProperty.setRemovedListener(this);
 			propertiesPane.add(newProperty);
 		}
 
 		for (int i = 0; i < jMethods.length(); i++) {
 			JSONObject method = jMethods.getJSONObject(i);
 			FieldMethod newMethod = FieldMethod.createFromJSON(method);
+			newMethod.setRemovedListener(this);
 			methodsPane.add(newMethod);
 		}
 
@@ -199,7 +200,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == propertyAddButton) {
 			FieldProperty newProperty = new FieldProperty();
-			newProperty.addRemovedListener(this);
+			newProperty.setRemovedListener(this);
 			propertiesPane.add(newProperty);
 
 			updateModelFromText();
@@ -207,14 +208,22 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		}
 		else if (e.getSource() == methodAddButton) {
 			FieldMethod newMethod = new FieldMethod();
+			newMethod.setRemovedListener(this);
 			methodsPane.add(newMethod);
 
 			updateModelFromText();
 		}
 		else if ("removed".equals(e.getActionCommand())) {
-			propertiesPane.remove((java.awt.Component) e.getSource());
-			propertiesPane.updateBorderTitle();
-			updateModelFromText();
+			Object source = e.getSource();
+			if (source instanceof java.awt.Component) {
+				java.awt.Component deleteComponent = (java.awt.Component) source;
+				propertiesPane.remove(deleteComponent);
+				propertiesPane.updateBorderTitle();
+
+				methodsPane.remove(deleteComponent);
+				methodsPane.updateBorderTitle();
+				updateModelFromText();
+			}
 		}
 	}
 
