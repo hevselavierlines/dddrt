@@ -3,30 +3,17 @@ package com.baselet.element;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
-import com.baselet.element.interfaces.Component;
-import com.baselet.element.interfaces.DrawHandlerInterface;
 
-public class EntityComposite extends FieldComposite {
-
+public class AggregateComposite extends EntityComposite {
 	@Override
 	public ElementId getId() {
-		return ElementId.DDDEntity;
-	}
-
-	public EntityComposite() {
-		super();
-	}
-
-	@Override
-	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
-		super.init(bounds, panelAttributes, additionalAttributes, component, handler);
+		return ElementId.DDDValueObject;
 	}
 
 	@Override
 	protected String getTitle() {
-		return "<<Entity>>";
+		return "<<Aggregate>>";
 	}
 
 	@Override
@@ -49,25 +36,9 @@ public class EntityComposite extends FieldComposite {
 		jMethods.put(method);
 
 		JSONObject entities = new JSONObject();
-		entities.put("name", "newEntity");
+		entities.put("name", "newAggregate");
 		entities.put("properties", jProperties);
 		entities.put("methods", jMethods);
 		jsonAttributes.put("entities", entities);
 	}
-
-	@Override
-	protected FieldProperty addProperty(JSONObject jsonObject) {
-		return EntityProperty.createFromJSON(jsonObject);
-	}
-
-	@Override
-	protected FieldProperty createProperty() {
-		return new EntityProperty();
-	}
-
-	@Override
-	protected FieldMethod createMethod() {
-		return new FieldMethod();
-	}
-
 }

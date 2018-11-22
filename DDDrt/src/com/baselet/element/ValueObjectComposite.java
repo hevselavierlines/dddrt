@@ -49,10 +49,25 @@ public class ValueObjectComposite extends FieldComposite {
 		jMethods.put(method);
 
 		JSONObject entities = new JSONObject();
-		entities.put("name", "Entity");
+		entities.put("name", "newValueObject");
 		entities.put("properties", jProperties);
 		entities.put("methods", jMethods);
 		jsonAttributes.put("entities", entities);
+	}
+
+	@Override
+	protected FieldProperty addProperty(JSONObject jsonObject) {
+		return ValueObjectProperty.createFromJSON(jsonObject);
+	}
+
+	@Override
+	protected FieldProperty createProperty() {
+		return new ValueObjectProperty();
+	}
+
+	@Override
+	protected FieldMethod createMethod() {
+		return new FieldMethod();
 	}
 
 }

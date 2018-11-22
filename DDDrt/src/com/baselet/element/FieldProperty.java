@@ -3,47 +3,40 @@ package com.baselet.element;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.json.JSONObject;
 
 import com.baselet.design.metal.MetalComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
 
-public class FieldProperty extends JLayeredPane implements ActionListener {
+public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener {
 
 	protected static final String REMOVED_COMMAND = "removed";
-	private static final String JSON_IDPROPERTY = "idproperty";
-	private static final String JSON_NAME = "name";
-	private static final String JSON_TYPE = "type";
-	private static final String JSON_VISIBILITY = "visibility";
-	private static String IDENTIFIER = "prop";
+	protected static final String JSON_IDPROPERTY = "idproperty";
+	protected static final String JSON_NAME = "name";
+	protected static final String JSON_TYPE = "type";
+	protected static final String JSON_VISIBILITY = "visibility";
+	protected static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 	private final JTextField propertyName;
-	private final JComboBox<String> propertyType;
+	protected final JComboBox<String> propertyType;
 	private final VisibilityComboBox propertyVisibility;
 	private final JButton removeButton;
 	private boolean idProperty;
-	private final static String UNIQUE_ID = "UUID";
+	protected final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 30;
 	private final int[] WIDTHS = { 40, -1, 80, 40 };
 	private ActionListener removeListener;
-
-	public static FieldProperty createFromJSON(JSONObject property) {
-		try {
-			String visibility = property.getString(JSON_VISIBILITY);
-			String type = property.getString(JSON_TYPE);
-			String name = property.getString(JSON_NAME);
-			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
-			return new FieldProperty(visibility, type, name, idProperty);
-		} catch (Exception ex) {
-			return new FieldProperty();
-		}
-	}
+	protected final List<String> DEFAULT_TYPES;
 
 	@Override
 	public String toString() {
@@ -69,15 +62,19 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 		add(propertyVisibility);
 
 		propertyType = new MetalComboBox();
-		propertyType.addItem("String");
-		propertyType.addItem("int");
-		propertyType.addItem("long");
-		propertyType.addItem("byte");
-		propertyType.addItem("char");
-		propertyType.addItem("short");
-		propertyType.addItem("Object");
-		propertyType.addItem("List");
+		DEFAULT_TYPES = new LinkedList<String>();
+		DEFAULT_TYPES.add("String");
+		DEFAULT_TYPES.add("int");
+		DEFAULT_TYPES.add("boolean");
+		DEFAULT_TYPES.add("long");
+		DEFAULT_TYPES.add("byte");
+		DEFAULT_TYPES.add("char");
+		DEFAULT_TYPES.add("short");
+		DEFAULT_TYPES.add("Object");
+		DEFAULT_TYPES.add("List");
+		DEFAULT_TYPES.add("Map");
 		propertyType.setEditable(true);
+		propertyType.addPopupMenuListener(this);
 		add(propertyType);
 
 		propertyName = new JTextField("newProperty");
@@ -116,7 +113,7 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 
 	public void setPropertyType(String propertyType) {
 		if (idProperty) {
-			this.propertyType.addItem(UNIQUE_ID);
+			DEFAULT_TYPES.add(0, UNIQUE_ID);
 		}
 		this.propertyType.setSelectedItem(propertyType);
 	}
@@ -135,8 +132,8 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 
 		int nameWidth = getBounds().width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
 		propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
-
-		propertyType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2], 0, WIDTHS[2], HEIGHT);
+		g.drawString(":", WIDTHS[0] + nameWidth, 20);
+		propertyType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
 		if (!idProperty) {
 			removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
 		}
@@ -153,4 +150,17 @@ public class FieldProperty extends JLayeredPane implements ActionListener {
 			removeListener.actionPerformed(new ActionEvent(this, 0, REMOVED_COMMAND));
 		}
 	}
+
+	@Override
+	public void popupMenuCanceled(PopupMenuEvent e) {}
+
+	@Override
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+
+	@Override
+	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+		addPropertyTypes();
+	}
+
+	protected abstract void addPropertyTypes();
 }

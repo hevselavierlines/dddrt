@@ -1,6 +1,7 @@
 package com.baselet.element.elementnew;
 
 import com.baselet.control.enums.ElementId;
+import com.baselet.element.AggregateComposite;
 import com.baselet.element.EntityComposite;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.ValueObjectComposite;
@@ -69,6 +70,8 @@ public abstract class ElementFactory {
 				return new EntityComposite();
 			case DDDValueObject:
 				return new ValueObjectComposite();
+			case DDDAggregate:
+				return new AggregateComposite();
 			default:
 				throw new RuntimeException("Unknown class id: " + id);
 		}

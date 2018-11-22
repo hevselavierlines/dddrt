@@ -119,4 +119,8 @@ public class ComponentSwing extends JComponent implements Component {
 		return getComponents();
 	}
 
+	public NewGridElement getGridElement() {
+		return gridElement;
+	}
+
 }

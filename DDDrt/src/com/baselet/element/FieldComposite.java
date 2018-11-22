@@ -42,7 +42,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	private int totalHeight;
 
 	public FieldComposite() {
-		fieldName = new JTextField("Name");
+		fieldName = new JTextField();
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
 		propertiesPane = new CollapsiblePanel("Properties");
@@ -84,20 +84,21 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		try {
 			jsonAttributes = new JSONObject(additionalAttributes);
 			JSONObject entities = jsonAttributes.getJSONObject("entities");
-			fieldName.setText(entities.getString("name"));
 			jProperties = entities.getJSONArray("properties");
 			jMethods = entities.getJSONArray("methods");
 		} catch (Exception ex) {
 			createDefaultJSON();
 		}
 
+		JSONObject entities = jsonAttributes.getJSONObject("entities");
+		fieldName.setText(entities.getString("name"));
 		component.addComponent(fieldName);
 
 		component.addComponent(propertiesPane);
 		component.addComponent(methodsPane);
 		for (int i = 0; i < jProperties.length(); i++) {
 			JSONObject property = jProperties.getJSONObject(i);
-			FieldProperty newProperty = FieldProperty.createFromJSON(property);
+			FieldProperty newProperty = addProperty(property);
 			newProperty.setRemovedListener(this);
 			propertiesPane.add(newProperty);
 		}
@@ -185,10 +186,16 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		};
 	}
 
+	protected abstract FieldProperty addProperty(JSONObject jsonObject);
+
+	protected abstract FieldProperty createProperty();
+
+	protected abstract FieldMethod createMethod();
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == propertyAddButton) {
-			FieldProperty newProperty = new FieldProperty();
+			FieldProperty newProperty = createProperty();
 			newProperty.setRemovedListener(this);
 			propertiesPane.add(newProperty);
 
@@ -196,7 +203,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 		}
 		else if (e.getSource() == methodAddButton) {
-			FieldMethod newMethod = new FieldMethod();
+			FieldMethod newMethod = createMethod();
 			newMethod.setRemovedListener(this);
 			methodsPane.add(newMethod);
 

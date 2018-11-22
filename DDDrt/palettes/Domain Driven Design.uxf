@@ -5,7 +5,7 @@
     <id>DDDEntity</id>
     <coordinates>
       <x>16</x>
-      <y>16</y>
+      <y>300</y>
       <w>300</w>
       <h>400</h>
     </coordinates>
@@ -18,6 +18,19 @@
     <id>DDDValueObject</id>
     <coordinates>
       <x>320</x>
+      <y>300</y>
+      <w>300</w>
+      <h>400</h>
+    </coordinates>
+        <panel_attributes>
+        </panel_attributes>
+    <additional_attributes></additional_attributes>
+  </element>
+  
+  <element>
+    <id>DDDAggregate</id>
+    <coordinates>
+      <x>170</x>
       <y>16</y>
       <w>300</w>
       <h>400</h>
