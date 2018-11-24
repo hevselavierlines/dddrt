@@ -1,13 +1,13 @@
 package com.baselet.element;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.event.PopupMenuEvent;
@@ -15,8 +15,9 @@ import javax.swing.event.PopupMenuListener;
 
 import org.json.JSONObject;
 
-import com.baselet.design.metal.MetalComboBox;
+import com.baselet.design.metal.DataTypeComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
+import com.baselet.diagram.DrawPanel;
 
 public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener {
 
@@ -28,7 +29,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 	private final JTextField propertyName;
-	protected final JComboBox<String> propertyType;
+	protected final DataTypeComboBox propertyType;
 	private final VisibilityComboBox propertyVisibility;
 	private final JButton removeButton;
 	private boolean idProperty;
@@ -61,7 +62,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyVisibility = new VisibilityComboBox();
 		add(propertyVisibility);
 
-		propertyType = new MetalComboBox();
+		propertyType = new DataTypeComboBox();
 		DEFAULT_TYPES = new LinkedList<String>();
 		DEFAULT_TYPES.add("String");
 		DEFAULT_TYPES.add("int");
@@ -155,11 +156,29 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public void popupMenuCanceled(PopupMenuEvent e) {}
 
 	@Override
-	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		FieldComposite fc = propertyType.getSelection();
+		System.out.println(fc);
+	}
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 		addPropertyTypes();
+	}
+
+	public java.awt.Point getAbsolutePosition() {
+		Point p = new Point();
+		getAbsolutePositionRecursively(this, p);
+		return p;
+	}
+
+	private void getAbsolutePositionRecursively(java.awt.Component currentComponent, java.awt.Point point) {
+		if (currentComponent != null && !(currentComponent instanceof DrawPanel)) {
+			point.x += currentComponent.getLocation().x;
+			point.y += currentComponent.getLocation().y;
+			getAbsolutePositionRecursively(currentComponent.getParent(), point);
+
+		}
 	}
 
 	protected abstract void addPropertyTypes();

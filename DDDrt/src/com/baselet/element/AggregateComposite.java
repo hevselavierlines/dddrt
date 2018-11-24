@@ -8,7 +8,7 @@ import com.baselet.control.enums.ElementId;
 public class AggregateComposite extends EntityComposite {
 	@Override
 	public ElementId getId() {
-		return ElementId.DDDValueObject;
+		return ElementId.DDDAggregate;
 	}
 
 	@Override
@@ -40,5 +40,15 @@ public class AggregateComposite extends EntityComposite {
 		entities.put("properties", jProperties);
 		entities.put("methods", jMethods);
 		jsonAttributes.put("entities", entities);
+	}
+
+	@Override
+	protected FieldProperty createProperty() {
+		return new EntityProperty();
+	}
+
+	@Override
+	protected FieldMethod createMethod() {
+		return new FieldMethod();
 	}
 }

@@ -41,7 +41,7 @@ public class EntityProperty extends FieldProperty {
 				NewGridElement gridElement = cw.getGridElement();
 				if (gridElement instanceof FieldComposite) {
 					FieldComposite ec = (FieldComposite) gridElement;
-					propertyType.addItem(ec.getName());
+					propertyType.addItem(ec.getName(), ec);
 				}
 			}
 		}

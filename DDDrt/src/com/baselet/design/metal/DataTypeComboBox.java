@@ -10,24 +10,20 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
-public class VisibilityComboBox extends JComboBox<VisibilityItem> {
-	private static final long serialVersionUID = 1385934107040563411L;
+import com.baselet.element.FieldComposite;
 
-	public VisibilityComboBox() {
+public class DataTypeComboBox extends JComboBox<DataTypeItem> {
+	public DataTypeComboBox() {
 		super();
 
-		addItem(new VisibilityItem("-", "private"));
-		addItem(new VisibilityItem("~", "package"));
-		addItem(new VisibilityItem("#", "protected"));
-		addItem(new VisibilityItem("+", "public"));
-		setRenderer(new ItemRenderer());
-		setUI(new VisibilityComboBoxUI());
+		setRenderer(new DataTypeItemRenderer());
+		setUI(new DataTypeComboBoxUI());
 	}
 
 	public void setSelection(String selectionString) {
 		int selectedIndex = -1;
 		for (int i = 0; i < getItemCount() && selectedIndex < 0; i++) {
-			VisibilityItem item = getItemAt(i);
+			DataTypeItem item = getItemAt(i);
 			if (item.getId().equals(selectionString)) {
 				selectedIndex = i;
 			}
@@ -37,20 +33,38 @@ public class VisibilityComboBox extends JComboBox<VisibilityItem> {
 			setSelectedIndex(selectedIndex);
 		}
 	}
+
+	public void addItem(String item) {
+		super.addItem(new DataTypeItem(item, null));
+	}
+
+	public void addItem(String item, FieldComposite ec) {
+		super.addItem(new DataTypeItem(item, ec));
+	}
+
+	public FieldComposite getSelection() {
+		DataTypeItem item = getItemAt(getSelectedIndex());
+		if (item != null) {
+			return item.getDescription();
+		}
+		else {
+			return null;
+		}
+	}
 }
 
-class ItemRenderer extends BasicComboBoxRenderer {
+class DataTypeItemRenderer extends BasicComboBoxRenderer {
 	@Override
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		super.getListCellRendererComponent(list, value, index, isSelected,
 				cellHasFocus);
 		if (value != null) {
-			VisibilityItem item = (VisibilityItem) value;
-			setText(item.getId() + " " + item.getDescription());
+			DataTypeItem item = (DataTypeItem) value;
+			setText(item.getId());
 		}
 		if (index == -1) {
-			VisibilityItem item = (VisibilityItem) value;
+			DataTypeItem item = (DataTypeItem) value;
 			if (item != null) {
 				setText(item.getId());
 			}
@@ -59,38 +73,38 @@ class ItemRenderer extends BasicComboBoxRenderer {
 	}
 }
 
-class VisibilityItem {
+class DataTypeItem {
 
-	private final String id;
-	private final String description;
+	private final String typeName;
+	private final FieldComposite typeField;
 
-	public VisibilityItem(String id, String description) {
-		this.id = id;
-		this.description = description;
+	public DataTypeItem(String id, FieldComposite typeField) {
+		typeName = id;
+		this.typeField = typeField;
 	}
 
 	public String getId() {
-		return id;
+		return typeName;
 	}
 
-	public String getDescription() {
-		return description;
+	public FieldComposite getDescription() {
+		return typeField;
 	}
 
 	@Override
 	public String toString() {
-		return id;
+		return typeName;
 	}
 }
 
-class VisibilityComboBoxUI extends MetalComboBoxUI {
+class DataTypeComboBoxUI extends MetalComboBoxUI {
 	@Override
 	protected ComboPopup createPopup() {
 		BasicComboPopup popup = new BasicComboPopup(comboBox) {
 			@Override
 			protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
 				return super.computePopupBounds(
-						px, py, Math.max(100, pw), ph);
+						px, py, Math.max(150, pw), ph);
 			}
 		};
 		popup.getAccessibleContext().setAccessibleParent(comboBox);

@@ -60,7 +60,7 @@ public class AddElement extends Command {
 		}
 	}
 
-	private void addentity(GridElement e, DrawPanel panel, int x, int y) {
+	private void addEntity(GridElement e, DrawPanel panel, int x, int y) {
 		panel.getHandler().setHandlerAndInitListeners(e);
 		panel.addElement(e);
 		e.setLocation(x, y);
@@ -82,7 +82,7 @@ public class AddElement extends Command {
 		int offsetY = origin.y - handler.getDrawPanel().getOriginAtDefaultZoom().y;
 
 		log.debug("Add Entity at " + getX() + "/" + getY());
-		addentity(_entity, handler.getDrawPanel(), getX() + offsetX, getY() + offsetY);
+		addEntity(_entity, handler.getDrawPanel(), getX() + offsetX, getY() + offsetY);
 
 		if (_zoom) {
 			DiagramHandler.zoomEntity(Constants.DEFAULTGRIDSIZE, handler.getGridSize(), _entity);

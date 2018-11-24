@@ -41,7 +41,7 @@ public class ValueObjectProperty extends FieldProperty {
 				NewGridElement gridElement = cw.getGridElement();
 				if (gridElement instanceof ValueObjectComposite) {
 					FieldComposite ec = (FieldComposite) gridElement;
-					propertyType.addItem(ec.getName());
+					propertyType.addItem(ec.getName(), ec);
 				}
 			}
 		}

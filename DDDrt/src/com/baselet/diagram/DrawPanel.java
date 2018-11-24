@@ -30,6 +30,7 @@ import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.config.Config;
 import com.baselet.control.config.SharedConfig;
 import com.baselet.control.constants.Constants;
+import com.baselet.control.enums.LineType;
 import com.baselet.control.enums.Program;
 import com.baselet.control.enums.RuntimeType;
 import com.baselet.control.util.Utils;
@@ -446,24 +447,24 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 	}
 
-	// private void drawDevHelpLines(Graphics2D g2d) {
-	// g2d.setStroke(Utils.getStroke(LineType.DASHED, 1));
-	//
-	// g2d.setColor(Color.BLUE);
-	// int w = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().x;
-	// int h = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().y;
-	// g2d.drawRect(w, h, w + 2, h + 2);
-	//
-	// g2d.setColor(Color.GRAY);
-	// Dimension dim = getViewableDiagrampanelSize();
-	// g2d.drawRect(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
-	//
-	// g2d.setColor(Color.RED);
-	// Dimension dim2 = getPreferredSize();
-	// g2d.drawRect(0, 0, (int) dim2.getWidth(), (int) dim2.getHeight());
-	//
-	// g2d.setStroke(Utils.getStroke(LineType.SOLID, 1));
-	// }
+	private void drawDevHelpLines(Graphics2D g2d) {
+		g2d.setStroke(Utils.getStroke(LineType.DASHED, 1));
+
+		g2d.setColor(Color.BLUE);
+		int w = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().x;
+		int h = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().y;
+		g2d.drawRect(w, h, w + 2, h + 2);
+
+		g2d.setColor(Color.GRAY);
+		Dimension dim = getViewableDiagrampanelSize();
+		g2d.drawRect(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
+
+		g2d.setColor(Color.RED);
+		Dimension dim2 = getPreferredSize();
+		g2d.drawRect(0, 0, (int) dim2.getWidth(), (int) dim2.getHeight());
+
+		g2d.setStroke(Utils.getStroke(LineType.SOLID, 1));
+	}
 
 	@Override
 	protected void paintChildren(Graphics g) {
@@ -475,6 +476,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 
 		Graphics2D g2d = (Graphics2D) g;
+		drawDevHelpLines(g2d);
 		g2d.setRenderingHints(Utils.getUxRenderingQualityHigh(true));
 		if (Config.getInstance().isShow_grid()) {
 			drawGrid(g2d);
