@@ -20,6 +20,8 @@ import com.baselet.element.UndoInformation;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
 import com.baselet.element.facet.common.LayerFacet;
+import com.baselet.element.interfaces.Component;
+import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.relation.facet.RelationLineTypeFacet;
 import com.baselet.element.relation.facet.SettingsRelation;
 import com.baselet.element.relation.helper.RelationPointHandler;
@@ -34,11 +36,17 @@ import com.baselet.element.sticking.polygon.NoStickingPolygonGenerator;
 
 public class Relation extends NewGridElement implements Stickable, RelationPointHolder {
 
-	private RelationPointHandler relationPoints;
+	protected RelationPointHandler relationPoints;
 
 	@Override
 	public ElementId getId() {
 		return ElementId.Relation;
+	}
+
+	@Override
+	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
+		// TODO Auto-generated method stub
+		super.init(bounds, panelAttributes, additionalAttributes, component, handler);
 	}
 
 	@Override
@@ -161,5 +169,4 @@ public class Relation extends NewGridElement implements Stickable, RelationPoint
 		super.drawError(drawer, errorText.replace(">>", "\\>>").replace("<<", "\\<<"));
 		RelationLineTypeFacet.drawDefaultLineAndArrows(drawer, relationPoints);
 	}
-
 }

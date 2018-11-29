@@ -22,6 +22,7 @@ import com.baselet.element.elementnew.uml.SyncBarHorizontal;
 import com.baselet.element.elementnew.uml.SyncBarVertical;
 import com.baselet.element.elementnew.uml.Timer;
 import com.baselet.element.elementnew.uml.UseCase;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.element.relation.Relation;
 
 public abstract class ElementFactory {
@@ -72,6 +73,8 @@ public abstract class ElementFactory {
 				return new ValueObjectComposite();
 			case DDDAggregate:
 				return new AggregateComposite();
+			case DDDRelation:
+				return new DDDRelation();
 			default:
 				throw new RuntimeException("Unknown class id: " + id);
 		}

@@ -17,6 +17,7 @@ import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.AlignHorizontal;
 import com.baselet.control.enums.LineType;
 import com.baselet.design.metal.MetalButton;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
@@ -40,6 +41,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	protected JSONArray jProperties;
 	protected JSONArray jMethods;
 	private int totalHeight;
+	private ComponentSwing component;
 
 	public FieldComposite() {
 		fieldName = new JTextField();
@@ -112,6 +114,8 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 		component.addComponent(propertyAddButton);
 		component.addComponent(methodAddButton);
+
+		this.component = (ComponentSwing) component;
 	}
 
 	protected abstract void createDefaultJSON();
@@ -174,6 +178,11 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		setRectangle(newRect);
 	}
 
+	@Override
+	public void dragEnd() {
+
+	}
+
 	protected abstract String getTitle();
 
 	@Override
@@ -210,16 +219,20 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			updateModelFromText();
 		}
 		else if (FieldProperty.REMOVED_COMMAND.equals(e.getActionCommand())) {
-			Object source = e.getSource();
-			if (source instanceof java.awt.Component) {
-				java.awt.Component deleteComponent = (java.awt.Component) source;
-				propertiesPane.remove(deleteComponent);
-				propertiesPane.updateBorderTitle();
+			removeComponent(e);
+		}
+	}
 
-				methodsPane.remove(deleteComponent);
-				methodsPane.updateBorderTitle();
-				updateModelFromText();
-			}
+	protected void removeComponent(ActionEvent actionEvent) {
+		Object source = actionEvent.getSource();
+		if (source instanceof java.awt.Component) {
+			java.awt.Component deleteComponent = (java.awt.Component) source;
+			propertiesPane.remove(deleteComponent);
+			propertiesPane.updateBorderTitle();
+
+			methodsPane.remove(deleteComponent);
+			methodsPane.updateBorderTitle();
+			updateModelFromText();
 		}
 	}
 
@@ -230,5 +243,20 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	public String getName() {
 		return fieldName.getText();
+	}
+
+	public java.awt.Point getAbsolutePosition() {
+		java.awt.Point p = new java.awt.Point();
+		getAbsolutePositionRecursively(component, p);
+		p.x += component.getWidth() / 2;
+		return p;
+	}
+
+	private void getAbsolutePositionRecursively(java.awt.Component currentComponent, java.awt.Point point) {
+		if (currentComponent != null && !(currentComponent instanceof DrawPanel)) {
+			point.x += currentComponent.getLocation().x;
+			point.y += currentComponent.getLocation().y;
+			getAbsolutePositionRecursively(currentComponent.getParent(), point);
+		}
 	}
 }

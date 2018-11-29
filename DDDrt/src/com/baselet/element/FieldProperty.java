@@ -17,7 +17,9 @@ import org.json.JSONObject;
 
 import com.baselet.design.metal.DataTypeComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
+import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.element.relation.DDDRelation;
 
 public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener {
 
@@ -35,9 +37,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 30;
-	private final int[] WIDTHS = { 40, -1, 80, 40 };
+	private final int[] WIDTHS = { 40, -1, 120, 40 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
+	private DDDRelation relationLineRef;
 
 	@Override
 	public String toString() {
@@ -147,6 +150,12 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+		if (relationLineRef != null) {
+			dp.removeRelation(relationLineRef);
+			relationLineRef = null;
+			dp.repaint();
+		}
 		if (removeListener != null) {
 			removeListener.actionPerformed(new ActionEvent(this, 0, REMOVED_COMMAND));
 		}
@@ -158,7 +167,21 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 		FieldComposite fc = propertyType.getSelection();
-		System.out.println(fc);
+		DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+		if (fc != null) {
+			if (relationLineRef != null) {
+				dp.removeRelation(relationLineRef);
+			}
+			relationLineRef = DDDRelation.createRelation(this, fc);
+			dp.addRelation(relationLineRef);
+		}
+		else {
+			if (relationLineRef != null) {
+				dp.removeRelation(relationLineRef);
+				relationLineRef = null;
+			}
+		}
+		dp.repaint();
 	}
 
 	@Override
@@ -166,9 +189,13 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		addPropertyTypes();
 	}
 
-	public java.awt.Point getAbsolutePosition() {
+	public java.awt.Point getAbsolutePosition(boolean right) {
 		Point p = new Point();
 		getAbsolutePositionRecursively(this, p);
+		if (right) {
+			p.x += getWidth() + 6;
+		}
+		p.y += HEIGHT / 2;
 		return p;
 	}
 
@@ -177,7 +204,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			point.x += currentComponent.getLocation().x;
 			point.y += currentComponent.getLocation().y;
 			getAbsolutePositionRecursively(currentComponent.getParent(), point);
-
 		}
 	}
 

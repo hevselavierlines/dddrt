@@ -13,6 +13,7 @@ import java.awt.print.Printable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,6 +37,7 @@ import com.baselet.control.enums.RuntimeType;
 import com.baselet.control.util.Utils;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.listener.ScrollbarListener;
 
 @SuppressWarnings("serial")
@@ -50,6 +52,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 
 	private final List<GridElement> gridElements = new ArrayList<GridElement>();
 	private Polygon selectionPoint;
+	private final List<RelationLine> relationLines;
 
 	public DrawPanel(DiagramHandler handler) {
 		this.handler = handler;
@@ -94,6 +97,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			}, 25, 25);
 		}
 
+		relationLines = new LinkedList<RelationLine>();
 		this.repaint(); // repaint the drawpanel to be sure everything is visible (startuphelp etc)
 	}
 
@@ -196,6 +200,8 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			return Collections.<com.baselet.element.relation.Relation> emptyList();
 		}
 		List<com.baselet.element.relation.Relation> returnList = getHelper(com.baselet.element.relation.Relation.class);
+		List<com.baselet.element.relation.DDDRelation> returnList2 = getHelper(com.baselet.element.relation.DDDRelation.class);
+		returnList.addAll(returnList2);
 		returnList.removeAll(excludeList);
 		return returnList;
 	}
@@ -484,7 +490,12 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		if (selectionPoint != null) {
 			g.drawPolygon(selectionPoint);
 		}
+
 		super.paintComponents(g);
+
+		for (RelationLine relation : relationLines) {
+			relation.paint(g2d);
+		}
 	}
 
 	/**
@@ -583,5 +594,23 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		add(notification);
 
 		repaint();
+	}
+
+	public void addRelation(RelationLine relationLine) {
+		relationLines.add(relationLine);
+	}
+
+	public void removeRelation(RelationLine relationLine) {
+		relationLines.remove(relationLine);
+	}
+
+	public void addRelation(DDDRelation relation) {
+		gridElements.add(relation);
+		add((Component) relation.getComponent(), relation.getLayer());
+	}
+
+	public void removeRelation(DDDRelation relation) {
+		gridElements.remove(relation);
+		remove((Component) relation.getComponent());
 	}
 }
