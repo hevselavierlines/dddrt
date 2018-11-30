@@ -1,7 +1,6 @@
 package com.baselet.diagram.io;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.Writer;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
-import javax.swing.JLayeredPane;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -28,9 +26,9 @@ import com.baselet.control.config.Config;
 import com.baselet.control.constants.Constants;
 import com.baselet.control.enums.Program;
 import com.baselet.control.util.Utils;
+import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
-import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.interfaces.GridElement;
 import com.itextpdf.awt.FontMapper;
 import com.itextpdf.awt.PdfGraphics2D;
@@ -164,19 +162,21 @@ public class OutputHandler {
 	}
 
 	public static void paintEntitiesIntoGraphics2D(Graphics2D g2d, Collection<GridElement> entities) {
-		DiagramHandler handler = new DiagramHandler(null);
-		JLayeredPane tempPanel = new JLayeredPane();
-		for (GridElement entity : entities) {
-			GridElement clone = ElementFactorySwing.createCopy(entity, handler);
-			com.baselet.element.interfaces.Component component = clone.getComponent();
-			// Issue 138: when PDF and Swing Export draw on (0,0) a part of the drawn image is cut, therefore it's displaced by 0.5px in that case.
-			// also Issue 270: makes arrow ending placement better
-			component.translateForExport();
-			tempPanel.add((Component) component, clone.getLayer());
-		}
-		tempPanel.validate();
-		tempPanel.setBackground(Color.WHITE);
-		tempPanel.setSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
-		tempPanel.update(g2d);
+		// DiagramHandler handler = new DiagramHandler(null);
+		// JLayeredPane tempPanel = new JLayeredPane();
+		// for (GridElement entity : entities) {
+		// GridElement clone = ElementFactorySwing.createCopy(entity, handler);
+		// com.baselet.element.interfaces.Component component = clone.getComponent();
+		// // Issue 138: when PDF and Swing Export draw on (0,0) a part of the drawn image is cut, therefore it's displaced by 0.5px in that case.
+		// // also Issue 270: makes arrow ending placement better
+		// component.translateForExport();
+		// tempPanel.add((Component) component, clone.getLayer());
+		// }
+		// tempPanel.validate();
+		// tempPanel.setBackground(Color.WHITE);
+		// tempPanel.setSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().paint(g2d);
+		// tempPanel.update(g2d);
+
 	}
 }

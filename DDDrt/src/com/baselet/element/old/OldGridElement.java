@@ -615,4 +615,9 @@ public abstract class OldGridElement extends JComponent implements GridElement, 
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getUUID() {
+		return null;
+	}
 }

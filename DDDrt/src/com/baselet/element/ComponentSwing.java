@@ -37,6 +37,9 @@ public class ComponentSwing extends JComponent implements Component {
 		if (selected) {
 			metaDrawer.drawAll();
 		}
+		if (g.getFont().getName().startsWith("Dialog")) {
+			System.out.println("JONAS");
+		}
 	}
 
 	@Override

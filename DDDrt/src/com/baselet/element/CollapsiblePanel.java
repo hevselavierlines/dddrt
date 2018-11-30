@@ -118,7 +118,7 @@ public class CollapsiblePanel extends JLayeredPane {
 	}
 
 	protected void toggleVisibility() {
-		toggleVisibility(hasInvisibleComponent());
+		toggleVisibility(isInvisible());
 	}
 
 	protected void toggleVisibility(boolean visible) {
@@ -133,13 +133,13 @@ public class CollapsiblePanel extends JLayeredPane {
 	public void updateBorderTitle() {
 		String arrow = "";
 		if (getComponentCount() > 0) {
-			arrow = hasInvisibleComponent() ? "▽" : "△";
+			arrow = isInvisible() ? "▽" : "△";
 		}
 		border.setTitle(arrow + " " + title);
 		repaint();
 	}
 
-	protected final boolean hasInvisibleComponent() {
+	protected final boolean isInvisible() {
 		return collapsed;
 	}
 
@@ -165,4 +165,5 @@ public class CollapsiblePanel extends JLayeredPane {
 			listener.collapseStateChange(collapsed);
 		}
 	}
+
 }

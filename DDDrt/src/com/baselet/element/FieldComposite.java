@@ -78,9 +78,13 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		return jsonAttributes.toString(1);
 	}
 
-	@Override
 	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
-		super.init(bounds, panelAttributes, additionalAttributes, component, handler);
+		init(bounds, panelAttributes, additionalAttributes, component, handler, null);
+	}
+
+	@Override
+	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler, String uuid) {
+		super.init(bounds, panelAttributes, additionalAttributes, component, handler, uuid);
 
 		jProperties = null;
 		try {
@@ -259,4 +263,5 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			getAbsolutePositionRecursively(currentComponent.getParent(), point);
 		}
 	}
+
 }

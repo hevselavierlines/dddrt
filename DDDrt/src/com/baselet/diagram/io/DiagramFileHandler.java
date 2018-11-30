@@ -144,6 +144,7 @@ public class DiagramFileHandler {
 		String sElType = c.getName();
 		String sElPanelAttributes = e.getPanelAttributes();
 		String sElAdditionalAttributes = e.getAdditionalAttributes();
+		String uuid = e.getUUID();
 
 		Element el = doc.createElement("element");
 
@@ -184,6 +185,10 @@ public class DiagramFileHandler {
 		Element elAA = doc.createElement("additional_attributes");
 		elAA.appendChild(doc.createTextNode(sElAdditionalAttributes));
 		el.appendChild(elAA);
+
+		Element elUI = doc.createElement("uuid");
+		elUI.appendChild(doc.createTextNode(uuid));
+		el.appendChild(elUI);
 
 		if (e instanceof CustomElement) {
 			Element elCO = doc.createElement("custom_code");

@@ -482,7 +482,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 
 		Graphics2D g2d = (Graphics2D) g;
-		drawDevHelpLines(g2d);
+		// drawDevHelpLines(g2d);
 		g2d.setRenderingHints(Utils.getUxRenderingQualityHigh(true));
 		if (Config.getInstance().isShow_grid()) {
 			drawGrid(g2d);

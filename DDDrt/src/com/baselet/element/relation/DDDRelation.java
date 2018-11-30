@@ -14,6 +14,11 @@ public class DDDRelation extends Relation {
 	private FieldProperty startProperty;
 	private FieldComposite endComposite;
 
+	@Override
+	public ElementId getId() {
+		return ElementId.DDDRelation;
+	}
+
 	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite) {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
 		java.awt.Point endPoint = endComposite.getAbsolutePosition();
@@ -27,7 +32,7 @@ public class DDDRelation extends Relation {
 		int maxX = Math.max(startPoint.x, endPoint.x);
 		int maxY = Math.max(startPoint.y, endPoint.y);
 		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(ElementId.DDDRelation, rect, "lt=<-", null, CurrentDiagram.getInstance().getDiagramHandler());
+		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(ElementId.DDDRelation, rect, "lt=<-", null, CurrentDiagram.getInstance().getDiagramHandler(), null);
 		dddRelation.startProperty = startProperty;
 		dddRelation.endComposite = endComposite;
 		dddRelation.createRelationLine();
@@ -43,8 +48,21 @@ public class DDDRelation extends Relation {
 			relationPoints = new RelationPointHandler(this, pointList);
 		}
 		else {
-			super.setAdditionalAttributes(additionalAttributes);
+			String[] spliter = additionalAttributes.split(";;;");
+			super.setAdditionalAttributes(spliter[0]);
+
 		}
+	}
+
+	@Override
+	public String getAdditionalAttributes() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.getAdditionalAttributes());
+		if (endComposite != null) {
+			sb.append(";;;");
+			sb.append(endComposite.getUUID());
+		}
+		return sb.toString();
 	}
 
 	public void createRelationLine() {

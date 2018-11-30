@@ -43,6 +43,7 @@ public class InputHandler extends DefaultHandler {
 	private String code;
 	private String panel_attributes;
 	private String additional_attributes;
+	private String uuid;
 
 	private Integer currentGroup;
 	private final DiagramHandler handler;
@@ -97,7 +98,7 @@ public class InputHandler extends DefaultHandler {
 		else if (elementname.equals("element")) {
 			if (id != null) {
 				try {
-					NewGridElement e = ElementFactorySwing.create(ElementId.valueOf(id), new Rectangle(x, y, w, h), panel_attributes, additional_attributes, handler);
+					NewGridElement e = ElementFactorySwing.create(ElementId.valueOf(id), new Rectangle(x, y, w, h), panel_attributes, additional_attributes, handler, uuid);
 					if (currentGroup != null) {
 						e.setProperty(GroupFacet.KEY, currentGroup);
 					}
@@ -138,6 +139,9 @@ public class InputHandler extends DefaultHandler {
 		}
 		else if (elementname.equals("id")) { // new elements have an id
 			id = elementtext;
+		}
+		else if (elementname.equals("uuid")) {
+			uuid = elementtext;
 		}
 		else if (elementname.equals("x")) {
 			Integer i = Integer.valueOf(elementtext);

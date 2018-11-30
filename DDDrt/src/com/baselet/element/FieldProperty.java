@@ -87,6 +87,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		removeButton = new JButton("x");
 		removeButton.addActionListener(this);
 		add(removeButton);
+
+		updateCoordinates(null, 200);
 	}
 
 	public FieldProperty(String propertyVisibility,
@@ -130,18 +132,30 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		this.propertyVisibility.setSelection(propertyVisibility);
 	}
 
-	@Override
-	public void paint(Graphics g) {
+	protected void updateCoordinates(Graphics g, int width) {
 		propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT);
 
-		int nameWidth = getBounds().width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
+		int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
 		propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
-		g.drawString(":", WIDTHS[0] + nameWidth, 20);
-		propertyType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
-		if (!idProperty) {
-			removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		if (g != null) {
+			g.drawString(":", WIDTHS[0] + nameWidth, 20);
 		}
+		propertyType.setBounds(width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
+		if (!idProperty) {
+			removeButton.setBounds(width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		}
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		updateCoordinates(g, getBounds().width);
 		super.paint(g);
+	}
+
+	@Override
+	public void print(Graphics g) {
+		updateCoordinates(g, getWidth());
+		super.print(g);
 	}
 
 	public void setRemovedListener(ActionListener actionListener) {

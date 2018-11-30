@@ -80,4 +80,6 @@ public interface GridElement extends HasPanelAttributes {
 	void mergeUndoDrag();
 
 	GridElementDeprecatedAddons getDeprecatedAddons();
+
+	String getUUID();
 }

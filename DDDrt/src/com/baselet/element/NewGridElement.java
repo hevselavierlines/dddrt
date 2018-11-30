@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -61,7 +62,9 @@ public abstract class NewGridElement implements GridElement {
 
 	protected final UndoHistory undoStack = new UndoHistory();
 
-	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
+	protected String uniqueId;
+
+	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler, String uuid) {
 		this.component = component;
 		drawer = component.getDrawHandler();
 		metaDrawer = component.getMetaDrawHandler();
@@ -70,6 +73,12 @@ public abstract class NewGridElement implements GridElement {
 		this.handler = handler;
 		state = new PropertiesParserState(createSettings(), drawer);
 		setAdditionalAttributes(additionalAttributes);
+		if (uuid == null) {
+			uniqueId = UUID.randomUUID().toString();
+		}
+		else {
+			uniqueId = uuid;
+		}
 	}
 
 	@Override
@@ -506,6 +515,10 @@ public abstract class NewGridElement implements GridElement {
 	@Override
 	public GridElementDeprecatedAddons getDeprecatedAddons() {
 		return GridElementDeprecatedAddons.NONE;
+	}
+
+	public String getUUID() {
+		return uniqueId;
 	}
 
 }

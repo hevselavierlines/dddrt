@@ -19,10 +19,14 @@ import com.baselet.element.sticking.Stickables;
 
 public class ElementFactorySwing extends ElementFactory {
 
+	public static NewGridElement create(ElementId id, Rectangle bounds, String panelAttributes, String additionalAttributes, DiagramHandler handler) {
+		return create(id, bounds, panelAttributes, additionalAttributes, handler, null);
+	}
+
 	/**
 	 * uses no reflection, to avoid complications with GWT
 	 */
-	public static NewGridElement create(ElementId id, Rectangle bounds, String panelAttributes, String additionalAttributes, DiagramHandler handler) {
+	public static NewGridElement create(ElementId id, Rectangle bounds, String panelAttributes, String additionalAttributes, DiagramHandler handler, String uuid) {
 		final NewGridElement returnObj = createAssociatedGridElement(id);
 
 		ComponentSwing component = new ComponentSwing(returnObj);
@@ -51,7 +55,7 @@ public class ElementFactorySwing extends ElementFactory {
 			}
 		};
 
-		returnObj.init(bounds, panelAttributes, additionalAttributes, component, panel);
+		returnObj.init(bounds, panelAttributes, additionalAttributes, component, panel, uuid);
 		handler.setHandlerAndInitListeners(returnObj);
 		return returnObj;
 	}
@@ -61,7 +65,7 @@ public class ElementFactorySwing extends ElementFactory {
 			return ((OldGridElement) src).cloneFromMe();
 		}
 		else {
-			return create(src.getId(), src.getRectangle().copy(), src.getPanelAttributes(), src.getAdditionalAttributes(), Main.getHandlerForElement(src));
+			return create(src.getId(), src.getRectangle().copy(), src.getPanelAttributes(), src.getAdditionalAttributes(), Main.getHandlerForElement(src), null);
 		}
 	}
 
