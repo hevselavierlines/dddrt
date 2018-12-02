@@ -7,6 +7,7 @@ import java.util.List;
 import com.baselet.control.constants.Constants;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.relation.DDDRelation;
 
@@ -90,9 +91,12 @@ public class RemoveElement extends Command {
 		}
 
 		for (GridElement e : connectedEntities) {
-			new AddElement(e,
-					handler.realignToGrid(e.getRectangle().x + offsetX),
-					handler.realignToGrid(e.getRectangle().y + offsetY), _zoom).execute(handler);
+			NewGridElement checkForTwo = handler.getDrawPanel().getElementById(e.getUUID());
+			if (checkForTwo == null) {
+				new AddElement(e,
+						handler.realignToGrid(e.getRectangle().x + offsetX),
+						handler.realignToGrid(e.getRectangle().y + offsetY), _zoom).execute(handler);
+			}
 		}
 
 		handler.getDrawPanel().updatePanelAndScrollbars();
