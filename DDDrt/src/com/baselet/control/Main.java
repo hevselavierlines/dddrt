@@ -45,6 +45,7 @@ import com.baselet.diagram.PaletteHandler;
 import com.baselet.diagram.UpdateCheckTimerTask;
 import com.baselet.diagram.io.OpenFileChooser;
 import com.baselet.element.interfaces.GridElement;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.BaseGUI;
 import com.baselet.gui.CurrentGui;
 import com.baselet.gui.pane.OwnSyntaxPane;
@@ -384,6 +385,10 @@ public class Main implements CanCloseProgram, CanOpenDiagram {
 			}
 			RecentlyUsedFilesList.getInstance().add(filename);
 			Notifier.getInstance().showNotification(filename + " opened");
+			DrawPanel dp = diagram.getDrawPanel();
+			for (DDDRelation dddRelation : dp.getHelper(DDDRelation.class)) {
+				dddRelation.initRelation(dp);
+			}
 		}
 	}
 

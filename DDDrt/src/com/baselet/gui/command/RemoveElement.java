@@ -8,12 +8,14 @@ import com.baselet.control.constants.Constants;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.element.interfaces.GridElement;
+import com.baselet.element.relation.DDDRelation;
 
 public class RemoveElement extends Command {
 
-	private List<GridElement> _entities;
+	protected final List<GridElement> _entities;
 	private Point origin;
-	private boolean _zoom;
+	private final boolean _zoom;
+	private final List<GridElement> connectedEntities;
 
 	public RemoveElement(GridElement e) {
 		this(e, true);
@@ -21,6 +23,7 @@ public class RemoveElement extends Command {
 
 	public RemoveElement(GridElement e, boolean zoom) {
 		_entities = new ArrayList<GridElement>();
+		connectedEntities = new ArrayList<GridElement>();
 		_entities.add(e);
 		_zoom = zoom;
 	}
@@ -32,6 +35,7 @@ public class RemoveElement extends Command {
 	public RemoveElement(List<GridElement> v, boolean zoom) {
 		_entities = new ArrayList<GridElement>();
 		_entities.addAll(v);
+		connectedEntities = new ArrayList<GridElement>();
 		_zoom = zoom;
 	}
 
@@ -42,9 +46,17 @@ public class RemoveElement extends Command {
 			return;
 		}
 
+		connectedEntities.clear();
 		DrawPanel p = handler.getDrawPanel();
 		for (GridElement e : _entities) {
 			handler.getDrawPanel().removeElement(e);
+			for (DDDRelation relatedRelation : p.getHelper(DDDRelation.class)) {
+				if (e.equals(relatedRelation.getEndComposite()) ||
+					e.equals(relatedRelation.getStartComposite())) {
+					connectedEntities.add(relatedRelation);
+					p.removeElement(relatedRelation);
+				}
+			}
 		}
 
 		origin = handler.getDrawPanel().getOriginAtDefaultZoom();
@@ -72,6 +84,12 @@ public class RemoveElement extends Command {
 		offsetY = offsetY * handler.getGridSize() / Constants.DEFAULTGRIDSIZE;
 
 		for (GridElement e : _entities) {
+			new AddElement(e,
+					handler.realignToGrid(e.getRectangle().x + offsetX),
+					handler.realignToGrid(e.getRectangle().y + offsetY), _zoom).execute(handler);
+		}
+
+		for (GridElement e : connectedEntities) {
 			new AddElement(e,
 					handler.realignToGrid(e.getRectangle().x + offsetX),
 					handler.realignToGrid(e.getRectangle().y + offsetY), _zoom).execute(handler);

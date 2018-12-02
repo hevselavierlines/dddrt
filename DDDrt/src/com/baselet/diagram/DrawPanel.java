@@ -35,6 +35,7 @@ import com.baselet.control.enums.LineType;
 import com.baselet.control.enums.Program;
 import com.baselet.control.enums.RuntimeType;
 import com.baselet.control.util.Utils;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -200,14 +201,27 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			return Collections.<com.baselet.element.relation.Relation> emptyList();
 		}
 		List<com.baselet.element.relation.Relation> returnList = getHelper(com.baselet.element.relation.Relation.class);
-		List<com.baselet.element.relation.DDDRelation> returnList2 = getHelper(com.baselet.element.relation.DDDRelation.class);
+		List<com.baselet.element.relation.DDDRelation> returnList2 = new LinkedList<com.baselet.element.relation.DDDRelation>();// getHelper(com.baselet.element.relation.DDDRelation.class);
 		returnList.addAll(returnList2);
 		returnList.removeAll(excludeList);
 		return returnList;
 	}
 
+	public NewGridElement getElementById(String uuid) {
+		NewGridElement element = null;
+		for (GridElement gridElement : gridElements) {
+			if (gridElement instanceof NewGridElement) {
+				NewGridElement newGridElement = (NewGridElement) gridElement;
+				if (uuid.equals(newGridElement.getUUID())) {
+					element = newGridElement;
+				}
+			}
+		}
+		return element;
+	}
+
 	@SuppressWarnings("unchecked")
-	private <T extends GridElement> List<T> getHelper(Class<T> filtered) {
+	public <T extends GridElement> List<T> getHelper(Class<T> filtered) {
 		List<T> gridElementsToReturn = new ArrayList<T>();
 		for (GridElement e : getGridElements()) {
 			if (e.getClass().equals(filtered)) {

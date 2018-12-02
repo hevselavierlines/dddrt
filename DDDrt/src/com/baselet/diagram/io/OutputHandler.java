@@ -162,6 +162,7 @@ public class OutputHandler {
 	}
 
 	public static void paintEntitiesIntoGraphics2D(Graphics2D g2d, Collection<GridElement> entities) {
+		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().paint(g2d);
 		// DiagramHandler handler = new DiagramHandler(null);
 		// JLayeredPane tempPanel = new JLayeredPane();
 		// for (GridElement entity : entities) {
@@ -175,7 +176,6 @@ public class OutputHandler {
 		// tempPanel.validate();
 		// tempPanel.setBackground(Color.WHITE);
 		// tempPanel.setSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
-		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().paint(g2d);
 		// tempPanel.update(g2d);
 
 	}

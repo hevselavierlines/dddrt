@@ -264,4 +264,17 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		}
 	}
 
+	public FieldProperty getPropertyByName(String name) {
+		FieldProperty element = null;
+		for (java.awt.Component property : propertiesPane.getComponents()) {
+			if (property instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) property;
+				if (name.equals(fieldProperty.getPropertyName())) {
+					element = fieldProperty;
+				}
+			}
+		}
+		return element;
+	}
+
 }

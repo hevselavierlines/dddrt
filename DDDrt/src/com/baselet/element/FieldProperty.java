@@ -221,5 +221,34 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		}
 	}
 
+	public FieldComposite getParentFieldComposite() {
+		NewGridElement element = getParentFieldCompositeRecursively(this);
+		if (element instanceof FieldComposite) {
+			return (FieldComposite) element;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private NewGridElement getParentFieldCompositeRecursively(java.awt.Component currentComponent) {
+		if (currentComponent != null) {
+			if (currentComponent instanceof ComponentSwing) {
+				ComponentSwing swing = (ComponentSwing) currentComponent;
+				return swing.getGridElement();
+			}
+			else {
+				return getParentFieldCompositeRecursively(currentComponent.getParent());
+			}
+		}
+		else {
+			return null;
+		}
+	}
+
 	protected abstract void addPropertyTypes();
+
+	public void setRelation(DDDRelation relation) {
+		relationLineRef = relation;
+	}
 }

@@ -3,6 +3,7 @@ package com.baselet.element.relation;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.CurrentDiagram;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.FieldComposite;
 import com.baselet.element.FieldProperty;
@@ -13,6 +14,7 @@ public class DDDRelation extends Relation {
 
 	private FieldProperty startProperty;
 	private FieldComposite endComposite;
+	private String relationString;
 
 	@Override
 	public ElementId getId() {
@@ -51,6 +53,9 @@ public class DDDRelation extends Relation {
 			String[] spliter = additionalAttributes.split(";;;");
 			super.setAdditionalAttributes(spliter[0]);
 
+			if (spliter.length >= 2) {
+				relationString = spliter[1];
+			}
 		}
 	}
 
@@ -61,6 +66,10 @@ public class DDDRelation extends Relation {
 		if (endComposite != null) {
 			sb.append(";;;");
 			sb.append(endComposite.getUUID());
+			sb.append(';');
+			sb.append(startProperty.getParentFieldComposite().getUUID());
+			sb.append(';');
+			sb.append(startProperty.getPropertyName());
 		}
 		return sb.toString();
 	}
@@ -89,4 +98,31 @@ public class DDDRelation extends Relation {
 
 	public void moveRelationLine() {}
 
+	public void initRelation(DrawPanel drawPanel) {
+		String[] relationParams = relationString.split(";");
+		if (relationParams.length == 3) {
+			String endCompUUID = relationParams[0];
+			String startCompUUID = relationParams[1];
+			String startCompProp = relationParams[2];
+
+			endComposite = (FieldComposite) drawPanel.getElementById(endCompUUID);
+			FieldComposite startComposite = (FieldComposite) drawPanel.getElementById(startCompUUID);
+			startProperty = startComposite.getPropertyByName(startCompProp);
+			startProperty.setRelation(this);
+			System.out.println(endComposite);
+		}
+	}
+
+	public FieldComposite getEndComposite() {
+		return endComposite;
+	}
+
+	public FieldComposite getStartComposite() {
+		if (startProperty != null) {
+			return startProperty.getParentFieldComposite();
+		}
+		else {
+			return null;
+		}
+	}
 }

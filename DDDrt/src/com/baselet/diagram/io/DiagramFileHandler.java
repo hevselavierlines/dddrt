@@ -249,15 +249,24 @@ public class DiagramFileHandler {
 	}
 
 	public void doOpen() {
+		FileInputStream input = null;
 		try {
 			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-			FileInputStream input = new FileInputStream(file);
+			input = new FileInputStream(file);
 			InputHandler xmlhandler = new InputHandler(handler);
 			parser.parse(input, xmlhandler);
 			input.close();
 		} catch (Exception e) {
 			log.error("Cannot open the file: " + file.getAbsolutePath(), e);
 
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					System.err.println("Error closing file " + e.getMessage());
+				}
+			}
 		}
 	}
 

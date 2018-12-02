@@ -29,6 +29,7 @@ import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.facet.common.GroupFacet;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.Stickables;
 import com.baselet.element.sticking.StickingPolygon;
@@ -284,12 +285,20 @@ public class GridElementListener extends UniversalListener {
 		if (FIRST_MOVE_COMMANDS == null) {
 			POINT_BEFORE_MOVE = getOldCoordinateNotRounded(); // must use exact coordinates eg for Relation which calculates distances from lines (to possibly drag new points out of it)
 			FIRST_MOVE_COMMANDS = calculateFirstMoveCommands(diffx, diffy, oldp, elementsToMove, isShiftKeyDown, false, handler, resizeDirection);
+			List<DDDRelation> dddRelations = handler.getDrawPanel().getHelper(DDDRelation.class);
+			for (DDDRelation dddRelation : dddRelations) {
+				dddRelation.createRelationLine();
+			}
 		}
 		else if (diffx != 0 || diffy != 0) {
 			Vector<Command> commands = continueDragging(diffx, diffy, POINT_BEFORE_MOVE, elementsToMove);
 			POINT_BEFORE_MOVE = new Point(POINT_BEFORE_MOVE.getX() + diffx, POINT_BEFORE_MOVE.getY() + diffy);
 			controller.executeCommand(new Macro(commands));
 			FIRST_DRAG = false;
+			List<DDDRelation> dddRelations = handler.getDrawPanel().getHelper(DDDRelation.class);
+			for (DDDRelation dddRelation : dddRelations) {
+				dddRelation.createRelationLine();
+			}
 		}
 	}
 

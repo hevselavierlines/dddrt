@@ -81,6 +81,17 @@ public class DiagramHandler {
 			if (gui instanceof StandaloneGUI) {
 				extendedPopupMenu = true; // AB: use extended popup menu on standalone gui only
 			}
+			//
+			// try {
+			// DrawPanel drawPanel = drawpanel;
+			// List<DDDRelation> relations = drawPanel.getHelper(DDDRelation.class);
+			// for (DDDRelation relation : relations) {
+			// relation.initRelation(drawPanel);
+			// }
+			// } catch (RuntimeException e) {
+			// e.printStackTrace();
+			// }
+
 		}
 
 		initDiagramPopupMenu(extendedPopupMenu);
