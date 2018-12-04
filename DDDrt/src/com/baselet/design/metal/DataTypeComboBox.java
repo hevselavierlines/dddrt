@@ -10,7 +10,7 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
-import com.baselet.element.FieldComposite;
+import com.baselet.element.ddd.FieldComposite;
 
 public class DataTypeComboBox extends JComboBox<DataTypeItem> {
 	public DataTypeComboBox() {

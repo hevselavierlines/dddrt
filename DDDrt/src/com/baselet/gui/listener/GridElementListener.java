@@ -25,8 +25,6 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.PaletteHandler;
 import com.baselet.diagram.SelectorFrame;
-import com.baselet.element.ElementFactorySwing;
-import com.baselet.element.facet.common.GroupFacet;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -34,7 +32,6 @@ import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.Stickables;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.gui.CurrentGui;
-import com.baselet.gui.command.AddElement;
 import com.baselet.gui.command.Command;
 import com.baselet.gui.command.Macro;
 import com.baselet.gui.command.Move;
@@ -200,15 +197,15 @@ public class GridElementListener extends UniversalListener {
 	}
 
 	public void mouseDoubleClicked(GridElement me) {
-		GridElement e = ElementFactorySwing.createCopy(me);
-		e.setProperty(GroupFacet.KEY, null);
-		GridElementListener eListener = handler.getEntityListener(e);
-		Command cmd;
-		int gridSize = CurrentDiagram.getInstance().getDiagramHandler().getGridSize();
-		cmd = new AddElement(e, me.getRectangle().x + gridSize * 2, me.getRectangle().y + gridSize * 2);
-		controller.executeCommand(cmd);
-		selector.selectOnly(e);
-		eListener.FIRST_DRAG = true;
+		// GridElement e = ElementFactorySwing.createCopy(me);
+		// e.setProperty(GroupFacet.KEY, null);
+		// GridElementListener eListener = handler.getEntityListener(e);
+		// Command cmd;
+		// int gridSize = CurrentDiagram.getInstance().getDiagramHandler().getGridSize();
+		// cmd = new AddElement(e, me.getRectangle().x + gridSize * 2, me.getRectangle().y + gridSize * 2);
+		// controller.executeCommand(cmd);
+		// selector.selectOnly(e);
+		// eListener.FIRST_DRAG = true;
 	}
 
 	@Override

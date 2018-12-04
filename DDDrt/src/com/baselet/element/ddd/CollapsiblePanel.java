@@ -1,4 +1,4 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
@@ -13,6 +13,8 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
 import javax.swing.border.TitledBorder;
+
+import com.baselet.element.ICollapseListener;
 
 public class CollapsiblePanel extends JLayeredPane {
 

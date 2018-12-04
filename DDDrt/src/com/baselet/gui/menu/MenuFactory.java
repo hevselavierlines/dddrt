@@ -7,6 +7,7 @@ import static com.baselet.control.constants.MenuConstants.CUSTOM_ELEMENTS_TUTORI
 import static com.baselet.control.constants.MenuConstants.CUSTOM_ELEMENTS_TUTORIAL_URL;
 import static com.baselet.control.constants.MenuConstants.CUT;
 import static com.baselet.control.constants.MenuConstants.DELETE;
+import static com.baselet.control.constants.MenuConstants.DUPLICATE;
 import static com.baselet.control.constants.MenuConstants.EDIT_CURRENT_PALETTE;
 import static com.baselet.control.constants.MenuConstants.EDIT_SELECTED;
 import static com.baselet.control.constants.MenuConstants.EXIT;
@@ -68,6 +69,7 @@ import com.baselet.gui.command.Align;
 import com.baselet.gui.command.ChangeElementSetting;
 import com.baselet.gui.command.Copy;
 import com.baselet.gui.command.Cut;
+import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.command.Paste;
 import com.baselet.gui.command.RemoveElement;
 
@@ -156,6 +158,9 @@ public class MenuFactory {
 				}
 				else if (menuItem.equals(PASTE) && actualHandler != null) {
 					actualHandler.getController().executeCommand(new Paste());
+				}
+				else if (menuItem.equals(DUPLICATE) && actualHandler != null) {
+					actualHandler.getController().executeCommand(new Duplicate());
 				}
 				else if (menuItem.equals(NEW_CE)) {
 					if (gui.getCurrentCustomHandler().closeEntity()) {

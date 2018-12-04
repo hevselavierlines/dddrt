@@ -29,6 +29,7 @@ public class MenuBuilder {
 	private JMenuItem editCut;
 	private JMenuItem editCopy;
 	private JMenuItem editPaste;
+	private JMenuItem editDuplicate;
 	private JMenuItem customNew;
 	private JMenu customNewFromTemplate;
 	private JMenuItem customEdit;
@@ -73,6 +74,7 @@ public class MenuBuilder {
 		editMenu.add(editUngroup = menuFactory.createUngroup());
 		editMenu.addSeparator();
 		editMenu.add(editCopy = menuFactory.createCopy());
+		editMenu.add(editDuplicate = menuFactory.createDuplicate());
 		editMenu.add(editCut = menuFactory.createCut());
 		editMenu.add(editPaste = menuFactory.createPaste());
 		menu.add(editMenu);
@@ -81,6 +83,7 @@ public class MenuBuilder {
 		editCut.setEnabled(false);
 		editPaste.setEnabled(false);
 		editUngroup.setEnabled(false);
+		editDuplicate.setEnabled(false);
 
 		// Custom Element Menu
 		JMenu menu_custom = new JMenu(MenuConstants.CUSTOM_ELEMENTS);
@@ -158,6 +161,7 @@ public class MenuBuilder {
 		editCut.setEnabled(enabled);
 		editPaste.setEnabled(enabled);
 		editCopy.setEnabled(enabled);
+		editDuplicate.setEnabled(enabled);
 		editSelectAll.setEnabled(enabled);
 	}
 
@@ -178,6 +182,7 @@ public class MenuBuilder {
 		if (handler == null || handler.getDrawPanel().getGridElements().isEmpty()) {
 			editCopy.setEnabled(false);
 			editSelectAll.setEnabled(false);
+			editDuplicate.setEnabled(false);
 		}
 		else if (handler instanceof CustomPreviewHandler) {
 			setCustomElementEditMenuEnabled(false);

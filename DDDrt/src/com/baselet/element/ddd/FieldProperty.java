@@ -1,4 +1,4 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -19,6 +19,8 @@ import com.baselet.design.metal.DataTypeComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.element.ComponentSwing;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.relation.DDDRelation;
 
 public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener {

@@ -64,6 +64,7 @@ public abstract class BaseGUI {
 			contextMenu.add(menuFactory.createDelete());
 			contextMenu.add(menuFactory.createCopy());
 			contextMenu.add(menuFactory.createCut());
+			contextMenu.add(menuFactory.createDuplicate());
 		}
 		JMenuItem group = menuFactory.createGroup();
 		contextMenu.add(group);

@@ -1,4 +1,4 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,8 +17,12 @@ import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.AlignHorizontal;
 import com.baselet.control.enums.LineType;
 import com.baselet.design.metal.MetalButton;
+import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
+import com.baselet.element.ComponentSwing;
+import com.baselet.element.ICollapseListener;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -42,6 +46,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	protected JSONArray jMethods;
 	private int totalHeight;
 	private ComponentSwing component;
+	private BoundedContext boundedContext;
 
 	public FieldComposite() {
 		fieldName = new JTextField();
@@ -184,7 +189,15 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	@Override
 	public void dragEnd() {
-
+		DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+		BoundedContext rightContext = null;
+		for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
+			if (boundedContext.getRectangle().contains(getRectangle())) {
+				rightContext = boundedContext;
+			}
+		}
+		boundedContext = rightContext;
+		System.out.println("Within bounded context: " + boundedContext);
 	}
 
 	protected abstract String getTitle();

@@ -5,8 +5,8 @@ import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.element.ElementFactorySwing;
-import com.baselet.element.FieldComposite;
-import com.baselet.element.FieldProperty;
+import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.FieldProperty;
 import com.baselet.element.relation.helper.RelationPointHandler;
 import com.baselet.element.relation.helper.RelationPointList;
 
@@ -109,7 +109,6 @@ public class DDDRelation extends Relation {
 			FieldComposite startComposite = (FieldComposite) drawPanel.getElementById(startCompUUID);
 			startProperty = startComposite.getPropertyByName(startCompProp);
 			startProperty.setRelation(this);
-			System.out.println(endComposite);
 		}
 	}
 

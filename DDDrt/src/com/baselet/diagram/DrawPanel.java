@@ -1,5 +1,6 @@
 package com.baselet.diagram;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -7,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -502,7 +504,11 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			drawGrid(g2d);
 		}
 		if (selectionPoint != null) {
+			Stroke originalStroke = g2d.getStroke();
+			Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 9 }, 0);
+			g2d.setStroke(dashed);
 			g.drawPolygon(selectionPoint);
+			g2d.setStroke(originalStroke);
 		}
 
 		super.paintComponents(g);
@@ -608,14 +614,6 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		add(notification);
 
 		repaint();
-	}
-
-	public void addRelation(RelationLine relationLine) {
-		relationLines.add(relationLine);
-	}
-
-	public void removeRelation(RelationLine relationLine) {
-		relationLines.remove(relationLine);
 	}
 
 	public void addRelation(DDDRelation relation) {

@@ -1,10 +1,11 @@
 package com.baselet.element.elementnew;
 
 import com.baselet.control.enums.ElementId;
-import com.baselet.element.AggregateComposite;
-import com.baselet.element.EntityComposite;
 import com.baselet.element.NewGridElement;
-import com.baselet.element.ValueObjectComposite;
+import com.baselet.element.ddd.AggregateComposite;
+import com.baselet.element.ddd.BoundedContext;
+import com.baselet.element.ddd.EntityComposite;
+import com.baselet.element.ddd.ValueObjectComposite;
 import com.baselet.element.elementnew.plot.PlotGrid;
 import com.baselet.element.elementnew.uml.ActivityObject;
 import com.baselet.element.elementnew.uml.Actor;
@@ -75,6 +76,8 @@ public abstract class ElementFactory {
 				return new AggregateComposite();
 			case DDDRelation:
 				return new DDDRelation();
+			case DDDBoundedContext:
+				return new BoundedContext();
 			default:
 				throw new RuntimeException("Unknown class id: " + id);
 		}

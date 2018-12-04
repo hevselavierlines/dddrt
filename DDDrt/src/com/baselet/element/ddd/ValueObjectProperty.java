@@ -1,8 +1,10 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
+import com.baselet.element.ComponentSwing;
+import com.baselet.element.NewGridElement;
 
 public class ValueObjectProperty extends FieldProperty {
 	private static final long serialVersionUID = -3533886022028899849L;

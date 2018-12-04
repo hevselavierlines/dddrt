@@ -1,4 +1,4 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;

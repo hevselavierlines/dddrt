@@ -39,4 +39,17 @@
         </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
+  
+  <element>
+  	<id>DDDBoundedContext</id>
+    <coordinates>
+      <x>0</x>
+      <y>700</y>
+      <w>480</w>
+      <h>390</h>
+    </coordinates>
+    <panel_attributes></panel_attributes>
+    <additional_attributes></additional_attributes>
+    <uuid>mars</uuid>
+  </element>
 </diagram>

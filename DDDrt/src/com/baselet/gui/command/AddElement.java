@@ -17,10 +17,10 @@ public class AddElement extends Command {
 	// AB: checked false after first execution
 	private boolean firstCall = true;
 	private Point origin;
-	private GridElement _entity;
+	private final GridElement _entity;
 	private int _x;
 	private int _y;
-	private boolean _zoom;
+	private final boolean _zoom;
 
 	private int getX() {
 		// AB: use default grid size since we zoom the whole entity on execution
@@ -107,5 +107,12 @@ public class AddElement extends Command {
 		new RemoveElement(_entity, false).execute(handler); // zoom must be false otherwise groups don't work correctly
 		handler.getDrawPanel().repaint();
 		handler.getDrawPanel().updatePanelAndScrollbars();
+	}
+
+	@Override
+	public void redo(DiagramHandler handler) {
+		if (_entity != null) {
+			handler.getDrawPanel().addElement(_entity);
+		}
 	}
 }

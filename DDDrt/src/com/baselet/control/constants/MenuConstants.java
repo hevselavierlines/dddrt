@@ -31,6 +31,7 @@ public class MenuConstants {
 	public static final String CUT = "Cut";
 	public static final String COPY = "Copy";
 	public static final String PASTE = "Paste";
+	public static final String DUPLICATE = "Duplicate";
 
 	// CUSTOM ELEMENTS
 	public static final String CUSTOM_ELEMENTS = "Custom Elements";

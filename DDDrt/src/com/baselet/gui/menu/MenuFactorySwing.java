@@ -6,6 +6,7 @@ import static com.baselet.control.constants.MenuConstants.COPY;
 import static com.baselet.control.constants.MenuConstants.CUSTOM_ELEMENTS_TUTORIAL;
 import static com.baselet.control.constants.MenuConstants.CUT;
 import static com.baselet.control.constants.MenuConstants.DELETE;
+import static com.baselet.control.constants.MenuConstants.DUPLICATE;
 import static com.baselet.control.constants.MenuConstants.EDIT_CURRENT_PALETTE;
 import static com.baselet.control.constants.MenuConstants.EDIT_SELECTED;
 import static com.baselet.control.constants.MenuConstants.EXIT;
@@ -181,6 +182,10 @@ public class MenuFactorySwing extends MenuFactory {
 
 	public JMenuItem createCopy() {
 		return createJMenuItem(false, COPY, KeyEvent.VK_C, true, null);
+	}
+
+	public JMenuItem createDuplicate() {
+		return createJMenuItem(false, DUPLICATE, KeyEvent.VK_D, true, null);
 	}
 
 	public JMenuItem createPaste() {

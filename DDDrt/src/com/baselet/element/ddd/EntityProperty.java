@@ -1,8 +1,10 @@
-package com.baselet.element;
+package com.baselet.element.ddd;
 
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
+import com.baselet.element.ComponentSwing;
+import com.baselet.element.NewGridElement;
 
 public class EntityProperty extends FieldProperty {
 	private static final long serialVersionUID = 6298444413188448662L;

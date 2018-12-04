@@ -4,8 +4,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.baselet.element.FieldComposite;
-import com.baselet.element.FieldProperty;
+import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.FieldProperty;
 
 public class RelationLine {
 	private java.awt.Point startPoint;

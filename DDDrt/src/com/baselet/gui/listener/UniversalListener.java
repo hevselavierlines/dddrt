@@ -147,8 +147,6 @@ public abstract class UniversalListener extends ComponentAdapter implements Mous
 		Point newp = getNewCoordinate();
 		Point oldp = getOldCoordinate();
 
-		int diffx = newp.x - oldp.x;
-		int diffy = newp.y - oldp.y;
 		Polygon polygon = new Polygon();
 		polygon.addPoint(startPoint.x, startPoint.y);
 		polygon.addPoint(newp.x, startPoint.y);
@@ -156,14 +154,14 @@ public abstract class UniversalListener extends ComponentAdapter implements Mous
 		polygon.addPoint(startPoint.x, newp.y);
 		polygon.addPoint(startPoint.x, startPoint.y);
 
-		java.awt.Rectangle boundRect = polygon.getBoundingBox();
+		java.awt.Rectangle boundRect = polygon.getBounds();
 		Rectangle boundingRectangle = new Rectangle(boundRect.x, boundRect.y, boundRect.width, boundRect.height);
 
 		diagram.setSelectionPoint(polygon);
 		diagram.repaint();
 		diagram.getSelector().deselectAll();
 		for (GridElement e : diagram.getGridElements()) {
-			if (e.isInRange(boundingRectangle)) {
+			if (e.getRectangle().intersects(boundingRectangle)) {
 				diagram.getSelector().select(e);
 			}
 		}
