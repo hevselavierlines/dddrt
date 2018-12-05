@@ -112,6 +112,16 @@ public class DDDRelation extends Relation {
 		}
 	}
 
+	public boolean isConnectedToFieldComposite(FieldComposite fieldComposite) {
+		if (endComposite != null && endComposite == fieldComposite) {
+			return true;
+		}
+		if (getStartComposite() != null && getStartComposite() == fieldComposite) {
+			return true;
+		}
+		return false;
+	}
+
 	public FieldComposite getEndComposite() {
 		return endComposite;
 	}

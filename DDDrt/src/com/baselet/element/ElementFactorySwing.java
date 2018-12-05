@@ -9,6 +9,7 @@ import com.baselet.control.Main;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.DiagramHandler;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.element.elementnew.ElementFactory;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.interfaces.GridElement;
@@ -52,6 +53,11 @@ public class ElementFactorySwing extends ElementFactory {
 				DiagramHandler h = Main.getHandlerForElement(returnObj);
 				List<Relation> stickables = h.getDrawPanel().getStickables(Collections.<GridElement> emptyList());
 				return Stickables.getStickingPointsWhichAreConnectedToStickingPolygon(returnObj.generateStickingBorder(), stickables);
+			}
+
+			@Override
+			public DrawPanel getDrawPanel() {
+				return Main.getHandlerForElement(returnObj).getDrawPanel();
 			}
 		};
 

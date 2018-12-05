@@ -1,13 +1,16 @@
 package com.baselet.element.ddd;
 
 import java.awt.Font;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.baselet.control.basics.XValues;
+import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.Rectangle;
+import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.ComponentSwing;
@@ -19,6 +22,7 @@ import com.baselet.element.facet.common.SeparatorLineFacet;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.settings.SettingsManualresizeCenter;
+import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 
@@ -104,6 +108,17 @@ public class BoundedContext extends NewGridElement {
 				return listOf(super.createFacets(), SeparatorLineFacet.INSTANCE);
 			}
 		};
+	}
+
+	@Override
+	public void drag(Collection<Direction> resizeDirection, int diffX, int diffY, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, StickableMap stickables, boolean undoable) {
+		super.drag(resizeDirection, diffX, diffY, mousePosBeforeDrag, isShiftKeyDown, firstDrag, stickables, undoable);
+		// if (resizeDirection == null || resizeDirection.isEmpty()) {
+		// DrawPanel drawPanel = getHandler().getDrawPanel();
+		// for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(this)) {
+		// fieldComposite.drag(resizeDirection, diffX, diffY, mousePosBeforeDrag, isShiftKeyDown, firstDrag, stickables, undoable);
+		// }
+		// }
 	}
 
 }

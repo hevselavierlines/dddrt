@@ -38,6 +38,8 @@ import com.baselet.control.enums.Program;
 import com.baselet.control.enums.RuntimeType;
 import com.baselet.control.util.Utils;
 import com.baselet.element.NewGridElement;
+import com.baselet.element.ddd.BoundedContext;
+import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -209,6 +211,26 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		return returnList;
 	}
 
+	public List<com.baselet.element.ddd.FieldComposite> getBoundedContextChildren(BoundedContext boundedContext) {
+		List<FieldComposite> ret = new ArrayList<FieldComposite>();
+		for (FieldComposite fieldComposite : getHelperAndSub(FieldComposite.class)) {
+			if (fieldComposite.isInBoundedContext(boundedContext)) {
+				ret.add(fieldComposite);
+			}
+		}
+		return ret;
+	}
+
+	public List<DDDRelation> getRelationsOfFieldComposite(FieldComposite fieldComposite) {
+		List<DDDRelation> ret = new ArrayList<DDDRelation>();
+		for (DDDRelation relation : getHelper(DDDRelation.class)) {
+			if (relation.isConnectedToFieldComposite(fieldComposite)) {
+				ret.add(relation);
+			}
+		}
+		return ret;
+	}
+
 	public NewGridElement getElementById(String uuid) {
 		NewGridElement element = null;
 		for (GridElement gridElement : gridElements) {
@@ -227,6 +249,16 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		List<T> gridElementsToReturn = new ArrayList<T>();
 		for (GridElement e : getGridElements()) {
 			if (e.getClass().equals(filtered)) {
+				gridElementsToReturn.add((T) e);
+			}
+		}
+		return gridElementsToReturn;
+	}
+
+	public <T extends GridElement> List<T> getHelperAndSub(Class<T> filtered) {
+		List<T> gridElementsToReturn = new ArrayList<T>();
+		for (GridElement e : getGridElements()) {
+			if (filtered.isAssignableFrom(e.getClass())) {
 				gridElementsToReturn.add((T) e);
 			}
 		}

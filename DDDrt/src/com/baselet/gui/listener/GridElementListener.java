@@ -23,8 +23,11 @@ import com.baselet.control.constants.SystemInfo;
 import com.baselet.control.enums.Direction;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.PaletteHandler;
 import com.baselet.diagram.SelectorFrame;
+import com.baselet.element.ddd.BoundedContext;
+import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -282,10 +285,6 @@ public class GridElementListener extends UniversalListener {
 		if (FIRST_MOVE_COMMANDS == null) {
 			POINT_BEFORE_MOVE = getOldCoordinateNotRounded(); // must use exact coordinates eg for Relation which calculates distances from lines (to possibly drag new points out of it)
 			FIRST_MOVE_COMMANDS = calculateFirstMoveCommands(diffx, diffy, oldp, elementsToMove, isShiftKeyDown, false, handler, resizeDirection);
-			List<DDDRelation> dddRelations = handler.getDrawPanel().getHelper(DDDRelation.class);
-			for (DDDRelation dddRelation : dddRelations) {
-				dddRelation.createRelationLine();
-			}
 		}
 		else if (diffx != 0 || diffy != 0) {
 			Vector<Command> commands = continueDragging(diffx, diffy, POINT_BEFORE_MOVE, elementsToMove);
@@ -303,13 +302,29 @@ public class GridElementListener extends UniversalListener {
 		Vector<Move> moveCommands = new Vector<Move>();
 		Vector<OldMoveLinePoint> linepointCommands = new Vector<OldMoveLinePoint>();
 		List<com.baselet.element.relation.Relation> stickables = handler.getDrawPanel().getStickables(entitiesToBeMoved);
-		for (GridElement ge : entitiesToBeMoved) {
+		for (GridElement movingElement : entitiesToBeMoved) {
 			// reduce stickables to those which really stick at the element at move-start
-			StickableMap stickingStickables = Stickables.getStickingPointsWhichAreConnectedToStickingPolygon(ge.generateStickingBorder(), stickables);
-			moveCommands.add(new Move(directions, ge, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+			StickableMap stickingStickables = Stickables.getStickingPointsWhichAreConnectedToStickingPolygon(movingElement.generateStickingBorder(), stickables);
+			moveCommands.add(new Move(directions, movingElement, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
 
-			handleStickingOfOldRelation(diffx, diffy, entitiesToBeMoved, handler, directions, linepointCommands, ge);
+			handleStickingOfOldRelation(diffx, diffy, entitiesToBeMoved, handler, directions, linepointCommands, movingElement);
+
+			DrawPanel drawPanel = handler.getDrawPanel();
+			if (movingElement instanceof BoundedContext) {
+				BoundedContext bc = (BoundedContext) movingElement;
+
+				for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
+					moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+				}
+			}
+			// else if (movingElement instanceof FieldComposite) {
+			// FieldComposite fieldComposite = (FieldComposite) movingElement;
+			// for (DDDRelation dddRelation : drawPanel.getRelationsOfFieldComposite(fieldComposite)) {
+			// moveCommands.add(new Move(directions, dddRelation, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+			// }
+			// }
 		}
+
 		Vector<Command> allCommands = new Vector<Command>();
 		allCommands.addAll(moveCommands);
 		allCommands.addAll(linepointCommands);
