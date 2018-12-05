@@ -67,7 +67,9 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	@Override
 	public String getAdditionalAttributes() {
-		jsonAttributes.getJSONObject("entities").put("name", fieldName.getText());
+		JSONObject entities = jsonAttributes.getJSONObject("entities");
+		entities.put("name", fieldName.getText());
+		entities.put("boundedContext", getBoundedContextUUID());
 		jProperties.clear();
 		jMethods.clear();
 		for (java.awt.Component property : propertiesPane.getComponents()) {
@@ -293,6 +295,23 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	public boolean isInBoundedContext(BoundedContext boundedContext) {
 		return boundedContext != null && this.boundedContext != null &&
 				this.boundedContext == boundedContext;
+	}
+
+	public String getBoundedContextUUID() {
+		if (boundedContext != null) {
+			return boundedContext.getUUID();
+		}
+		else {
+			return "";
+		}
+	}
+
+	public void initBoundedContext(DrawPanel dp) {
+		JSONObject entities = jsonAttributes.getJSONObject("entities");
+		String uuidEntities = entities.getString("boundedContext");
+		if (uuidEntities != null && uuidEntities.length() > 0) {
+			boundedContext = (BoundedContext) dp.getElementById(uuidEntities);
+		}
 	}
 
 }

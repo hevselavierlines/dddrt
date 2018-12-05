@@ -1,5 +1,6 @@
 package com.baselet.element.ddd;
 
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -38,11 +39,13 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private final JButton removeButton;
 	private boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
-	public final static int HEIGHT = 30;
+	public final static int HEIGHT = 25;
 	private final int[] WIDTHS = { 40, -1, 120, 40 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
+	private final Font propertyFont;
+	public static final String FONT_NAME = "Tahoma";
 
 	@Override
 	public String toString() {
@@ -64,7 +67,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public FieldProperty() {
+		propertyFont = new Font(FONT_NAME, Font.PLAIN, 15);
+
 		propertyVisibility = new VisibilityComboBox();
+		propertyVisibility.setFont(propertyFont);
 		add(propertyVisibility);
 
 		propertyType = new DataTypeComboBox();
@@ -81,12 +87,15 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		DEFAULT_TYPES.add("Map");
 		propertyType.setEditable(true);
 		propertyType.addPopupMenuListener(this);
+		propertyType.setFont(propertyFont);
 		add(propertyType);
 
 		propertyName = new JTextField("newProperty");
+		propertyName.setFont(propertyFont);
 		add(propertyName);
 
 		removeButton = new JButton("x");
+		removeButton.setFont(propertyFont);
 		removeButton.addActionListener(this);
 		add(removeButton);
 
@@ -116,7 +125,13 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public String getPropertyType() {
-		return propertyType.getSelectedItem().toString();
+		Object selItem = propertyType.getSelectedItem();
+		if (selItem != null) {
+			return selItem.toString();
+		}
+		else {
+			return null;
+		}
 	}
 
 	public void setPropertyType(String propertyType) {

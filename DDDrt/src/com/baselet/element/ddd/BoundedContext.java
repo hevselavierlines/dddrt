@@ -7,6 +7,8 @@ import java.util.List;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.json.JSONObject;
+
 import com.baselet.control.basics.XValues;
 import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.Rectangle;
@@ -28,9 +30,12 @@ import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 
 public class BoundedContext extends NewGridElement {
 
+	private static final String JSON_BOUNDEDCONTEXT_PACKAGE = "package";
+	private static final String JSON_BOUNDEDCONTEXT_NAME = "name";
 	private final JTextField contextName;
 	private final JTextField packageName;
 	private ComponentSwing component;
+	private JSONObject jsonAttributes;
 
 	public BoundedContext() {
 		super();
@@ -55,6 +60,14 @@ public class BoundedContext extends NewGridElement {
 		this.component = (ComponentSwing) component;
 		this.component.add(contextName);
 		this.component.add(packageName);
+
+		try {
+			jsonAttributes = new JSONObject(additionalAttributes);
+			contextName.setText(jsonAttributes.getString(JSON_BOUNDEDCONTEXT_NAME));
+			packageName.setText(jsonAttributes.getString(JSON_BOUNDEDCONTEXT_PACKAGE));
+		} catch (Exception ex) {
+			createDefaultJSON();
+		}
 	}
 
 	private final StickingPolygonGenerator stickingPolygonGenerator = new StickingPolygonGenerator() {
@@ -119,6 +132,19 @@ public class BoundedContext extends NewGridElement {
 		// fieldComposite.drag(resizeDirection, diffX, diffY, mousePosBeforeDrag, isShiftKeyDown, firstDrag, stickables, undoable);
 		// }
 		// }
+	}
+
+	protected void createDefaultJSON() {
+		jsonAttributes = new JSONObject();
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_NAME, "boundedContext");
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGE, "com.example.model.context1");
+	}
+
+	@Override
+	public String getAdditionalAttributes() {
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_NAME, contextName.getText());
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGE, packageName.getText());
+		return jsonAttributes.toString(1);
 	}
 
 }

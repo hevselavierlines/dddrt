@@ -517,6 +517,7 @@ public abstract class NewGridElement implements GridElement {
 		return GridElementDeprecatedAddons.NONE;
 	}
 
+	@Override
 	public String getUUID() {
 		return uniqueId;
 	}
