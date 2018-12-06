@@ -191,9 +191,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			DiagramHandler handler = diagram.getDiagramHandler();
 			if (handler != null) {
 				Rectangle rect = getRectangle();
-				if (paletteCopy != null) {
-					rect = paletteCopy.getRectangle();
-				}
+
 				DrawPanel drawPanel = handler.getDrawPanel();
 				BoundedContext rightContext = null;
 				for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
@@ -201,13 +199,8 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 						rightContext = boundedContext;
 					}
 				}
-				if (paletteCopy != null) {
-					((FieldComposite) paletteCopy).boundedContext = rightContext;
-					paletteCopy = null;
-				}
-				else {
-					boundedContext = rightContext;
-				}
+
+				boundedContext = rightContext;
 			}
 		}
 	}

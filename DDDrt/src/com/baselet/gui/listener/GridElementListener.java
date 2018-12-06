@@ -224,7 +224,11 @@ public class GridElementListener extends UniversalListener {
 		}
 		if (IS_DRAGGED_FROM_PALETTE) {
 			IS_DRAGGED_FROM_PALETTE = false;
-			controller.executeCommand(new MoveEnd(e));
+			if (getCopies() != null) {
+				for (GridElement copy : getCopies()) {
+					controller.executeCommand(new MoveEnd(copy));
+				}
+			}
 		}
 		if (IS_DRAGGING && !FIRST_DRAG) { // if mouse is dragged and element really has been dragged around execute moveend
 			controller.executeCommand(new MoveEnd(e));
@@ -372,6 +376,10 @@ public class GridElementListener extends UniversalListener {
 			}
 		}
 		return tmpVector;
+	}
+
+	protected Vector<GridElement> getCopies() {
+		return null;
 	}
 
 }
