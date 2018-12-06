@@ -42,7 +42,6 @@ import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.Notifier;
 import com.baselet.diagram.PaletteHandler;
-import com.baselet.diagram.UpdateCheckTimerTask;
 import com.baselet.diagram.io.OpenFileChooser;
 import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
@@ -134,9 +133,9 @@ public class Main implements CanCloseProgram, CanOpenDiagram {
 		}
 		else { // no arguments specified
 			alreadyRunningChecker(true); // start checker
-			if (Config.getInstance().isCheckForUpdates()) {
-				new Timer("Update Checker", true).schedule(UpdateCheckTimerTask.getInstance(), 0);
-			}
+			// if (Config.getInstance().isCheckForUpdates()) {
+			// new Timer("Update Checker", true).schedule(UpdateCheckTimerTask.getInstance(), 0);
+			// }
 			main.init(new StandaloneGUI(main));
 			main.doNew();
 		}

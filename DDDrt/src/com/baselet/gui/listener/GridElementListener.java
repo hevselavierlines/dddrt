@@ -215,16 +215,16 @@ public class GridElementListener extends UniversalListener {
 	public void mouseReleased(MouseEvent me) {
 		super.mouseReleased(me);
 		// log.debug("Entity mouse released");
-		if (IS_DRAGGED_FROM_PALETTE) {
-			IS_DRAGGED_FROM_PALETTE = false;
-		}
-
 		GridElement e = getGridElement(me);
 
 		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
 			if (selector.isSelected(e) && DESELECT_MULTISEL) {
 				selector.deselect(e);
 			}
+		}
+		if (IS_DRAGGED_FROM_PALETTE) {
+			IS_DRAGGED_FROM_PALETTE = false;
+			controller.executeCommand(new MoveEnd(e));
 		}
 		if (IS_DRAGGING && !FIRST_DRAG) { // if mouse is dragged and element really has been dragged around execute moveend
 			controller.executeCommand(new MoveEnd(e));
@@ -312,9 +312,10 @@ public class GridElementListener extends UniversalListener {
 			DrawPanel drawPanel = handler.getDrawPanel();
 			if (movingElement instanceof BoundedContext) {
 				BoundedContext bc = (BoundedContext) movingElement;
-
 				for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
-					moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+					if (!entitiesToBeMoved.contains(fieldComposite)) {
+						moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+					}
 				}
 			}
 			// else if (movingElement instanceof FieldComposite) {

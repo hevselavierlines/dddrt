@@ -14,6 +14,7 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.element.ElementFactorySwing;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.Selector;
 import com.baselet.element.facet.common.GroupFacet;
 import com.baselet.element.interfaces.GridElement;
@@ -66,7 +67,7 @@ public class PaletteEntityListener extends GridElementListener {
 		if (IS_DRAGGED_FROM_PALETTE) {
 			moveDraggedEntities();
 		}
-		else if (entity.getRectangle().x + entity.getRectangle().width <= 0) {
+		else if (entity.getRectangle().x/* + entity.getRectangle().width */ <= 0) {
 			resetEntities();
 			insertDraggedEntities(me);
 			handler.getDrawPanel().getSelector().deselectAllWithoutUpdatePropertyPanel();
@@ -151,6 +152,7 @@ public class PaletteEntityListener extends GridElementListener {
 	public void mouseReleased(MouseEvent me) {
 		super.mouseReleased(me);
 		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().updatePanelAndScrollbars();
+		resetEntities();
 	}
 
 	protected boolean allowCopyEntity() {
@@ -168,6 +170,9 @@ public class PaletteEntityListener extends GridElementListener {
 		handler.setGridAndZoom(Constants.DEFAULTGRIDSIZE, false);
 
 		GridElement e = ElementFactorySwing.createCopy(me);
+		if (me instanceof NewGridElement) {
+			((NewGridElement) me).paletteCopy = (NewGridElement) e;
+		}
 		e.setProperty(GroupFacet.KEY, null);
 
 		Command cmd;

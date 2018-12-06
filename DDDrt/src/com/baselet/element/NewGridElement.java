@@ -64,6 +64,8 @@ public abstract class NewGridElement implements GridElement {
 
 	protected String uniqueId;
 
+	public NewGridElement paletteCopy;
+
 	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler, String uuid) {
 		this.component = component;
 		drawer = component.getDrawHandler();

@@ -15,9 +15,11 @@ import org.json.JSONObject;
 import com.baselet.control.basics.geom.PointDouble;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.AlignHorizontal;
+import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.LineType;
 import com.baselet.design.metal.MetalButton;
 import com.baselet.diagram.CurrentDiagram;
+import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.ComponentSwing;
@@ -183,6 +185,33 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		updateCompositeHeight();
 	}
 
+	protected void updateBoundedContext() {
+		CurrentDiagram diagram = CurrentDiagram.getInstance();
+		if (diagram != null) {
+			DiagramHandler handler = diagram.getDiagramHandler();
+			if (handler != null) {
+				Rectangle rect = getRectangle();
+				if (paletteCopy != null) {
+					rect = paletteCopy.getRectangle();
+				}
+				DrawPanel drawPanel = handler.getDrawPanel();
+				BoundedContext rightContext = null;
+				for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
+					if (boundedContext.getRectangle().contains(rect)) {
+						rightContext = boundedContext;
+					}
+				}
+				if (paletteCopy != null) {
+					((FieldComposite) paletteCopy).boundedContext = rightContext;
+					paletteCopy = null;
+				}
+				else {
+					boundedContext = rightContext;
+				}
+			}
+		}
+	}
+
 	protected void updateCompositeHeight() {
 		Rectangle newRect = getRectangle();
 		newRect.height = totalHeight;
@@ -190,16 +219,14 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	}
 
 	@Override
+	public ElementId getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public void dragEnd() {
-		DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
-		BoundedContext rightContext = null;
-		for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
-			if (boundedContext.getRectangle().contains(getRectangle())) {
-				rightContext = boundedContext;
-			}
-		}
-		boundedContext = rightContext;
-		System.out.println("Within bounded context: " + boundedContext);
+		updateBoundedContext();
 	}
 
 	protected abstract String getTitle();
@@ -313,5 +340,4 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			boundedContext = (BoundedContext) dp.getElementById(uuidEntities);
 		}
 	}
-
 }
