@@ -312,6 +312,10 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		return element;
 	}
 
+	public void updateBoundedContext(BoundedContext boundedContext) {
+		this.boundedContext = boundedContext;
+	}
+
 	public boolean isInBoundedContext(BoundedContext boundedContext) {
 		return boundedContext != null && this.boundedContext != null &&
 				this.boundedContext == boundedContext;

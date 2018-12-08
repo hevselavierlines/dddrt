@@ -14,6 +14,9 @@ import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
+import com.baselet.diagram.CurrentDiagram;
+import com.baselet.diagram.DiagramHandler;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
@@ -145,6 +148,28 @@ public class BoundedContext extends NewGridElement {
 		jsonAttributes.put(JSON_BOUNDEDCONTEXT_NAME, contextName.getText());
 		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGE, packageName.getText());
 		return jsonAttributes.toString(1);
+	}
+
+	@Override
+	public void dragEnd() {
+		checkFieldCompositesInsideBoundedContext();
+	}
+
+	protected void checkFieldCompositesInsideBoundedContext() {
+		CurrentDiagram diagram = CurrentDiagram.getInstance();
+		if (diagram != null) {
+			DiagramHandler handler = diagram.getDiagramHandler();
+			if (handler != null) {
+				DrawPanel drawPanel = handler.getDrawPanel();
+				for (FieldComposite fieldComposite : drawPanel.getHelperAndSub(FieldComposite.class)) {
+					Rectangle rect = fieldComposite.getRectangle();
+					if (getRectangle().contains(rect)) {
+						fieldComposite.updateBoundedContext(this);
+					}
+				}
+
+			}
+		}
 	}
 
 }

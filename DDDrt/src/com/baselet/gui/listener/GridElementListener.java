@@ -317,7 +317,7 @@ public class GridElementListener extends UniversalListener {
 			if (movingElement instanceof BoundedContext) {
 				BoundedContext bc = (BoundedContext) movingElement;
 				for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
-					if (!entitiesToBeMoved.contains(fieldComposite)) {
+					if (!entitiesToBeMoved.contains(fieldComposite) && (directions == null || directions.isEmpty())) {
 						moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
 					}
 				}
