@@ -1,6 +1,7 @@
 package com.baselet.element.ddd;
 
 import java.awt.Font;
+import java.awt.Polygon;
 import java.util.Collection;
 import java.util.List;
 
@@ -93,6 +94,29 @@ public class BoundedContext extends NewGridElement {
 			return p;
 		}
 	};
+
+	@Override
+	public Polygon getBoundingPolygon() {
+		Rectangle rect = getRectangle();
+		Polygon p = new Polygon();
+		p.addPoint((int) (rect.width / 4.0), 0);
+		p.addPoint((int) (rect.width * 3.0 / 4), 0);
+
+		p.addPoint(rect.width, (int) (rect.height / 4.0));
+		p.addPoint(rect.width, (int) (rect.height * 3.0 / 4));
+
+		p.addPoint((int) (rect.width * 3.0 / 4), rect.height);
+		p.addPoint((int) (rect.width / 4.0), rect.height);
+
+		p.addPoint(0, (int) (rect.height * 3.0 / 4));
+		p.addPoint(0, (int) (rect.height / 4.0));
+
+		p.addPoint((int) (rect.width / 4.0), 0);
+
+		p.translate(rect.x, rect.y);
+
+		return p;
+	}
 
 	@Override
 	public ElementId getId() {

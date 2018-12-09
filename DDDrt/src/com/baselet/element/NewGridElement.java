@@ -1,5 +1,6 @@
 package com.baselet.element;
 
+import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -129,6 +130,17 @@ public abstract class NewGridElement implements GridElement {
 		component.afterModelUpdate();
 	}
 
+	public Polygon getBoundingPolygon() {
+		Polygon bounding = new Polygon();
+		Rectangle rectBounds = getRectangle();
+		bounding.addPoint(rectBounds.x, rectBounds.y);
+		bounding.addPoint(rectBounds.x + rectBounds.width, rectBounds.y);
+		bounding.addPoint(rectBounds.x + rectBounds.width, rectBounds.y + rectBounds.height);
+		bounding.addPoint(rectBounds.x, rectBounds.y + rectBounds.height);
+		bounding.addPoint(rectBounds.x, rectBounds.y);
+		return bounding;
+	}
+
 	protected void drawError(DrawHandler drawer, String errorText) {
 		drawer.setEnableDrawing(true);
 		drawer.setForegroundColor(ColorOwn.RED);
@@ -158,7 +170,8 @@ public abstract class NewGridElement implements GridElement {
 		drawer.clearCache();
 		drawer.setForegroundColor(ColorOwn.TRANSPARENT);
 		drawer.setBackgroundColor(ColorOwn.SELECTION_BG);
-		drawer.drawRectangle(0, 0, getRealSize().width, getRealSize().height);
+		drawer.setLineWidth(3.0);
+		// drawer.drawRectangle(0, 0, getRealSize().width, getRealSize().height);
 		if (SharedConfig.getInstance().isDev_mode()) {
 			drawer.setForegroundColor(ColorOwn.BLACK);
 			drawer.setFontSize(10.5);

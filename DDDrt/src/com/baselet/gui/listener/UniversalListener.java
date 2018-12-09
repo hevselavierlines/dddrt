@@ -1,6 +1,5 @@
 package com.baselet.gui.listener;
 
-import java.awt.Polygon;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -14,6 +13,7 @@ import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.SelectorFrame;
 import com.baselet.diagram.SelectorOld;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.gui.CurrentGui;
 import com.baselet.gui.command.Controller;
@@ -75,7 +75,7 @@ public abstract class UniversalListener extends ComponentAdapter implements Mous
 		}
 
 		diagram.updatePanelAndScrollbars();
-		DrawPanel drawPanel = CurrentGui.getInstance().getGui().getCurrentDiagram();
+		DrawPanel drawPanel = handler.getDrawPanel();
 		drawPanel.setSelectionPoint(null);
 		drawPanel.repaint();
 
@@ -145,24 +145,29 @@ public abstract class UniversalListener extends ComponentAdapter implements Mous
 		}
 
 		Point newp = getNewCoordinate();
-		Point oldp = getOldCoordinate();
 
-		Polygon polygon = new Polygon();
-		polygon.addPoint(startPoint.x, startPoint.y);
-		polygon.addPoint(newp.x, startPoint.y);
-		polygon.addPoint(newp.x, newp.y);
-		polygon.addPoint(startPoint.x, newp.y);
-		polygon.addPoint(startPoint.x, startPoint.y);
+		int minX = Math.min(startPoint.x, newp.x);
+		int minY = Math.min(startPoint.y, newp.y);
+		int maxX = Math.max(startPoint.x, newp.x);
+		int maxY = Math.max(startPoint.y, newp.y);
 
-		java.awt.Rectangle boundRect = polygon.getBounds();
+		java.awt.Rectangle boundRect = new java.awt.Rectangle(minX, minY, maxX - minX, maxY - minY);
 		Rectangle boundingRectangle = new Rectangle(boundRect.x, boundRect.y, boundRect.width, boundRect.height);
 
-		diagram.setSelectionPoint(polygon);
+		diagram.setSelectionPoint(boundRect);
 		diagram.repaint();
 		diagram.getSelector().deselectAll();
 		for (GridElement e : diagram.getGridElements()) {
-			if (e.getRectangle().intersects(boundingRectangle)) {
-				diagram.getSelector().select(e);
+			if (e instanceof NewGridElement) {
+				NewGridElement newGridElement = (NewGridElement) e;
+				if (newGridElement.getBoundingPolygon().intersects(boundRect)) {
+					diagram.getSelector().select(e);
+				}
+			}
+			else {
+				if (e.getRectangle().intersects(boundingRectangle)) {
+					diagram.getSelector().select(e);
+				}
 			}
 		}
 

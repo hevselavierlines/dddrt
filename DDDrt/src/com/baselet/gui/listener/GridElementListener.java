@@ -177,9 +177,9 @@ public class GridElementListener extends UniversalListener {
 		GridElement e = getGridElement(me);
 
 		// Ctrl + Mouseclick initializes the lasso
-		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
-			initializeLasso();
-		}
+		// if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
+
+		// }
 
 		IS_DRAGGING = true;
 		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {

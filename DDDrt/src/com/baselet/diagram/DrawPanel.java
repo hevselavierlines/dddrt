@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
@@ -56,7 +55,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	private final DiagramHandler handler;
 
 	private final List<GridElement> gridElements = new ArrayList<GridElement>();
-	private Polygon selectionPoint;
+	private java.awt.Rectangle selectionRect;
 	private final List<RelationLine> relationLines;
 
 	public DrawPanel(DiagramHandler handler) {
@@ -134,8 +133,8 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		return _scr;
 	}
 
-	public void setSelectionPoint(Polygon polygon) {
-		selectionPoint = polygon;
+	public void setSelectionPoint(java.awt.Rectangle polygon) {
+		selectionRect = polygon;
 	}
 
 	/**
@@ -535,11 +534,11 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		if (Config.getInstance().isShow_grid()) {
 			drawGrid(g2d);
 		}
-		if (selectionPoint != null) {
+		if (selectionRect != null) {
 			Stroke originalStroke = g2d.getStroke();
 			Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 9 }, 0);
 			g2d.setStroke(dashed);
-			g.drawPolygon(selectionPoint);
+			g.drawRect(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height);
 			g2d.setStroke(originalStroke);
 		}
 
