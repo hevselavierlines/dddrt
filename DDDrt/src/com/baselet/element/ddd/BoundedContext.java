@@ -3,6 +3,7 @@ package com.baselet.element.ddd;
 import java.awt.Font;
 import java.awt.Polygon;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -177,6 +178,8 @@ public class BoundedContext extends NewGridElement {
 	@Override
 	public void dragEnd() {
 		checkFieldCompositesInsideBoundedContext();
+
+		validateNames();
 	}
 
 	protected void checkFieldCompositesInsideBoundedContext() {
@@ -194,6 +197,20 @@ public class BoundedContext extends NewGridElement {
 
 			}
 		}
+	}
+
+	public boolean validateNames() {
+		DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+		HashMap<String, FieldComposite> boundedContextNames = new HashMap<String, FieldComposite>();
+		for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(this)) {
+			FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
+			fieldComposite.setNameValidity(previous);
+		}
+		return true;
+	}
+
+	public String getContextName() {
+		return contextName.getText();
 	}
 
 }

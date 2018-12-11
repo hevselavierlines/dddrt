@@ -15,9 +15,11 @@ import org.apache.log4j.Logger;
 import com.baselet.control.CanCloseProgram;
 import com.baselet.control.Main;
 import com.baselet.control.config.Config;
+import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.CustomPreviewHandler;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.custom.CustomElement;
 import com.baselet.element.old.custom.CustomElementHandler;
@@ -65,6 +67,10 @@ public abstract class BaseGUI {
 			contextMenu.add(menuFactory.createCopy());
 			contextMenu.add(menuFactory.createCut());
 			contextMenu.add(menuFactory.createDuplicate());
+		}
+		if (e instanceof FieldComposite) {
+			FieldComposite fieldComp = (FieldComposite) e;
+			contextMenu.add(menuFactory.createCopyToBoundedContext(fieldComp, CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel()));
 		}
 		JMenuItem group = menuFactory.createGroup();
 		contextMenu.add(group);

@@ -12,7 +12,6 @@
         <panel_attributes>
         </panel_attributes>
     <additional_attributes></additional_attributes>
-    <uuid>mars</uuid>
   </element>
   
     <element>
@@ -51,6 +50,5 @@
     </coordinates>
     <panel_attributes></panel_attributes>
     <additional_attributes></additional_attributes>
-    <uuid>mars</uuid>
   </element>
 </diagram>

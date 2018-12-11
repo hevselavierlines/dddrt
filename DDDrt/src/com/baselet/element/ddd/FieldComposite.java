@@ -1,5 +1,6 @@
 package com.baselet.element.ddd;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,6 +50,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	private int totalHeight;
 	private ComponentSwing component;
 	private BoundedContext boundedContext;
+	private boolean nameValid;
 
 	public FieldComposite() {
 		fieldName = new JTextField();
@@ -65,6 +67,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 		methodAddButton = new MetalButton("+");
 		methodAddButton.addActionListener(this);
+		nameValid = true;
 	}
 
 	@Override
@@ -144,6 +147,14 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 		drawer.setFontSize(20.0);
 		fieldName.setBounds(10, 15, getRealRectangle().getWidth() - 20, 30);
+		if (nameValid) {
+			fieldName.setBackground(Color.WHITE);
+			fieldName.setForeground(Color.BLACK);
+		}
+		else {
+			fieldName.setBackground(Color.WHITE);
+			fieldName.setForeground(Color.RED);
+		}
 
 		drawer.setLineType(LineType.DOTTED);
 		drawer.drawLine(0, 45, getRealSize().width, 45);
@@ -200,7 +211,17 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 					}
 				}
 
+				// update old bounded context
+				if (boundedContext != null) {
+					boundedContext.validateNames();
+				}
+
 				boundedContext = rightContext;
+
+				// update new bounded context
+				if (boundedContext != null) {
+					boundedContext.validateNames();
+				}
 			}
 		}
 	}
@@ -335,6 +356,20 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		String uuidEntities = entities.getString("boundedContext");
 		if (uuidEntities != null && uuidEntities.length() > 0) {
 			boundedContext = (BoundedContext) dp.getElementById(uuidEntities);
+		}
+	}
+
+	public void setNameValidity(FieldComposite previous) {
+		nameValid = previous == null;
+		if (previous != null) {
+			fieldName.setBackground(Color.WHITE);
+			fieldName.setForeground(Color.RED);
+			fieldName.setToolTipText("Duplicated name " + previous.getName());
+		}
+		else {
+			fieldName.setBackground(Color.WHITE);
+			fieldName.setForeground(Color.BLACK);
+			fieldName.setToolTipText(null);
 		}
 	}
 }

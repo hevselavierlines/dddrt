@@ -46,4 +46,8 @@ public class Duplicate extends Command {
 		}
 	}
 
+	public List<GridElement> getCopies() {
+		return entities;
+	}
+
 }

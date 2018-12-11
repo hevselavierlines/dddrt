@@ -53,6 +53,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	private JScrollPane _scr;
 	private final SelectorOld selector;
 	private final DiagramHandler handler;
+	private List<GridElement> selections;
 
 	private final List<GridElement> gridElements = new ArrayList<GridElement>();
 	private java.awt.Rectangle selectionRect;
@@ -645,6 +646,16 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		add(notification);
 
 		repaint();
+	}
+
+	public GridElement getElementAtPosition(java.awt.Point point) {
+		java.awt.Component component = super.getComponentAt(point);
+		if (component != null && component instanceof GridElement) {
+			return (GridElement) component;
+		}
+		else {
+			return null;
+		}
 	}
 
 	public void addRelation(DDDRelation relation) {

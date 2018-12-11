@@ -535,4 +535,17 @@ public abstract class NewGridElement implements GridElement {
 		return uniqueId;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof NewGridElement) {
+			return uniqueId.equals(((NewGridElement) obj).uniqueId);
+		}
+		else if (obj instanceof String) {
+			return uniqueId.equals(obj);
+		}
+		else {
+			return false;
+		}
+	}
+
 }

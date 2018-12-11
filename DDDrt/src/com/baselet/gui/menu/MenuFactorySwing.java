@@ -57,11 +57,19 @@ import com.baselet.control.constants.Constants;
 import com.baselet.control.constants.SystemInfo;
 import com.baselet.control.enums.Os;
 import com.baselet.control.util.RecentlyUsedFilesList;
+import com.baselet.diagram.CurrentDiagram;
+import com.baselet.diagram.DiagramHandler;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.helper.ColorOwn;
+import com.baselet.element.ddd.BoundedContext;
+import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.interfaces.GridElement;
+import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.helper.PlainColorIcon;
 
 public class MenuFactorySwing extends MenuFactory {
 
+	private static final String COPY_TO_BOUNDED_CONTEXT = "Copy to bounded context";
 	private static MenuFactorySwing instance = null;
 
 	public static MenuFactorySwing getInstance() {
@@ -226,6 +234,30 @@ public class MenuFactorySwing extends MenuFactory {
 
 	public JMenuItem createProgramHomepage() {
 		return createJMenuItem(false, PROGRAM_HOMEPAGE, null);
+	}
+
+	public JMenu createCopyToBoundedContext(final FieldComposite fieldComp, DrawPanel drawPanel) {
+		JMenu bcMenu = new JMenu(COPY_TO_BOUNDED_CONTEXT);
+
+		for (final BoundedContext bc : drawPanel.getHelper(BoundedContext.class)) {
+			if (!bc.equals(fieldComp.getBoundedContextUUID())) {
+				JMenuItem menuItemInt = new JMenuItem(bc.getContextName());
+				menuItemInt.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+						Duplicate duplicate = new Duplicate();
+						handler.getController().executeCommand(duplicate);
+						GridElement copy = duplicate.getCopies().get(0);
+						copy.setLocation(bc.getRectangle().x, bc.getRectangle().y);
+						copy.dragEnd();
+					}
+				});
+				bcMenu.add(menuItemInt);
+			}
+		}
+		return bcMenu;
 	}
 
 	public JMenuItem createRateProgram() {
