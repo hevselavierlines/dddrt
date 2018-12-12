@@ -5,14 +5,18 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.text.JTextComponent;
 
 import org.json.JSONObject;
 
@@ -23,8 +27,11 @@ import com.baselet.diagram.DrawPanel;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.relation.DDDRelation;
+import com.baselet.gui.command.ComboBoxChange;
+import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.TextFieldChange;
 
-public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener {
+public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener, FocusListener {
 
 	protected static final String REMOVED_COMMAND = "removed";
 	protected static final String JSON_IDPROPERTY = "idproperty";
@@ -46,6 +53,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private DDDRelation relationLineRef;
 	private final Font propertyFont;
 	public static final String FONT_NAME = "Tahoma";
+	private String originalString;
+	private Object originalSelection;
 
 	@Override
 	public String toString() {
@@ -71,6 +80,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 		propertyVisibility = new VisibilityComboBox();
 		propertyVisibility.setFont(propertyFont);
+		propertyVisibility.addPopupMenuListener(this);
 		add(propertyVisibility);
 
 		propertyType = new DataTypeComboBox();
@@ -87,11 +97,14 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		DEFAULT_TYPES.add("Map");
 		propertyType.setEditable(true);
 		propertyType.addPopupMenuListener(this);
+		final JTextComponent tc = (JTextComponent) propertyType.getEditor().getEditorComponent();
+		tc.addFocusListener(this);
 		propertyType.setFont(propertyFont);
 		add(propertyType);
 
 		propertyName = new JTextField("newProperty");
 		propertyName.setFont(propertyFont);
+		propertyName.addFocusListener(this);
 		add(propertyName);
 
 		removeButton = new JButton("x");
@@ -197,27 +210,36 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-		FieldComposite fc = propertyType.getSelection();
-		DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
-		if (fc != null) {
-			if (relationLineRef != null) {
-				dp.removeRelation(relationLineRef);
+		if (e.getSource() == propertyType) {
+			FieldComposite fc = propertyType.getSelection();
+			DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+			if (fc != null) {
+				if (relationLineRef != null) {
+					dp.removeRelation(relationLineRef);
+				}
+				relationLineRef = DDDRelation.createRelation(this, fc);
+				dp.addRelation(relationLineRef);
 			}
-			relationLineRef = DDDRelation.createRelation(this, fc);
-			dp.addRelation(relationLineRef);
-		}
-		else {
-			if (relationLineRef != null) {
-				dp.removeRelation(relationLineRef);
-				relationLineRef = null;
+			else {
+				if (relationLineRef != null) {
+					dp.removeRelation(relationLineRef);
+					relationLineRef = null;
+				}
 			}
+			dp.repaint();
 		}
-		dp.repaint();
+		else if (e.getSource() == propertyVisibility) {
+			Controller controller = CurrentDiagram.getInstance().getDiagramHandler().getController();
+			controller.executeCommand(new ComboBoxChange((JComboBox<?>) e.getSource(), originalSelection));
+		}
 	}
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-		addPropertyTypes();
+		if (e.getSource() == propertyType) {
+			addPropertyTypes();
+		}
+		originalSelection = ((JComboBox<?>) e.getSource()).getSelectedItem();
 	}
 
 	public java.awt.Point getAbsolutePosition(boolean right) {
@@ -268,4 +290,31 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public void setRelation(DDDRelation relation) {
 		relationLineRef = relation;
 	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		Object source = e.getSource();
+		if (source instanceof JTextField) {
+			originalString = ((JTextField) source).getText();
+		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		Object source = e.getSource();
+		if (source instanceof JTextField) {
+			String newText = ((JTextField) source).getText();
+			if (newText != null && !newText.equals(originalString)) {
+				CurrentDiagram
+						.getInstance()
+						.getDiagramHandler()
+						.getController()
+						.executeCommand(
+								new TextFieldChange(
+										(JTextField) source,
+										originalString));
+			}
+		}
+	}
+
 }

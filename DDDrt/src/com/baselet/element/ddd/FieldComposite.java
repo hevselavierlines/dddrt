@@ -4,11 +4,15 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,8 +40,10 @@ import com.baselet.element.facet.specific.TemplateClassFacet;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.settings.SettingsManualResizeTop;
+import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.TextFieldChange;
 
-public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener {
+public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener {
 
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
@@ -51,11 +57,15 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	private ComponentSwing component;
 	private BoundedContext boundedContext;
 	private boolean nameValid;
+	private Controller controller;
+	private String originalString;
 
 	public FieldComposite() {
 		fieldName = new JTextField();
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
+		fieldName.getDocument().addDocumentListener(this);
+		fieldName.addFocusListener(this);
 		propertiesPane = new CollapsiblePanel("Properties");
 		propertiesPane.addCollapseListener(this);
 		propertiesPane.setLayout(new GridLayout(0, 1));
@@ -193,6 +203,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		drawer.drawRectangle(0, 0, elementWidth, elementHeight);
 
 		totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
+
 		updateCompositeHeight();
 	}
 
@@ -371,5 +382,37 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			fieldName.setForeground(Color.BLACK);
 			fieldName.setToolTipText(null);
 		}
+	}
+
+	@Override
+	public void focusGained(FocusEvent arg0) {
+		originalString = fieldName.getText();
+	}
+
+	@Override
+	public void focusLost(FocusEvent arg0) {
+		Controller controller = component.getController();
+		controller.executeCommand(new TextFieldChange(fieldName, originalString));
+	}
+
+	private void validateFieldName() {
+		if (boundedContext != null) {
+			boundedContext.validateNames();
+		}
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		validateFieldName();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		validateFieldName();
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		validateFieldName();
 	}
 }
