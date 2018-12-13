@@ -223,19 +223,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		for (java.awt.Component comp : methodsPane.getComponents()) {
 			if (comp instanceof FieldMethod) {
 				FieldMethod fieldMethod = (FieldMethod) comp;
-				try {
-					List<String> params = fieldMethod.parseParameters();
-					StringBuilder sb = new StringBuilder();
-					for (String param : params) {
-						sb.append(param);
-						sb.append(',');
-					}
-					sb.deleteCharAt(sb.length() - 1);
-					System.out.println(sb.toString());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
 			}
 		}
 	}
