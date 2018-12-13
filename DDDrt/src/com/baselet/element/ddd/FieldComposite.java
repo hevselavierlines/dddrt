@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -40,7 +41,9 @@ import com.baselet.element.facet.specific.TemplateClassFacet;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.settings.SettingsManualResizeTop;
+import com.baselet.gui.command.AddFieldElement;
 import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.RemoveFieldElement;
 import com.baselet.gui.command.TextFieldChange;
 
 public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener {
@@ -57,7 +60,6 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	private ComponentSwing component;
 	private BoundedContext boundedContext;
 	private boolean nameValid;
-	private Controller controller;
 	private String originalString;
 
 	public FieldComposite() {
@@ -205,6 +207,37 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
 
 		updateCompositeHeight();
+		validateNames();
+	}
+
+	public void validateNames() {
+		HashMap<String, FieldProperty> names = new HashMap<String, FieldProperty>();
+		for (java.awt.Component comp : propertiesPane.getComponents()) {
+			if (comp instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) comp;
+				FieldProperty previous = names.put(fieldProperty.getPropertyName(), fieldProperty);
+				fieldProperty.setNameValidity(previous);
+			}
+		}
+
+		for (java.awt.Component comp : methodsPane.getComponents()) {
+			if (comp instanceof FieldMethod) {
+				FieldMethod fieldMethod = (FieldMethod) comp;
+				try {
+					List<String> params = fieldMethod.parseParameters();
+					StringBuilder sb = new StringBuilder();
+					for (String param : params) {
+						sb.append(param);
+						sb.append(',');
+					}
+					sb.deleteCharAt(sb.length() - 1);
+					System.out.println(sb.toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	protected void updateBoundedContext() {
@@ -245,7 +278,6 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	@Override
 	public ElementId getId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -277,17 +309,12 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		if (e.getSource() == propertyAddButton) {
 			FieldProperty newProperty = createProperty();
 			newProperty.setRemovedListener(this);
-			propertiesPane.add(newProperty);
-
-			updateModelFromText();
-
+			component.getController().executeCommand(new AddFieldElement(newProperty, propertiesPane, this));
 		}
 		else if (e.getSource() == methodAddButton) {
 			FieldMethod newMethod = createMethod();
 			newMethod.setRemovedListener(this);
-			methodsPane.add(newMethod);
-
-			updateModelFromText();
+			component.getController().executeCommand(new AddFieldElement(newMethod, methodsPane, this));
 		}
 		else if (FieldProperty.REMOVED_COMMAND.equals(e.getActionCommand())) {
 			removeComponent(e);
@@ -298,12 +325,13 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		Object source = actionEvent.getSource();
 		if (source instanceof java.awt.Component) {
 			java.awt.Component deleteComponent = (java.awt.Component) source;
-			propertiesPane.remove(deleteComponent);
-			propertiesPane.updateBorderTitle();
 
-			methodsPane.remove(deleteComponent);
-			methodsPane.updateBorderTitle();
-			updateModelFromText();
+			if (deleteComponent instanceof FieldProperty) {
+				component.getController().executeCommand(new RemoveFieldElement(deleteComponent, propertiesPane, this));
+			}
+			else if (deleteComponent instanceof FieldMethod) {
+				component.getController().executeCommand(new RemoveFieldElement(deleteComponent, methodsPane, this));
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.baselet.element.ddd;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -14,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
@@ -31,7 +34,7 @@ import com.baselet.gui.command.ComboBoxChange;
 import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.TextFieldChange;
 
-public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener, FocusListener {
+public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener, FocusListener, DocumentListener {
 
 	protected static final String REMOVED_COMMAND = "removed";
 	protected static final String JSON_IDPROPERTY = "idproperty";
@@ -55,6 +58,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public static final String FONT_NAME = "Tahoma";
 	private String originalString;
 	private Object originalSelection;
+	private boolean nameValid;
+	private FieldComposite parentFieldComposite;
 
 	@Override
 	public String toString() {
@@ -105,6 +110,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyName = new JTextField("newProperty");
 		propertyName.setFont(propertyFont);
 		propertyName.addFocusListener(this);
+		propertyName.getDocument().addDocumentListener(this);
 		add(propertyName);
 
 		removeButton = new JButton("x");
@@ -261,6 +267,9 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public FieldComposite getParentFieldComposite() {
+		if (parentFieldComposite != null) {
+			return parentFieldComposite;
+		}
 		NewGridElement element = getParentFieldCompositeRecursively(this);
 		if (element instanceof FieldComposite) {
 			return (FieldComposite) element;
@@ -315,6 +324,42 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 										originalString));
 			}
 		}
+	}
+
+	public void setNameValidity(FieldProperty previous) {
+		nameValid = previous == null;
+		if (previous != null) {
+			propertyName.setBackground(Color.WHITE);
+			propertyName.setForeground(Color.RED);
+			propertyName.setToolTipText("Duplicated name " + previous.getPropertyName());
+		}
+		else {
+			propertyName.setBackground(Color.WHITE);
+			propertyName.setForeground(Color.BLACK);
+			propertyName.setToolTipText(null);
+		}
+	}
+
+	private void updateValidation() {
+		FieldComposite fc = getParentFieldComposite();
+		if (fc != null) {
+			fc.validateNames();
+		}
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent arg0) {
+		updateValidation();
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent arg0) {
+		updateValidation();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent arg0) {
+		updateValidation();
 	}
 
 }

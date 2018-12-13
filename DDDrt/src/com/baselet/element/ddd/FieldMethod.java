@@ -3,6 +3,8 @@ package com.baselet.element.ddd;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -135,5 +137,40 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 		if (removeListener != null) {
 			removeListener.actionPerformed(new ActionEvent(this, 0, FieldProperty.REMOVED_COMMAND));
 		}
+	}
+
+	public List<String> parseParameters() throws Exception {
+		List<String> params = new LinkedList<String>();
+		String paramString = getMethodParameters().replaceAll("\\(", "").replaceAll("\\)", "");
+
+		String[] splitParams = paramString.split(",");
+		for (String splitPara : splitParams) {
+			String name = null, type = null;
+			if (splitPara.contains(":")) {
+				String[] parameterElements = splitPara.split(":");
+				if (parameterElements.length == 2) {
+					name = parameterElements[0].trim();
+					type = parameterElements[1].trim();
+				}
+				else {
+					throw new Exception("Parsing error. Type and name not found.");
+				}
+			}
+			else {
+				String[] parameterElements = splitPara.split(" ");
+				if (parameterElements.length == 2) {
+					type = parameterElements[0].trim();
+					name = parameterElements[1].trim();
+				}
+			}
+			if (name != null && type != null) {
+				params.add(type);
+				params.add(name);
+			}
+			else {
+				throw new Exception("Parsing error. Type and name not found.");
+			}
+		}
+		return params;
 	}
 }
