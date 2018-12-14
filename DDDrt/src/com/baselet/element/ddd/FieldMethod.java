@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -21,8 +20,10 @@ import org.json.JSONObject;
 
 import com.baselet.design.metal.MetalComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
+import com.baselet.element.ComponentSwing;
+import com.baselet.element.NewGridElement;
 
-public class FieldMethod extends JLayeredPane implements ActionListener {
+public class FieldMethod extends JLayeredPane implements ActionListener, DocumentListener {
 	private static final long serialVersionUID = -6900199799847961884L;
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
@@ -33,6 +34,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 	private final JTextField textParameters;
 	private final JButton removeButton;
 	private ActionListener removeListener;
+	private FieldComposite parentFieldComposite;
 
 	public FieldMethod() {
 		methodVisibility = new VisibilityComboBox();
@@ -51,6 +53,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 		add(methodType);
 
 		methodName = new JTextField("newmethod");
+		methodName.getDocument().addDocumentListener(this);
 		add(methodName);
 
 		textParameters = new JTextField("()");
@@ -164,18 +167,18 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 
 	public String validateParameters() {
 		try {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					if (!getMethodParameters().startsWith("(")) {
-						textParameters.setText("(" + textParameters.getText());
-					}
-					if (!getMethodParameters().endsWith(")")) {
-						textParameters.setText(textParameters.getText() + ")");
-					}
-				}
-			});
+			// SwingUtilities.invokeLater(new Runnable() {
+			//
+			// @Override
+			// public void run() {
+			// if (!getMethodParameters().startsWith("(")) {
+			// textParameters.setText("(" + textParameters.getText().replaceAll("\\(", ""));
+			// }
+			// if (!getMethodParameters().endsWith(")")) {
+			// textParameters.setText(textParameters.getText().replaceAll("\\)", "") + ")");
+			// }
+			// }
+			// });
 
 			Set<String> names = new HashSet<String>();
 			for (Parameter parameter : parseParameters()) {
@@ -253,5 +256,68 @@ public class FieldMethod extends JLayeredPane implements ActionListener {
 			textParameters.setForeground(Color.RED);
 			textParameters.setToolTipText(validationResult);
 		}
+	}
+
+	public void setNameValidity(FieldMethod previous) {
+		if (previous != null) {
+			methodName.setBackground(Color.WHITE);
+			methodName.setForeground(Color.RED);
+			methodName.setToolTipText("Duplicated name " + previous.getMethodName());
+		}
+		else {
+			methodName.setBackground(Color.WHITE);
+			methodName.setForeground(Color.BLACK);
+			methodName.setToolTipText(null);
+		}
+	}
+
+	public FieldComposite getParentFieldComposite() {
+		if (parentFieldComposite != null) {
+			return parentFieldComposite;
+		}
+		NewGridElement element = getParentFieldCompositeRecursively(this);
+		if (element instanceof FieldComposite) {
+			return (FieldComposite) element;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private NewGridElement getParentFieldCompositeRecursively(java.awt.Component currentComponent) {
+		if (currentComponent != null) {
+			if (currentComponent instanceof ComponentSwing) {
+				ComponentSwing swing = (ComponentSwing) currentComponent;
+				return swing.getGridElement();
+			}
+			else {
+				return getParentFieldCompositeRecursively(currentComponent.getParent());
+			}
+		}
+		else {
+			return null;
+		}
+	}
+
+	private void updateValidation() {
+		FieldComposite fc = getParentFieldComposite();
+		if (fc != null) {
+			fc.validateNames();
+		}
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		updateValidation();
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		updateValidation();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		updateValidation();
 	}
 }

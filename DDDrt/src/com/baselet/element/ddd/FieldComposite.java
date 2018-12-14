@@ -211,19 +211,21 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	}
 
 	public void validateNames() {
-		HashMap<String, FieldProperty> names = new HashMap<String, FieldProperty>();
+		HashMap<String, FieldProperty> propertyNames = new HashMap<String, FieldProperty>();
 		for (java.awt.Component comp : propertiesPane.getComponents()) {
 			if (comp instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) comp;
-				FieldProperty previous = names.put(fieldProperty.getPropertyName(), fieldProperty);
+				FieldProperty previous = propertyNames.put(fieldProperty.getPropertyName(), fieldProperty);
 				fieldProperty.setNameValidity(previous);
 			}
 		}
 
+		HashMap<String, FieldMethod> methodNames = new HashMap<String, FieldMethod>();
 		for (java.awt.Component comp : methodsPane.getComponents()) {
 			if (comp instanceof FieldMethod) {
 				FieldMethod fieldMethod = (FieldMethod) comp;
-
+				FieldMethod previous = methodNames.put(fieldMethod.getMethodName(), fieldMethod);
+				fieldMethod.setNameValidity(previous);
 			}
 		}
 	}
