@@ -32,6 +32,7 @@ import com.baselet.element.NewGridElement;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.command.ComboBoxChange;
 import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.PropertyDataTypeChange;
 import com.baselet.gui.command.TextFieldChange;
 
 public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener, FocusListener, DocumentListener {
@@ -318,22 +319,26 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (e.getSource() == propertyTypeEditor) {
 			FieldComposite fc = propertyType.getSelection();
 			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
-			if (fc != null) {
-				if (relationLineRef != null) {
-					dp.removeRelation(relationLineRef);
-				}
-				relationLineRef = DDDRelation.createRelation(this, fc);
-				dp.addRelation(relationLineRef);
-			}
-			else {
-				if (relationLineRef != null) {
-					dp.removeRelation(relationLineRef);
-					relationLineRef = null;
-				}
-			}
-			dp.repaint();
+			getParentFieldComposite()
+					.getComponent()
+					.getController()
+					.executeCommand(new PropertyDataTypeChange(this, fc, dp, relationLineRef, propertyType, originalString));
+			// if (fc != null) {
+			// if (relationLineRef != null) {
+			// dp.removeRelation(relationLineRef);
+			// }
+			// relationLineRef = DDDRelation.createRelation(this, fc);
+			// dp.addRelation(relationLineRef);
+			// }
+			// else {
+			// if (relationLineRef != null) {
+			// dp.removeRelation(relationLineRef);
+			// relationLineRef = null;
+			// }
+			// }
+			// dp.repaint();
 		}
-		if (source instanceof JTextField) {
+		else if (source instanceof JTextField) {
 			String newText = ((JTextField) source).getText();
 			if (newText != null && !newText.equals(originalString)) {
 				getParentFieldComposite()
