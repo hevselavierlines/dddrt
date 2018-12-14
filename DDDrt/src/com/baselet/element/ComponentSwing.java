@@ -9,6 +9,7 @@ import com.baselet.control.basics.Converter;
 import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.diagram.DiagramHandler;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.diagram.draw.swing.DrawHandlerSwing;
 import com.baselet.element.interfaces.Component;
@@ -107,6 +108,10 @@ public class ComponentSwing extends JComponent implements Component {
 
 	public Controller getController() {
 		return drawer.getHandler().getController();
+	}
+
+	public DrawPanel getDrawPanel() {
+		return drawer.getHandler().getDrawPanel();
 	}
 
 	@Override

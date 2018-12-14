@@ -40,6 +40,7 @@ import com.baselet.element.facet.specific.InnerClassFacet;
 import com.baselet.element.facet.specific.TemplateClassFacet;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.element.settings.SettingsManualResizeTop;
 import com.baselet.gui.command.AddFieldElement;
 import com.baselet.gui.command.Controller;
@@ -433,4 +434,26 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	public void changedUpdate(DocumentEvent e) {
 		validateFieldName();
 	}
+
+	@Override
+	public void undoDrag() {
+		super.undoDrag();
+		for (DDDRelation relation : component.getDrawPanel().getRelationsOfFieldComposite(this)) {
+			relation.createRelationLine();
+		}
+	}
+
+	@Override
+	public void redoDrag() {
+		super.redoDrag();
+		for (DDDRelation relation : component.getDrawPanel().getRelationsOfFieldComposite(this)) {
+			relation.createRelationLine();
+		}
+	}
+
+	@Override
+	public ComponentSwing getComponent() {
+		return component;
+	}
+
 }

@@ -60,6 +60,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private Object originalSelection;
 	private boolean nameValid;
 	private FieldComposite parentFieldComposite;
+	private final JTextComponent propertyTypeEditor;
 
 	@Override
 	public String toString() {
@@ -96,14 +97,16 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		DEFAULT_TYPES.add("long");
 		DEFAULT_TYPES.add("byte");
 		DEFAULT_TYPES.add("char");
+		DEFAULT_TYPES.add("float");
+		DEFAULT_TYPES.add("double");
 		DEFAULT_TYPES.add("short");
 		DEFAULT_TYPES.add("Object");
 		DEFAULT_TYPES.add("List");
 		DEFAULT_TYPES.add("Map");
 		propertyType.setEditable(true);
 		propertyType.addPopupMenuListener(this);
-		final JTextComponent tc = (JTextComponent) propertyType.getEditor().getEditorComponent();
-		tc.addFocusListener(this);
+		propertyTypeEditor = (JTextComponent) propertyType.getEditor().getEditorComponent();
+		propertyTypeEditor.addFocusListener(this);
 		propertyType.setFont(propertyFont);
 		add(propertyType);
 
@@ -217,22 +220,23 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 		if (e.getSource() == propertyType) {
-			FieldComposite fc = propertyType.getSelection();
-			DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
-			if (fc != null) {
-				if (relationLineRef != null) {
-					dp.removeRelation(relationLineRef);
-				}
-				relationLineRef = DDDRelation.createRelation(this, fc);
-				dp.addRelation(relationLineRef);
-			}
-			else {
-				if (relationLineRef != null) {
-					dp.removeRelation(relationLineRef);
-					relationLineRef = null;
-				}
-			}
-			dp.repaint();
+			// FieldComposite fc = propertyType.getSelection();
+			// DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+			// if (fc != null) {
+			// if (relationLineRef != null) {
+			// dp.removeRelation(relationLineRef);
+			// }
+			// relationLineRef = DDDRelation.createRelation(this, fc);
+			// dp.addRelation(relationLineRef);
+			// }
+			// else {
+			// if (relationLineRef != null) {
+			// dp.removeRelation(relationLineRef);
+			// relationLineRef = null;
+			// }
+			// }
+			getParentFieldComposite().getComponent().requestFocus();
+			// dp.repaint();
 		}
 		else if (e.getSource() == propertyVisibility) {
 			Controller controller = CurrentDiagram.getInstance().getDiagramHandler().getController();
@@ -311,12 +315,29 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	@Override
 	public void focusLost(FocusEvent e) {
 		Object source = e.getSource();
+		if (e.getSource() == propertyTypeEditor) {
+			FieldComposite fc = propertyType.getSelection();
+			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
+			if (fc != null) {
+				if (relationLineRef != null) {
+					dp.removeRelation(relationLineRef);
+				}
+				relationLineRef = DDDRelation.createRelation(this, fc);
+				dp.addRelation(relationLineRef);
+			}
+			else {
+				if (relationLineRef != null) {
+					dp.removeRelation(relationLineRef);
+					relationLineRef = null;
+				}
+			}
+			dp.repaint();
+		}
 		if (source instanceof JTextField) {
 			String newText = ((JTextField) source).getText();
 			if (newText != null && !newText.equals(originalString)) {
-				CurrentDiagram
-						.getInstance()
-						.getDiagramHandler()
+				getParentFieldComposite()
+						.getComponent()
 						.getController()
 						.executeCommand(
 								new TextFieldChange(

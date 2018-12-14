@@ -34,6 +34,7 @@ import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.LineType;
 import com.baselet.control.util.Utils;
+import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.diagram.draw.helper.ColorOwn.Transparency;
@@ -51,6 +52,7 @@ import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.Stickables;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.gui.AutocompletionText;
+import com.baselet.gui.command.Controller;
 
 public abstract class OldGridElement extends JComponent implements GridElement, com.baselet.element.interfaces.Component {
 
@@ -620,4 +622,15 @@ public abstract class OldGridElement extends JComponent implements GridElement, 
 	public String getUUID() {
 		return null;
 	}
+
+	@Override
+	public DrawPanel getDrawPanel() {
+		return null;
+	}
+
+	@Override
+	public Controller getController() {
+		return null;
+	}
+
 }

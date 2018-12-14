@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,15 +17,22 @@ import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.text.JTextComponent;
 
 import org.json.JSONObject;
 
 import com.baselet.design.metal.MetalComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
+import com.baselet.diagram.CurrentDiagram;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
+import com.baselet.gui.command.ComboBoxChange;
+import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.TextFieldChange;
 
-public class FieldMethod extends JLayeredPane implements ActionListener, DocumentListener {
+public class FieldMethod extends JLayeredPane implements ActionListener, DocumentListener, FocusListener, PopupMenuListener {
 	private static final long serialVersionUID = -6900199799847961884L;
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
@@ -35,9 +44,12 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final JButton removeButton;
 	private ActionListener removeListener;
 	private FieldComposite parentFieldComposite;
+	private String originalString;
+	private Object originalSelection;
 
 	public FieldMethod() {
 		methodVisibility = new VisibilityComboBox();
+		methodVisibility.addPopupMenuListener(this);
 		add(methodVisibility);
 
 		methodType = new MetalComboBox();
@@ -50,10 +62,13 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		methodType.addItem("short");
 		methodType.addItem("Object");
 		methodType.setEditable(true);
+		final JTextComponent tc = (JTextComponent) methodType.getEditor().getEditorComponent();
+		tc.addFocusListener(this);
 		add(methodType);
 
 		methodName = new JTextField("newmethod");
 		methodName.getDocument().addDocumentListener(this);
+		methodName.addFocusListener(this);
 		add(methodName);
 
 		textParameters = new JTextField("()");
@@ -74,6 +89,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 				validateParameters();
 			}
 		});
+		textParameters.addFocusListener(this);
 		add(textParameters);
 
 		removeButton = new JButton("x");
@@ -319,5 +335,48 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 		updateValidation();
+	}
+
+	@Override
+	public void popupMenuCanceled(PopupMenuEvent e) {}
+
+	@Override
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		if (e.getSource() == methodVisibility) {
+			Controller controller = CurrentDiagram.getInstance().getDiagramHandler().getController();
+			controller.executeCommand(new ComboBoxChange((JComboBox<?>) e.getSource(), originalSelection));
+		}
+	}
+
+	@Override
+	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+		if (e.getSource() == methodVisibility) {
+			originalSelection = ((JComboBox<?>) e.getSource()).getSelectedItem();
+		}
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		Object source = e.getSource();
+		if (source instanceof JTextField) {
+			originalString = ((JTextField) source).getText();
+		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		Object source = e.getSource();
+		if (source instanceof JTextField) {
+			String newText = ((JTextField) source).getText();
+			if (newText != null && !newText.equals(originalString)) {
+				getParentFieldComposite()
+						.getComponent()
+						.getController()
+						.executeCommand(
+								new TextFieldChange(
+										(JTextField) source,
+										originalString));
+			}
+		}
 	}
 }
