@@ -109,6 +109,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyTypeEditor = (JTextComponent) propertyType.getEditor().getEditorComponent();
 		propertyTypeEditor.addFocusListener(this);
 		propertyType.setFont(propertyFont);
+		propertyType.setSelectedItem("String");
 		add(propertyType);
 
 		propertyName = new JTextField("newProperty");
