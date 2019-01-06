@@ -20,6 +20,7 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
+import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.facet.Facet;
@@ -42,6 +43,12 @@ public class BoundedContext extends NewGridElement {
 	private ComponentSwing component;
 	private JSONObject jsonAttributes;
 
+	public enum BORDER_STYLE {
+		THICK, NORMAL, NOTHING
+	};
+
+	private BORDER_STYLE borderStyle;
+
 	public BoundedContext() {
 		super();
 		contextName = new JTextField("BoundedContext1");
@@ -56,6 +63,7 @@ public class BoundedContext extends NewGridElement {
 		Font fontPackage = new Font(originalFontName, Font.PLAIN, 10);
 		packageName.setFont(fontPackage);
 		packageName.setBorder(null);
+		borderStyle = BORDER_STYLE.NOTHING;
 	}
 
 	@Override
@@ -134,6 +142,22 @@ public class BoundedContext extends NewGridElement {
 		Rectangle boundsRect = getRectangle();
 		contextName.setBounds(boundsRect.width / 2 - 100, 20, 200, 15);
 		packageName.setBounds(boundsRect.width / 2 - 150, 35, 300, 10);
+
+		double lineWidth = drawer.getLineWidth();
+		ColorOwn lineColor = drawer.getForegroundColor();
+
+		if (borderStyle == BORDER_STYLE.NORMAL) {
+			drawer.setLineWidth(2.0f);
+			drawer.setForegroundColor(ColorOwn.BLUE);
+			drawer.drawEllipse(1, 1, boundsRect.width - 2, boundsRect.height - 2);
+		}
+		else if (borderStyle == BORDER_STYLE.THICK) {
+			drawer.setLineWidth(5.0f);
+			drawer.setForegroundColor(ColorOwn.BLUE);
+			drawer.drawEllipse(3, 3, boundsRect.width - 6, boundsRect.height - 6);
+		}
+		drawer.setLineWidth(lineWidth);
+		drawer.setForegroundColor(lineColor);
 	}
 
 	@Override
@@ -180,6 +204,8 @@ public class BoundedContext extends NewGridElement {
 		checkFieldCompositesInsideBoundedContext();
 
 		validateNames();
+		borderStyle = BORDER_STYLE.NOTHING;
+		updateModelFromText();
 	}
 
 	protected void checkFieldCompositesInsideBoundedContext() {
@@ -211,6 +237,21 @@ public class BoundedContext extends NewGridElement {
 
 	public String getContextName() {
 		return contextName.getText();
+	}
+
+	public void setBorderThick() {
+		borderStyle = BORDER_STYLE.THICK;
+		updateModelFromText();
+	}
+
+	public void setBorderNormal() {
+		borderStyle = BORDER_STYLE.NORMAL;
+		updateModelFromText();
+	}
+
+	public void setBorderNothing() {
+		borderStyle = BORDER_STYLE.NOTHING;
+		updateModelFromText();
 	}
 
 }

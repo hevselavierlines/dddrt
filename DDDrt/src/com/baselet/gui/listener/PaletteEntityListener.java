@@ -159,6 +159,7 @@ public class PaletteEntityListener extends GridElementListener {
 	}
 
 	protected GridElement copyEntity(GridElement me) {
+		me.dragEnd();
 		DrawPanel currentDiagram = CurrentGui.getInstance().getGui().getCurrentDiagram();
 
 		// We save the actual zoom level of the diagram and the palette

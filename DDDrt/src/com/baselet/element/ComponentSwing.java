@@ -106,12 +106,19 @@ public class ComponentSwing extends JComponent implements Component {
 		metaDrawer.setHandler(diagramHandler);
 	}
 
+	@Override
 	public Controller getController() {
 		return drawer.getHandler().getController();
 	}
 
+	@Override
 	public DrawPanel getDrawPanel() {
-		return drawer.getHandler().getDrawPanel();
+		if (drawer != null && drawer.getHandler() != null) {
+			return drawer.getHandler().getDrawPanel();
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override

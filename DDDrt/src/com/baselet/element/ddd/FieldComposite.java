@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,9 +19,11 @@ import javax.swing.event.DocumentListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.PointDouble;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.AlignHorizontal;
+import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.LineType;
 import com.baselet.design.metal.MetalButton;
@@ -42,6 +45,7 @@ import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.element.settings.SettingsManualResizeTop;
+import com.baselet.element.sticking.StickableMap;
 import com.baselet.gui.command.AddFieldElement;
 import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.RemoveFieldElement;
@@ -59,7 +63,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	protected JSONArray jMethods;
 	private int totalHeight;
 	private ComponentSwing component;
-	private BoundedContext boundedContext;
+	protected BoundedContext boundedContext;
 	private boolean nameValid;
 	private String originalString;
 
@@ -231,6 +235,20 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		}
 	}
 
+	public void updateBoundedContextBorder() {
+		DrawPanel drawPanel = component.getDrawPanel();
+		if (drawPanel != null) {
+			for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
+				if (boundedContext.getRectangle().contains(getRectangle())) {
+					boundedContext.setBorderThick();
+				}
+				else {
+					boundedContext.setBorderNormal();
+				}
+			}
+		}
+	}
+
 	protected void updateBoundedContext() {
 		CurrentDiagram diagram = CurrentDiagram.getInstance();
 		if (diagram != null) {
@@ -241,6 +259,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 				DrawPanel drawPanel = handler.getDrawPanel();
 				BoundedContext rightContext = null;
 				for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
+					boundedContext.setBorderNothing();
 					if (boundedContext.getRectangle().contains(rect)) {
 						rightContext = boundedContext;
 					}
@@ -270,6 +289,12 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	@Override
 	public ElementId getId() {
 		return null;
+	}
+
+	@Override
+	public void drag(Collection<Direction> resizeDirection, int diffX, int diffY, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, StickableMap stickables, boolean undoable) {
+		super.drag(resizeDirection, diffX, diffY, mousePosBeforeDrag, isShiftKeyDown, firstDrag, stickables, undoable);
+		updateBoundedContextBorder();
 	}
 
 	@Override
@@ -386,6 +411,15 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		String uuidEntities = entities.getString("boundedContext");
 		if (uuidEntities != null && uuidEntities.length() > 0) {
 			boundedContext = (BoundedContext) dp.getElementById(uuidEntities);
+		}
+	}
+
+	public boolean isInSameBoundedContext(FieldComposite fieldComposite) {
+		if (boundedContext == null || fieldComposite.boundedContext == null) {
+			return false;
+		}
+		else {
+			return boundedContext.equals(fieldComposite.boundedContext);
 		}
 	}
 

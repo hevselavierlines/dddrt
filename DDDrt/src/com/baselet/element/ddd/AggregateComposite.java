@@ -1,5 +1,8 @@
 package com.baselet.element.ddd;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,9 +14,34 @@ public class AggregateComposite extends EntityComposite {
 		return ElementId.DDDAggregate;
 	}
 
+	public boolean isRootAggregates() {
+		if (boundedContext != null) {
+			List<AggregateComposite> aggregates = new LinkedList<AggregateComposite>();
+			for (FieldComposite fieldComp : getComponent().getDrawPanel().getBoundedContextChildren(boundedContext)) {
+				if (fieldComp instanceof AggregateComposite) {
+					aggregates.add((AggregateComposite) fieldComp);
+				}
+			}
+			if (aggregates.size() == 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+
 	@Override
 	protected String getTitle() {
-		return "<<Aggregate>>";
+		if (isRootAggregates()) {
+			return "<<Root Aggregate>>";
+		}
+		else {
+			return "<<Aggregate>>";
+		}
 	}
 
 	@Override

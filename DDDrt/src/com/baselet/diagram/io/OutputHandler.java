@@ -7,19 +7,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.sourceforge.jlibeps.epsgraphics.EpsGraphics2D;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Element;
 
-import com.baselet.control.basics.Converter;
 import com.baselet.control.basics.geom.Dimension;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.config.Config;
@@ -33,6 +26,8 @@ import com.baselet.element.interfaces.GridElement;
 import com.itextpdf.awt.FontMapper;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import tk.baumi.main.SVGExporter;
 
 public class OutputHandler {
 
@@ -86,7 +81,7 @@ public class OutputHandler {
 		Rectangle bounds = DrawPanel.getContentBounds(Config.getInstance().getPrintPadding(), entities);
 		EpsGraphics2D graphics2d = new EpsGraphics2D(Program.getInstance().getProgramName() + " Diagram", ostream, 0, 0, bounds.width, bounds.height);
 		setGraphicsBorders(bounds, graphics2d);
-		paintEntitiesIntoGraphics2D(graphics2d, entities);
+		paintEntities(graphics2d);
 		graphics2d.flush();
 		graphics2d.close();
 	}
@@ -106,7 +101,7 @@ public class OutputHandler {
 			Dimension trans = new Dimension(bounds.getX(), bounds.getY());
 			graphics2d.translate(-trans.getWidth(), -trans.getHeight());
 
-			paintEntitiesIntoGraphics2D(graphics2d, entities);
+			paintEntities(graphics2d);
 			graphics2d.dispose();
 			document.close();
 		} catch (com.itextpdf.text.DocumentException e) {
@@ -116,18 +111,9 @@ public class OutputHandler {
 
 	private static void exportSvg(OutputStream ostream, Collection<GridElement> entities) throws IOException {
 		Rectangle bounds = DrawPanel.getContentBounds(Config.getInstance().getPrintPadding(), entities);
-		DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-		org.w3c.dom.Document document = domImpl.createDocument(null, "svg", null);
-
-		SVGGraphics2D graphics2d = new SVGGraphics2D(document);
-		graphics2d.setSVGCanvasSize(Converter.convert(bounds.getSize()));
-		paintEntitiesIntoGraphics2D(graphics2d, entities);
-
-		Element root = graphics2d.getRoot();
-		root.setAttributeNS(null, "viewBox", String.format("%d %d %d %d", bounds.x, bounds.y, bounds.width, bounds.height));
-		Writer out = new OutputStreamWriter(ostream, "UTF-8"); // Stream out SVG to the standard output using UTF-8 character to byte encoding
-		graphics2d.stream(root, out, false, false);
-		graphics2d.dispose();
+		SVGExporter svgExporter = new SVGExporter(new java.awt.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height));
+		paintEntities(svgExporter.getGraphics());
+		svgExporter.export(ostream);
 	}
 
 	private static void exportImg(String imgType, OutputStream ostream, Collection<GridElement> entities) throws IOException {
@@ -144,7 +130,7 @@ public class OutputHandler {
 		graphics2d.setRenderingHints(Utils.getUxRenderingQualityHigh(true));
 
 		setGraphicsBorders(bounds, graphics2d);
-		paintEntitiesIntoGraphics2D(graphics2d, entities);
+		paintEntities(graphics2d);
 		graphics2d.dispose();
 
 		return im;
@@ -161,6 +147,10 @@ public class OutputHandler {
 		return ImageIO.getImageWritersBySuffix(ext).hasNext();
 	}
 
+	public static void paintEntities(Graphics2D g2d) {
+		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().paint(g2d);
+	}
+
 	public static void paintEntitiesIntoGraphics2D(Graphics2D g2d, Collection<GridElement> entities) {
 		CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().paint(g2d);
 		// DiagramHandler handler = new DiagramHandler(null);
@@ -171,7 +161,7 @@ public class OutputHandler {
 		// // Issue 138: when PDF and Swing Export draw on (0,0) a part of the drawn image is cut, therefore it's displaced by 0.5px in that case.
 		// // also Issue 270: makes arrow ending placement better
 		// component.translateForExport();
-		// tempPanel.add((Component) component, clone.getLayer());
+		// tempPanel.add((java.awt.Component) component, clone.getLayer());
 		// }
 		// tempPanel.validate();
 		// tempPanel.setBackground(Color.WHITE);

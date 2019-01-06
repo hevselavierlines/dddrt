@@ -4,9 +4,12 @@ import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ElementFactorySwing;
+import com.baselet.element.ddd.AggregateComposite;
 import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.ddd.FieldProperty;
+import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.relation.helper.RelationPointHandler;
 import com.baselet.element.relation.helper.RelationPointList;
 
@@ -134,4 +137,36 @@ public class DDDRelation extends Relation {
 			return null;
 		}
 	}
+
+	protected boolean isValidRelation() {
+		FieldComposite startComposite = getStartComposite();
+		FieldComposite endComposite = getEndComposite();
+		if (startComposite == null || endComposite == null) {
+			return true;
+		}
+		if (!startComposite.isInSameBoundedContext(endComposite)) {
+			if (endComposite instanceof AggregateComposite) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return true;
+		}
+	}
+
+	@Override
+	protected void drawCommonContent(PropertiesParserState state) {
+		if (isValidRelation()) {
+			state.getDrawer().setForegroundColor(ColorOwn.BLACK);
+		}
+		else {
+			state.getDrawer().setForegroundColor(ColorOwn.RED);
+		}
+
+		super.drawCommonContent(state);
+	}
+
 }

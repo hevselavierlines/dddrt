@@ -369,6 +369,7 @@ public class GridElementListener extends UniversalListener {
 			if (command instanceof Move) {
 				Move m = (Move) command;
 				tmpVector.add(new Move(resizeDirection, m.getEntity(), diffx, diffy, oldp, m.isShiftKeyDown(), FIRST_DRAG, useSetLocation, m.getStickables()));
+
 			}
 			else if (command instanceof OldMoveLinePoint) {
 				OldMoveLinePoint m = (OldMoveLinePoint) command;

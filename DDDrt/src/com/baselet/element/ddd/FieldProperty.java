@@ -59,7 +59,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public static final String FONT_NAME = "Tahoma";
 	private String originalString;
 	private Object originalSelection;
-	private boolean nameValid;
 	private FieldComposite parentFieldComposite;
 	private final JTextComponent propertyTypeEditor;
 
@@ -354,7 +353,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public void setNameValidity(FieldProperty previous) {
-		nameValid = previous == null;
 		if (previous != null) {
 			propertyName.setBackground(Color.WHITE);
 			propertyName.setForeground(Color.RED);

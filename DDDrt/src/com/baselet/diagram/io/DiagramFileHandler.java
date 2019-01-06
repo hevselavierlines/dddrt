@@ -323,6 +323,7 @@ public class DiagramFileHandler {
 		try {
 			OutputHandler.createAndOutputToFile(extension, file, handler);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IOException(e.getMessage());
 		}
 		// CustomElementSecurityManager.remThreadPrivileges(Thread.currentThread());
