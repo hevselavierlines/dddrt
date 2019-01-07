@@ -321,6 +321,7 @@ public class DiagramFileHandler {
 	public void doExportAs(String extension, File file) throws IOException {
 		// CustomElementSecurityManager.addThreadPrivileges(Thread.currentThread(), fileName);
 		try {
+			handler.getDrawPanel().getSelector().deselectAll();
 			OutputHandler.createAndOutputToFile(extension, file, handler);
 		} catch (Exception e) {
 			e.printStackTrace();
