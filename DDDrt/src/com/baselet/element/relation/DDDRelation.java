@@ -80,7 +80,7 @@ public class DDDRelation extends Relation {
 	public void createRelationLine() {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
 		java.awt.Point endPoint = endComposite.getAbsolutePosition();
-		if (startPoint.x < endPoint.x) {
+		if (startPoint.x + startProperty.getWidth() / 2 < endPoint.x) {
 			startPoint = startProperty.getAbsolutePosition(true);
 		}
 		int minX = getRectangle().x;
