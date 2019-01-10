@@ -1,5 +1,9 @@
 package com.baselet.element.ddd;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
@@ -37,20 +41,36 @@ public class ValueObjectProperty extends FieldProperty {
 		Object selection = propertyType.getSelectedItem();
 		propertyType.removeAllItems();
 		java.awt.Component[] container = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().getComponents();
+		List<FieldComposite> sameBoundedContextElements = new LinkedList<FieldComposite>();
+		List<FieldComposite> diffrentBoundedContextElements = new LinkedList<FieldComposite>();
 		for (java.awt.Component cont : container) {
 			if (cont instanceof ComponentSwing) {
 				ComponentSwing cw = (ComponentSwing) cont;
 				NewGridElement gridElement = cw.getGridElement();
 				if (gridElement instanceof ValueObjectComposite) {
 					FieldComposite ec = (FieldComposite) gridElement;
-					propertyType.addItem(ec.getName(), ec);
+					if (getParentFieldComposite().isInSameBoundedContext((FieldComposite) gridElement)) {
+						sameBoundedContextElements.add(ec);
+					}
+					else {
+						diffrentBoundedContextElements.add(ec);
+					}
 				}
 			}
 		}
 
+		Collections.sort(sameBoundedContextElements);
+		Collections.sort(diffrentBoundedContextElements);
+		for (FieldComposite fc : sameBoundedContextElements) {
+			propertyType.addItem(fc.getName(), fc);
+		}
 		for (String DEFAULT_TYPE : DEFAULT_TYPES) {
 			propertyType.addItem(DEFAULT_TYPE);
 		}
+		for (FieldComposite fc : diffrentBoundedContextElements) {
+			propertyType.addItem(fc.getFullName(), fc);
+		}
+
 		if (selection != null) {
 			propertyType.setSelectedItem(selection);
 		}
