@@ -157,16 +157,20 @@ public class DDDRelation extends Relation {
 		}
 	}
 
+	public void validateRelation() {
+		updateModelFromText();
+	}
+
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
+		super.drawCommonContent(state);
+
 		if (isValidRelation()) {
 			state.getDrawer().setForegroundColor(ColorOwn.BLACK);
 		}
 		else {
 			state.getDrawer().setForegroundColor(ColorOwn.RED);
 		}
-
-		super.drawCommonContent(state);
 	}
 
 }

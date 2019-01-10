@@ -104,7 +104,7 @@ class DataTypeComboBoxUI extends MetalComboBoxUI {
 			@Override
 			protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
 				return super.computePopupBounds(
-						px, py, Math.max(150, pw), ph);
+						px, py, Math.max(250, pw), Math.max(250, ph));
 			}
 		};
 		popup.getAccessibleContext().setAccessibleParent(comboBox);

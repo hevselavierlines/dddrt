@@ -51,7 +51,7 @@ import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.RemoveFieldElement;
 import com.baselet.gui.command.TextFieldChange;
 
-public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener {
+public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
 
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
@@ -362,6 +362,15 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		return fieldName.getText();
 	}
 
+	public String getFullName() {
+		StringBuilder stringBuilder = new StringBuilder();
+		if (boundedContext != null) {
+			stringBuilder.append(boundedContext.getContextName()).append(": ");
+		}
+		stringBuilder.append(getName());
+		return stringBuilder.toString();
+	}
+
 	public java.awt.Point getAbsolutePosition() {
 		java.awt.Point p = new java.awt.Point();
 		getAbsolutePositionRecursively(component, p);
@@ -490,6 +499,11 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	@Override
 	public ComponentSwing getComponent() {
 		return component;
+	}
+
+	@Override
+	public int compareTo(FieldComposite o) {
+		return getFullName().compareTo(o.getFullName());
 	}
 
 }
