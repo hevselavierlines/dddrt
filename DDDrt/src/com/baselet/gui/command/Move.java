@@ -33,6 +33,12 @@ public class Move extends Command {
 
 	private final Collection<Direction> resizeDirection;
 
+	private final boolean insideMovement;
+
+	public boolean isInsideMovement() {
+		return insideMovement;
+	}
+
 	public GridElement getEntity() {
 		return entity;
 	}
@@ -69,7 +75,7 @@ public class Move extends Command {
 		return p;
 	}
 
-	public Move(Collection<Direction> resizeDirection, boolean absoluteMousePos, GridElement e, int x, int y, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, boolean useSetLocation, StickableMap stickingStickables) {
+	public Move(Collection<Direction> resizeDirection, boolean absoluteMousePos, GridElement e, int x, int y, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, boolean useSetLocation, StickableMap stickingStickables, boolean insideMovement) {
 		entity = e;
 		int gridSize = Main.getHandlerForElement(e).getGridSize();
 		this.x = x / gridSize;
@@ -81,10 +87,11 @@ public class Move extends Command {
 		this.useSetLocation = useSetLocation;
 		stickables = stickingStickables;
 		this.resizeDirection = resizeDirection;
+		this.insideMovement = insideMovement;
 	}
 
-	public Move(Collection<Direction> resizeDirection, GridElement e, int x, int y, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, boolean useSetLocation, StickableMap stickingStickables) {
-		this(resizeDirection, true, e, x, y, mousePosBeforeDrag, isShiftKeyDown, firstDrag, useSetLocation, stickingStickables);
+	public Move(Collection<Direction> resizeDirection, GridElement e, int x, int y, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, boolean useSetLocation, StickableMap stickingStickables, boolean insideMovement) {
+		this(resizeDirection, true, e, x, y, mousePosBeforeDrag, isShiftKeyDown, firstDrag, useSetLocation, stickingStickables, insideMovement);
 	}
 
 	/**
@@ -110,7 +117,7 @@ public class Move extends Command {
 			entity.setRectangleDifference(getX(), getY(), 0, 0, firstDrag, stickables, true);
 		}
 		else {
-			entity.drag(resizeDirection, getX(), getY(), getMousePosBeforeDrag(), isShiftKeyDown, firstDrag, stickables, true);
+			entity.drag(resizeDirection, getX(), getY(), getMousePosBeforeDrag(), isShiftKeyDown, firstDrag, stickables, true, insideMovement);
 		}
 	}
 
@@ -146,7 +153,7 @@ public class Move extends Command {
 		Move m = (Move) c;
 		Point mousePosBeforeDrag = firstDrag ? getMousePosBeforeDrag() : m.getMousePosBeforeDrag();
 		// Important: absoluteMousePos=false, because the mousePos is already relative from the first constructor call!
-		Move ret = new Move(m.resizeDirection, false, entity, getX() + m.getX(), getY() + m.getY(), mousePosBeforeDrag, isShiftKeyDown, firstDrag || m.firstDrag, useSetLocation, stickables);
+		Move ret = new Move(m.resizeDirection, false, entity, getX() + m.getX(), getY() + m.getY(), mousePosBeforeDrag, isShiftKeyDown, firstDrag || m.firstDrag, useSetLocation, stickables, false);
 		entity.mergeUndoDrag();
 		return ret;
 	}

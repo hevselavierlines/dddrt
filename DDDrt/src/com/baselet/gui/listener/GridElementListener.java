@@ -309,7 +309,7 @@ public class GridElementListener extends UniversalListener {
 		for (GridElement movingElement : entitiesToBeMoved) {
 			// reduce stickables to those which really stick at the element at move-start
 			StickableMap stickingStickables = Stickables.getStickingPointsWhichAreConnectedToStickingPolygon(movingElement.generateStickingBorder(), stickables);
-			moveCommands.add(new Move(directions, movingElement, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+			moveCommands.add(new Move(directions, movingElement, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables, false));
 
 			handleStickingOfOldRelation(diffx, diffy, entitiesToBeMoved, handler, directions, linepointCommands, movingElement);
 
@@ -318,7 +318,7 @@ public class GridElementListener extends UniversalListener {
 				BoundedContext bc = (BoundedContext) movingElement;
 				for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
 					if (!entitiesToBeMoved.contains(fieldComposite) && (directions == null || directions.isEmpty())) {
-						moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+						moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables, true));
 					}
 				}
 			}
@@ -368,8 +368,7 @@ public class GridElementListener extends UniversalListener {
 		for (Command command : FIRST_MOVE_COMMANDS) { // use first move commands to identify the necessary commands and moved entities
 			if (command instanceof Move) {
 				Move m = (Move) command;
-				tmpVector.add(new Move(resizeDirection, m.getEntity(), diffx, diffy, oldp, m.isShiftKeyDown(), FIRST_DRAG, useSetLocation, m.getStickables()));
-
+				tmpVector.add(new Move(resizeDirection, m.getEntity(), diffx, diffy, oldp, m.isShiftKeyDown(), FIRST_DRAG, useSetLocation, m.getStickables(), m.isInsideMovement()));
 			}
 			else if (command instanceof OldMoveLinePoint) {
 				OldMoveLinePoint m = (OldMoveLinePoint) command;

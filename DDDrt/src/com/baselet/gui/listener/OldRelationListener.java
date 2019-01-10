@@ -214,7 +214,7 @@ public class OldRelationListener extends GridElementListener {
 			return;
 		}
 		else if (IS_DRAGGING_LINE) {
-			controller.executeCommand(new Move(Collections.<Direction> emptySet(), r, diffx, diffy, oldp, me.isShiftDown(), false, true, StickableMap.EMPTY_MAP));
+			controller.executeCommand(new Move(Collections.<Direction> emptySet(), r, diffx, diffy, oldp, me.isShiftDown(), false, true, StickableMap.EMPTY_MAP, false));
 			return;
 		}
 

@@ -390,7 +390,7 @@ public abstract class NewGridElement implements GridElement {
 			diffwInt = SharedUtils.realignTo(false, diffwInt / 2.0, true, getGridSize()) * 2;
 			directions = Arrays.asList(Direction.RIGHT, Direction.LEFT, Direction.DOWN);
 		}
-		drag(directions, diffwInt, diffhInt, new Point(0, 0), false, true, handler.getStickableMap(), false);
+		drag(directions, diffwInt, diffhInt, new Point(0, 0), false, true, handler.getStickableMap(), false, false);
 	}
 
 	private double unzoom(double diffw) {
@@ -407,7 +407,7 @@ public abstract class NewGridElement implements GridElement {
 	}
 
 	@Override
-	public void drag(Collection<Direction> resizeDirection, int diffX, int diffY, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, StickableMap stickables, boolean undoable) {
+	public void drag(Collection<Direction> resizeDirection, int diffX, int diffY, Point mousePosBeforeDrag, boolean isShiftKeyDown, boolean firstDrag, StickableMap stickables, boolean undoable, boolean insideElement) {
 		Rectangle oldRect = getRectangle();
 		StickingPolygon stickingPolygonBeforeLocationChange = generateStickingBorder();
 		String oldAddAttr = getAdditionalAttributes();
