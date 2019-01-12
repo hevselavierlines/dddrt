@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core.compiler.ecj-4.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-5.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DDDrtExport"/>
+	<classpathentry kind="lib" path="lib/ojdbc8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
