@@ -1,6 +1,7 @@
 package com.baselet.element.ddd;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -31,6 +32,10 @@ public class CollapsiblePanel extends JLayeredPane {
 		addMouseListener(mouseListener);
 		collapseListeners = new LinkedList<ICollapseListener>();
 		collapsed = false;
+	}
+
+	public void setTitleFont(Font font) {
+		border.setTitleFont(font);
 	}
 
 	MouseListener mouseListener = new MouseAdapter() {
@@ -135,7 +140,7 @@ public class CollapsiblePanel extends JLayeredPane {
 	public void updateBorderTitle() {
 		String arrow = "";
 		if (getComponentCount() > 0) {
-			arrow = isInvisible() ? "▽" : "△";
+			arrow = isInvisible() ? "\u25BC" : "\u25B2";
 		}
 		border.setTitle(arrow + " " + title);
 		repaint();

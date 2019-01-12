@@ -1,6 +1,7 @@
 package com.baselet.element.ddd;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,13 +47,18 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private FieldComposite parentFieldComposite;
 	private String originalString;
 	private Object originalSelection;
+	private final Font methodFont;
 
 	public FieldMethod() {
+		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
+
 		methodVisibility = new VisibilityComboBox();
 		methodVisibility.addPopupMenuListener(this);
+		methodVisibility.setFont(methodFont);
 		add(methodVisibility);
 
 		methodType = new MetalComboBox();
+		methodType.setFont(methodFont);
 		methodType.addItem("void");
 		methodType.addItem("String");
 		methodType.addItem("int");
@@ -67,11 +73,13 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		add(methodType);
 
 		methodName = new JTextField("newmethod");
+		methodName.setFont(methodFont);
 		methodName.getDocument().addDocumentListener(this);
 		methodName.addFocusListener(this);
 		add(methodName);
 
 		textParameters = new JTextField("()");
+		textParameters.setFont(methodFont);
 		textParameters.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -93,6 +101,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		add(textParameters);
 
 		removeButton = new JButton("x");
+		removeButton.setFont(methodFont);
 		removeButton.addActionListener(this);
 		add(removeButton);
 	}

@@ -1,6 +1,7 @@
 package com.baselet.element.ddd;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,6 +54,7 @@ import com.baselet.gui.command.TextFieldChange;
 
 public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
 
+	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
 	private final JTextField fieldName;
@@ -66,23 +68,31 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	protected BoundedContext boundedContext;
 	private boolean nameValid;
 	private String originalString;
+	private final Font compositeFont;
 
 	public FieldComposite() {
+		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
+
 		fieldName = new JTextField();
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
 		fieldName.getDocument().addDocumentListener(this);
 		fieldName.addFocusListener(this);
+		fieldName.setFont(compositeFont);
 		propertiesPane = new CollapsiblePanel("Properties");
+		propertiesPane.setTitleFont(compositeFont);
 		propertiesPane.addCollapseListener(this);
 		propertiesPane.setLayout(new GridLayout(0, 1));
 		methodsPane = new CollapsiblePanel("Methods");
 		methodsPane.setLayout(new GridLayout(0, 1));
 		methodsPane.addCollapseListener(this);
+		methodsPane.setTitleFont(compositeFont);
 		propertyAddButton = new MetalButton("+");
 		propertyAddButton.addActionListener(this);
+		propertyAddButton.setFont(compositeFont);
 
 		methodAddButton = new MetalButton("+");
+		methodAddButton.setFont(compositeFont);
 		methodAddButton.addActionListener(this);
 		nameValid = true;
 	}
@@ -180,7 +190,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		int addHeight = 0;
 
 		// properties
-		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight();
+		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight() + 5;
 		if (propertiesPane.isCollapsed()) {
 			addHeight = propertiesPane.getTitleHeight();
 		}
@@ -191,7 +201,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 		// methods
 		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight();
+		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
 		if (methodsPane.isCollapsed()) {
 			addHeight = methodsPane.getTitleHeight();
 		}

@@ -56,7 +56,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
 	private final Font propertyFont;
-	public static final String FONT_NAME = "Tahoma";
 	private String originalString;
 	private Object originalSelection;
 	private FieldComposite parentFieldComposite;
@@ -82,7 +81,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public FieldProperty() {
-		propertyFont = new Font(FONT_NAME, Font.PLAIN, 15);
+		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
 
 		propertyVisibility = new VisibilityComboBox();
 		propertyVisibility.setFont(propertyFont);
