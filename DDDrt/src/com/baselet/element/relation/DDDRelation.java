@@ -1,5 +1,6 @@
 package com.baselet.element.relation;
 
+import com.baselet.control.SharedUtils;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.CurrentDiagram;
@@ -89,6 +90,12 @@ public class DDDRelation extends Relation {
 		endPoint.y -= minY;
 		startPoint.x -= minX;
 		startPoint.y -= minY;
+
+		endPoint.x = SharedUtils.realignToGridRoundToNearest(true, endPoint.x);
+		endPoint.y = SharedUtils.realignToGridRoundToNearest(true, endPoint.y);
+		startPoint.x = SharedUtils.realignToGridRoundToNearest(true, startPoint.x);
+		startPoint.y = SharedUtils.realignToGridRoundToNearest(true, startPoint.y);
+
 		RelationPointList pointList = new RelationPointList();
 		pointList.add(endPoint.x, endPoint.y);
 		pointList.add(startPoint.x, startPoint.y);

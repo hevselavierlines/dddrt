@@ -26,7 +26,12 @@ public class DatabaseImportManager {
 	public List<Table> loadTables() throws SQLException {
 		List<Table> retTables = new LinkedList<Table>();
 		PreparedStatement statement;
-		statement = connection.prepareStatement("SELECT table_name " + "FROM all_tables " + "WHERE owner=? " + "AND tablespace_name IS NOT NULL " + "AND table_name not like \'%$%\' " + "ORDER BY TABLE_NAME asc");
+		statement = connection.prepareStatement("SELECT table_name " +
+												"FROM all_tables " +
+												"WHERE owner=? " +
+												"AND tablespace_name IS NOT NULL " +
+												"AND table_name not like \'%$%\' " +
+												"ORDER BY TABLE_NAME asc");
 		statement.setString(1, username);
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
@@ -40,7 +45,11 @@ public class DatabaseImportManager {
 
 	public void loadColumns(Table table) throws SQLException {
 		PreparedStatement columnStatement;
-		columnStatement = connection.prepareStatement("SELECT column_name, data_type, data_length, nullable " + "FROM all_tab_columns " + "WHERE owner =? " + "AND table_name=?");
+		columnStatement = connection.prepareStatement(
+				"SELECT column_name, data_type, data_length, nullable " +
+														"FROM all_tab_columns " +
+														"WHERE owner =? " +
+														"AND table_name=?");
 		columnStatement.setString(1, username);
 		columnStatement.setString(2, table.getTableName());
 		ResultSet columnSet = columnStatement.executeQuery();
@@ -53,7 +62,7 @@ public class DatabaseImportManager {
 		columnStatement.close();
 	}
 
-	public List<ColumnRelation> loadRelations(Table table, List<Table> allTables) throws SQLException {
+	public List<ColumnRelation> loadRelations(Table table) throws SQLException {
 		PreparedStatement relStatement;
 		relStatement = connection.prepareStatement("SELECT " +
 													"            a.table_name original_table,  " +
@@ -75,7 +84,7 @@ public class DatabaseImportManager {
 		while (relSet.next()) {
 			// System.out.println("Relations: " + relSet.getString(1) + " with column " + relSet.getString(2)
 			// + " references to " + relSet.getString(3) + " with column " + relSet.getString(4));
-			relations.add(ColumnRelation.findRelationByName(table, relSet.getString(2), relSet.getString(3), relSet.getString(4), allTables));
+			relations.add(ColumnRelation.findRelationByName(table, relSet.getString(2), relSet.getString(3), relSet.getString(4)));
 		}
 		relSet.close();
 		relStatement.close();

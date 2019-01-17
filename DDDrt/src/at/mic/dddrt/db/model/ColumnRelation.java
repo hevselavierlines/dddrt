@@ -35,7 +35,7 @@ public class ColumnRelation {
 		return retColumn;
 	}
 
-	public static ColumnRelation findRelationByName(Table originalTable, String originalColumnName, String refTableName, String refTableColumn, List<Table> tables) {
+	public static ColumnRelation findRelationByName(Table originalTable, String originalColumnName, String refTableName, String refTableColumn) {
 		ColumnRelation relation = new ColumnRelation(originalTable, originalColumnName, refTableName, refTableColumn);
 		if (relation.originalColumn != null && relation.referencingColumn != null) {
 			relation.originalColumn.setColumnRelation(relation);

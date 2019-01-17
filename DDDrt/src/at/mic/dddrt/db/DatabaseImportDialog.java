@@ -2,14 +2,17 @@ package at.mic.dddrt.db;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -48,12 +51,13 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 	private final DefaultListModel<JCheckBox> tablesModel;
 	private DatabaseImportManager databaseManager;
 	private final JLabel errorLabel;
+	private final JCheckBoxList checkBoxList;
 
 	public DatabaseImportDialog(Frame owner) {
 		super(owner);
 
 		JPanel panelTop = new JPanel(new BorderLayout());
-		JPanel panelInput = new JPanel(new GridLayout(3, 2));
+		JPanel panelInput = new JPanel(new GridBagLayout());
 		labelDB = new JLabel("DB Connection");
 		fieldDB = new JTextField("jdbc:oracle:thin:@localhost:1521:xe");
 		labelUser = new JLabel("Username");
@@ -62,13 +66,30 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 		fieldPassword = new JTextField("afaci");
 		connectButton = new JButton("Load Database Tables");
 		connectButton.addActionListener(this);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.insets = new Insets(0, 5, 0, 5);
 
-		panelInput.add(labelDB);
-		panelInput.add(fieldDB);
-		panelInput.add(labelUser);
-		panelInput.add(fieldUser);
-		panelInput.add(labelPassword);
-		panelInput.add(fieldPassword);
+		panelInput.add(labelDB, gbc);
+		gbc.weightx = 2;
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		panelInput.add(fieldDB, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		panelInput.add(labelUser, gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		panelInput.add(fieldUser, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		panelInput.add(labelPassword, gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		panelInput.add(fieldPassword, gbc);
 		panelTop.add(panelInput, BorderLayout.NORTH);
 		panelTop.add(connectButton, BorderLayout.SOUTH);
 
@@ -76,7 +97,7 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 		this.add(panelTop, BorderLayout.NORTH);
 
 		tablesModel = new DefaultListModel<JCheckBox>();
-		JCheckBoxList checkBoxList = new JCheckBoxList(tablesModel);
+		checkBoxList = new JCheckBoxList(tablesModel);
 		JScrollPane scrollListModel = new JScrollPane(checkBoxList);
 
 		this.add(scrollListModel, BorderLayout.CENTER);
@@ -99,7 +120,7 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 
 		this.add(bottomPanel, BorderLayout.SOUTH);
 		addWindowListener(this);
-		setSize(480, 640);
+		setSize(450, 700);
 	}
 
 	@Override
@@ -121,7 +142,7 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 									tablesModel.clear();
 									for (Table table : tables) {
 										JCheckBox tableCheckBox = new JCheckBox(table.getTableName());
-										tableCheckBox.setSelected(true);
+										tableCheckBox.setSelected(false);
 										tablesModel.addElement(tableCheckBox);
 									}
 								}
@@ -149,6 +170,63 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 			setVisible(false);
 			dispose();
 		}
+		else if (arg0.getSource() == resolveRelationsButton) {
+			resolveRelationsButton.setEnabled(false);
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						final Set<String> tablesToAdd = new TreeSet<String>();
+						final List<Table> selectedTables = new LinkedList<Table>();
+						for (int i = 0; i < tablesModel.size(); i++) {
+							JCheckBox checkbox = tablesModel.getElementAt(i);
+							if (checkbox.isSelected()) {
+								selectedTables.add(new Table(checkbox.getText()));
+							}
+						}
+						for (final Table table : selectedTables) {
+							List<ColumnRelation> relations = databaseManager.loadRelations(table);
+							for (ColumnRelation relation : relations) {
+								String refTable = relation.getReferencingTable();
+								boolean referenceExist = false;
+								for (Table refTables : selectedTables) {
+									if (refTables.getTableName().equals(refTable)) {
+										referenceExist = true;
+									}
+								}
+								if (!referenceExist) {
+									tablesToAdd.add(refTable);
+								}
+							}
+						}
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								for (int i = 0; i < tablesModel.size(); i++) {
+									JCheckBox checkbox = tablesModel.getElementAt(i);
+									if (tablesToAdd.contains(checkbox.getText())) {
+										checkbox.setSelected(true);
+									}
+								}
+								checkBoxList.updateUI();
+								resolveRelationsButton.setEnabled(true);
+							}
+						});
+					} catch (final Exception ex) {
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								errorLabel.setText(ex.getMessage());
+								resolveRelationsButton.setEnabled(true);
+							}
+						});
+					}
+				}
+			}).start();
+		}
 		else if (arg0.getSource() == importButton) {
 			importButton.setEnabled(false);
 			new Thread(new Runnable() {
@@ -164,24 +242,15 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 							}
 						}
 						for (final Table table : selectedTables) {
-							try {
-								databaseManager.loadColumns(table);
-							} catch (SQLException e) {
-								e.printStackTrace();
-							}
+							databaseManager.loadColumns(table);
 						}
 						final List<ColumnRelation> allRelations = new LinkedList<ColumnRelation>();
 						for (final Table table : selectedTables) {
-							try {
-								allRelations.addAll(databaseManager.loadRelations(table, selectedTables));
-								System.out.println(table);
-							} catch (SQLException e) {
-								e.printStackTrace();
-							}
+							allRelations.addAll(databaseManager.loadRelations(table));
 						}
 						final List<FieldComposite> elements = new LinkedList<FieldComposite>();
 						for (final Table table : selectedTables) {
-							Rectangle size = new Rectangle(0, 0, 400, 100);
+							Rectangle size = new Rectangle(0, 0, 350, 100);
 							FieldComposite fieldComposite = (FieldComposite) ElementFactorySwing.create(ElementId.DDDEntity, size, "", null, CurrentDiagram.getInstance().getDiagramHandler(), null);
 							fieldComposite.initFromDatabase(table);
 							int totalHeight = fieldComposite.measureHeight();

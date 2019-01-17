@@ -166,7 +166,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	protected abstract void createDefaultJSON();
 
 	public int measureHeight() {
-		int startHeight = 45;
+		int startHeight = 0;
 		int addHeight = 0;
 		// properties
 		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight() + 5;
@@ -184,7 +184,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		if (methodsPane.isCollapsed()) {
 			addHeight = methodsPane.getTitleHeight();
 		}
-		return totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
+		return startHeight + addHeight + FieldMethod.HEIGHT;
 	}
 
 	@Override

@@ -80,9 +80,6 @@ public class SharedUtils {
 			if (val < 0 && !roundUp) { // eg ExampleB: -10 - 10 = -20 (for negative vals roundDown must be specifically handled by subtracting gridSize)
 				alignedVal -= gridSize;
 			}
-			if (logRealign) {
-				log.error("realignToGrid from " + val + " to " + alignedVal);
-			}
 		}
 		return (int) alignedVal;
 	}
