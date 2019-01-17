@@ -28,7 +28,12 @@ public class AlphabetLayout extends Layout {
 
 		@Override
 		public int compare(SortableElement e1, SortableElement e2) {
-			return getClassName(e1.getParsedClass()).compareTo(getClassName(e2.getParsedClass()));
+			if (e1.getParsedClass() == null && e2.getParsedClass() == null) {
+				return e1.getName().compareTo(e2.getName());
+			}
+			else {
+				return getClassName(e1.getParsedClass()).compareTo(getClassName(e2.getParsedClass()));
+			}
 		}
 	}
 }

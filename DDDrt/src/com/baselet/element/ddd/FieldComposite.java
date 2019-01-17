@@ -52,6 +52,8 @@ import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.RemoveFieldElement;
 import com.baselet.gui.command.TextFieldChange;
 
+import at.mic.dddrt.db.model.Table;
+
 public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
 
 	public static final String FONT_NAME = "Tahoma";
@@ -162,6 +164,28 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	}
 
 	protected abstract void createDefaultJSON();
+
+	public int measureHeight() {
+		int startHeight = 45;
+		int addHeight = 0;
+		// properties
+		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight() + 5;
+		if (propertiesPane.isCollapsed()) {
+			addHeight = propertiesPane.getTitleHeight();
+		}
+		startHeight += addHeight + 35;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
+		if (methodsPane.isCollapsed()) {
+			addHeight = methodsPane.getTitleHeight();
+		}
+		// methods
+		startHeight += addHeight + 35;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
+		if (methodsPane.isCollapsed()) {
+			addHeight = methodsPane.getTitleHeight();
+		}
+		return totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
+	}
 
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
@@ -326,6 +350,8 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		};
 	}
 
+	protected abstract FieldProperty addPropertyFromDatabaseColumn(at.mic.dddrt.db.model.TableColumn column);
+
 	protected abstract FieldProperty addProperty(JSONObject jsonObject);
 
 	protected abstract FieldProperty createProperty();
@@ -370,6 +396,16 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	public String getName() {
 		return fieldName.getText();
+	}
+
+	public void initFromDatabase(Table table) {
+		fieldName.setText(table.getTableName());
+		propertiesPane.removeAll();
+		methodsPane.removeAll();
+		for (at.mic.dddrt.db.model.TableColumn column : table.getColumns()) {
+			FieldProperty property = addPropertyFromDatabaseColumn(column);
+			propertiesPane.add(property);
+		}
 	}
 
 	public String getFullName() {

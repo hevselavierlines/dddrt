@@ -8,6 +8,8 @@ import com.baselet.control.enums.ElementId;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
+import at.mic.dddrt.db.model.TableColumn;
+
 public class ValueObjectComposite extends FieldComposite {
 
 	@Override
@@ -68,6 +70,11 @@ public class ValueObjectComposite extends FieldComposite {
 	@Override
 	protected FieldMethod createMethod() {
 		return new FieldMethod();
+	}
+
+	@Override
+	protected FieldProperty addPropertyFromDatabaseColumn(TableColumn column) {
+		return null;
 	}
 
 }

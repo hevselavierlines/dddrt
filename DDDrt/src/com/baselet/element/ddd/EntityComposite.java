@@ -66,6 +66,11 @@ public class EntityComposite extends FieldComposite {
 	}
 
 	@Override
+	protected FieldProperty addPropertyFromDatabaseColumn(at.mic.dddrt.db.model.TableColumn column) {
+		return EntityProperty.createFromDatabaseColumn(column);
+	}
+
+	@Override
 	protected FieldMethod createMethod() {
 		return new FieldMethod();
 	}

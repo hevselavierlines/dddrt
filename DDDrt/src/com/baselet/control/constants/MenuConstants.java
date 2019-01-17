@@ -50,6 +50,10 @@ public class MenuConstants {
 	public static final String RATE_PROGRAM = "Rate " + Program.getInstance().getProgramName() + " at Eclipse Marketplace...";
 	public static final String ABOUT_PROGRAM = "About " + Program.getInstance().getProgramName();
 
+	// Domain-Driven Design
+	public static final String IMPORT_DB = "Import from Database";
+	public static final String EXPORT_JAVA = "Export to Java classes";
+	
 	// CONTEXT ON ELEMENT
 	public static final String SET_FOREGROUND_COLOR = "Set foreground color";
 	public static final String SET_BACKGROUND_COLOR = "Set background color";
@@ -61,5 +65,6 @@ public class MenuConstants {
 	// OTHERS
 	public static final String SEARCH = "Search";
 	public static final String ZOOM = "Zoom to";
+	public static final String DOMAIN_DRIVEN_DESIGN = "Domain-Driven Design";
 
 }

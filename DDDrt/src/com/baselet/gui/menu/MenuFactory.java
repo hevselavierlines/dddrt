@@ -50,6 +50,7 @@ import javax.swing.SwingUtilities;
 
 import com.baselet.control.Main;
 import com.baselet.control.constants.FacetConstants;
+import com.baselet.control.constants.MenuConstants;
 import com.baselet.control.enums.Program;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
@@ -72,6 +73,8 @@ import com.baselet.gui.command.Cut;
 import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.command.Paste;
 import com.baselet.gui.command.RemoveElement;
+
+import at.mic.dddrt.db.DatabaseImportDialog;
 
 public class MenuFactory {
 
@@ -226,6 +229,11 @@ public class MenuFactory {
 						valueMap.put(e, Integer.toString(e.getLayer() + change));
 					}
 					actualHandler.getController().executeCommand(new ChangeElementSetting(LayerFacet.KEY, valueMap));
+				}
+				else if (menuItem.equals(MenuConstants.IMPORT_DB)) {
+					DatabaseImportDialog importDialog = new DatabaseImportDialog(CurrentGui.getInstance().getGui().getMainFrame());
+					importDialog.setAlwaysOnTop(true);
+					importDialog.setVisible(true);
 				}
 			}
 		});

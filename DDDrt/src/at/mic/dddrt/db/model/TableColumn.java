@@ -1,10 +1,10 @@
 package at.mic.dddrt.db.model;
 
 public class TableColumn {
-	private String columnName;
-	private String columnType;
-	private long length;
-	private boolean nullable;
+	private final String columnName;
+	private final String columnType;
+	private final long length;
+	private final boolean nullable;
 	private ColumnRelation relation;
 
 	public TableColumn(String columnName, String columnType, long length, boolean nullable) {
@@ -35,17 +35,19 @@ public class TableColumn {
 		this.relation = relation;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(columnName).append(": ");
 		if ("VARCHAR2".equals(columnType)) {
 			sb.append(columnType).append('(').append(length).append(')');
-		} else {
+		}
+		else {
 			sb.append(columnType);
 		}
 		if (relation != null) {
-			sb.append(" relates to ").append(relation.getReferencingTable().getTableName()).append(" in column ")
-					.append(relation.getReferencingColumn().getColumnName());
+			sb.append(" relates to ").append(relation.getReferencingTable()).append(" in column ")
+					.append(relation.getReferencingColumn());
 		}
 		return sb.toString();
 	}

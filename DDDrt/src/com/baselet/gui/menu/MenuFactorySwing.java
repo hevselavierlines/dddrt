@@ -54,6 +54,7 @@ import javax.swing.event.MenuListener;
 
 import com.baselet.control.Main;
 import com.baselet.control.constants.Constants;
+import com.baselet.control.constants.MenuConstants;
 import com.baselet.control.constants.SystemInfo;
 import com.baselet.control.enums.Os;
 import com.baselet.control.util.RecentlyUsedFilesList;
@@ -110,6 +111,14 @@ public class MenuFactorySwing extends MenuFactory {
 
 	public JMenuItem createGenerate() {
 		return createJMenuItem(false, GENERATE_CLASS, null);
+	}
+
+	public JMenuItem createImportDB() {
+		return createJMenuItem(false, MenuConstants.IMPORT_DB, null);
+	}
+
+	public JMenuItem createExportJava() {
+		return createJMenuItem(true, MenuConstants.EXPORT_JAVA, null);
 	}
 
 	public JMenuItem createGenerateOptions() {

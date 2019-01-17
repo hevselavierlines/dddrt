@@ -244,6 +244,16 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		return element;
 	}
 
+	public List<FieldComposite> getFieldCompositesByName(String name) {
+		List<FieldComposite> ret = new LinkedList<FieldComposite>();
+		for (GridElement e : getGridElements()) {
+			if (e instanceof FieldComposite && name.equals(((FieldComposite) e).getName())) {
+				ret.add((FieldComposite) e);
+			}
+		}
+		return ret;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T extends GridElement> List<T> getHelper(Class<T> filtered) {
 		List<T> gridElementsToReturn = new ArrayList<T>();

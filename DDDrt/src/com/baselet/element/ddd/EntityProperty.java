@@ -10,6 +10,8 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
 
+import at.mic.dddrt.db.model.TableColumn;
+
 public class EntityProperty extends FieldProperty {
 	private static final long serialVersionUID = 6298444413188448662L;
 
@@ -19,6 +21,18 @@ public class EntityProperty extends FieldProperty {
 			String type = property.getString(JSON_TYPE);
 			String name = property.getString(JSON_NAME);
 			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
+			return new EntityProperty(visibility, type, name, idProperty);
+		} catch (Exception ex) {
+			return new EntityProperty();
+		}
+	}
+
+	public static EntityProperty createFromDatabaseColumn(TableColumn column) {
+		try {
+			String visibility = "private";
+			String type = column.getColumnType();
+			String name = column.getColumnName();
+			boolean idProperty = false; // TODO check for primary key
 			return new EntityProperty(visibility, type, name, idProperty);
 		} catch (Exception ex) {
 			return new EntityProperty();

@@ -109,6 +109,11 @@ public class MenuBuilder {
 		helpMenu.add(menuFactory.createAboutProgram());
 		menu.add(helpMenu);
 
+		JMenu dddMenu = new JMenu(MenuConstants.DOMAIN_DRIVEN_DESIGN);
+		dddMenu.add(menuFactory.createImportDB());
+		dddMenu.add(menuFactory.createExportJava());
+		menu.add(dddMenu);
+
 		menu.add(searchPanel);
 		menu.add(zoomPanel);
 		this.mailButton = mailButton;
