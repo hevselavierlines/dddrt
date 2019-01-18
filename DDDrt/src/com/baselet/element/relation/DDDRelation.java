@@ -27,9 +27,12 @@ public class DDDRelation extends Relation {
 
 	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite) {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
-		java.awt.Point endPoint = endComposite.getAbsolutePosition();
+		java.awt.Point endPoint = endComposite.getAbsolutePosition(false);
 		if (startPoint.x < endPoint.x) {
 			startPoint = startProperty.getAbsolutePosition(true);
+		}
+		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
+			endPoint = endComposite.getAbsolutePosition(true);
 		}
 
 		int minX = Math.min(startPoint.x, endPoint.x);
@@ -80,9 +83,12 @@ public class DDDRelation extends Relation {
 
 	public void createRelationLine() {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
-		java.awt.Point endPoint = endComposite.getAbsolutePosition();
+		java.awt.Point endPoint = endComposite.getAbsolutePosition(false);
 		if (startPoint.x + startProperty.getWidth() / 2 < endPoint.x) {
 			startPoint = startProperty.getAbsolutePosition(true);
+		}
+		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
+			endPoint = endComposite.getAbsolutePosition(true);
 		}
 		int minX = getRectangle().x;
 		int minY = getRectangle().y;

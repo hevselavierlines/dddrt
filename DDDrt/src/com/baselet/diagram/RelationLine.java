@@ -24,9 +24,12 @@ public class RelationLine {
 
 	public void updatePoints() {
 		startPoint = startProperty.getAbsolutePosition(false);
-		endPoint = endComposite.getAbsolutePosition();
+		endPoint = endComposite.getAbsolutePosition(false);
 		if (startPoint.x < endPoint.x) {
 			startPoint = startProperty.getAbsolutePosition(true);
+		}
+		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
+			endPoint = endComposite.getAbsolutePosition(true);
 		}
 	}
 

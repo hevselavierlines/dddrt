@@ -430,10 +430,13 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		return stringBuilder.toString();
 	}
 
-	public java.awt.Point getAbsolutePosition() {
+	public java.awt.Point getAbsolutePosition(boolean bottom) {
 		java.awt.Point p = new java.awt.Point();
 		getAbsolutePositionRecursively(component, p);
 		p.x += component.getWidth() / 2;
+		if (bottom) {
+			p.y += component.getHeight() - 1.0f;
+		}
 		return p;
 	}
 
