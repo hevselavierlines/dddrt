@@ -8,8 +8,6 @@ public class ColumnRelation {
 
 	private final String originalTableName;
 	private final String originalTableColumn;
-
-	private final Table originalTable;
 	private final TableColumn originalColumn;
 
 	public static Table findTableByName(String tableName, List<Table> tables) {
@@ -44,7 +42,6 @@ public class ColumnRelation {
 	}
 
 	private ColumnRelation(Table originalTable, String originalColumnName, String refTableName, String refTableColumn) {
-		this.originalTable = originalTable;
 		originalTableName = originalTable.getTableName();
 		originalTableColumn = originalColumnName;
 
