@@ -46,16 +46,27 @@ public class DatabaseImportManager {
 	public void loadColumns(Table table) throws SQLException {
 		PreparedStatement columnStatement;
 		columnStatement = connection.prepareStatement(
-				"SELECT column_name, data_type, data_length, nullable " +
-														"FROM all_tab_columns " +
-														"WHERE owner =? " +
-														"AND table_name=?");
+				"   SELECT \r\n" +
+														"            a.column_name, \r\n" +
+														"            a.data_type, \r\n" +
+														"            a.data_length, \r\n" +
+														"            a.nullable, \r\n" +
+														"            CASE WHEN c.constraint_type = 'P' THEN 'Y' ELSE 'N' END as prim\r\n" +
+														"   FROM ALL_TAB_COLUMNS a \r\n" +
+														"   LEFT OUTER JOIN all_cons_columns b on a.owner = b.owner AND a.table_name = b.table_name AND a.column_name = b.column_name\r\n" +
+														"   LEFT OUTER JOIN all_constraints c ON b.owner = c.owner AND b.constraint_name = c.constraint_name\r\n" +
+														"   WHERE a.OWNER = ? AND a.TABLE_NAME = ?\r\n" +
+														"   ORDER BY a.column_id ASC");
 		columnStatement.setString(1, username);
 		columnStatement.setString(2, table.getTableName());
 		ResultSet columnSet = columnStatement.executeQuery();
 		while (columnSet.next()) {
+			boolean primaryKey = columnSet.getBoolean(5);
+			if (primaryKey) {
+				table.setPrimaryKey(true);
+			}
 			TableColumn column = new TableColumn(columnSet.getString(1), columnSet.getString(2), columnSet.getLong(3),
-					columnSet.getBoolean(4));
+					columnSet.getBoolean(4), primaryKey);
 			table.addColumn(column);
 		}
 		columnSet.close();

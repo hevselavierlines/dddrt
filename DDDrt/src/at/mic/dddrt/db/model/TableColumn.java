@@ -5,14 +5,16 @@ public class TableColumn {
 	private final String columnType;
 	private final long length;
 	private final boolean nullable;
+	private final boolean primaryKey;
 	private ColumnRelation relation;
 
-	public TableColumn(String columnName, String columnType, long length, boolean nullable) {
+	public TableColumn(String columnName, String columnType, long length, boolean nullable, boolean primaryKey) {
 		super();
 		this.columnName = columnName;
 		this.columnType = columnType;
 		this.length = length;
 		this.nullable = nullable;
+		this.primaryKey = primaryKey;
 	}
 
 	public String getColumnName() {
@@ -31,6 +33,10 @@ public class TableColumn {
 		return nullable;
 	}
 
+	public boolean isIDColumn() {
+		return primaryKey;
+	}
+
 	public void setColumnRelation(ColumnRelation relation) {
 		this.relation = relation;
 	}
@@ -44,6 +50,9 @@ public class TableColumn {
 		}
 		else {
 			sb.append(columnType);
+		}
+		if (primaryKey) {
+			sb.append(" PRIMARY KEY");
 		}
 		if (relation != null) {
 			sb.append(" relates to ").append(relation.getReferencingTable()).append(" in column ")

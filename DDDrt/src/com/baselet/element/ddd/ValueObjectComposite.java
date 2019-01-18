@@ -74,7 +74,7 @@ public class ValueObjectComposite extends FieldComposite {
 
 	@Override
 	protected FieldProperty addPropertyFromDatabaseColumn(TableColumn column) {
-		return null;
+		return EntityProperty.createFromDatabaseColumn(column);
 	}
 
 }

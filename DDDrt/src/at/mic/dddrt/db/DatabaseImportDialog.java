@@ -138,8 +138,8 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 		cancelButton.addActionListener(this);
 		bottomPanel.add(cancelButton, BorderLayout.EAST);
 
-		errorLabel = new JLabel();
-		bottomPanel.add(errorLabel, BorderLayout.NORTH);
+		errorLabel = new JLabel("TEST");
+		bottomPanel.add(errorLabel, BorderLayout.SOUTH);
 
 		this.add(bottomPanel, BorderLayout.SOUTH);
 		addWindowListener(this);
@@ -305,7 +305,17 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 					final List<FieldComposite> elements = new LinkedList<FieldComposite>();
 					for (final Table table : selectedTables) {
 						Rectangle size = new Rectangle(0, 0, 350, 100);
-						FieldComposite fieldComposite = (FieldComposite) ElementFactorySwing.create(ElementId.DDDEntity, size, "", null, CurrentDiagram.getInstance().getDiagramHandler(), null);
+						ElementId elementId = ElementId.DDDValueObject;
+						if (table.hasPrimaryKey()) {
+							elementId = ElementId.DDDEntity;
+						}
+						FieldComposite fieldComposite = (FieldComposite) ElementFactorySwing.create(
+								elementId,
+								size,
+								"",
+								null,
+								CurrentDiagram.getInstance().getDiagramHandler(),
+								null);
 						fieldComposite.initFromDatabase(table);
 						int totalHeight = fieldComposite.measureHeight();
 						size.height = totalHeight;
