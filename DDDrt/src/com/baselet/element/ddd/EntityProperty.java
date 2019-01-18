@@ -32,7 +32,7 @@ public class EntityProperty extends FieldProperty {
 			String visibility = "private";
 			String type = column.getColumnType();
 			String name = column.getColumnName();
-			boolean idProperty = column.isIDColumn(); // TODO check for primary key
+			boolean idProperty = column.isIDColumn();
 			return new EntityProperty(visibility, type, name, idProperty);
 		} catch (Exception ex) {
 			return new EntityProperty();
