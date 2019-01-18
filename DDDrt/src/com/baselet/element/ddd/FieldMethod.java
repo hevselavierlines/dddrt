@@ -40,7 +40,8 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final VisibilityComboBox methodVisibility;
 	public final static int HEIGHT = 50;
 	public final static int HALF_HEIGHT = HEIGHT / 2;
-	private final int[] WIDTHS = { 40, -1, 80, 40 };
+	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
+	private final int[] FIXED_WIDTHS = { 40, 50 };
 	private final JTextField textParameters;
 	private final JButton removeButton;
 	private ActionListener removeListener;
@@ -110,15 +111,29 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		setMethodParameters(parameters);
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		methodVisibility.setBounds(0, 0, WIDTHS[0], HALF_HEIGHT);
-		int nameWidth = getBounds().width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
-		methodName.setBounds(WIDTHS[0], 0, nameWidth, HALF_HEIGHT);
-		methodType.setBounds(getBounds().width - WIDTHS[3] - WIDTHS[2], 0, WIDTHS[2], HALF_HEIGHT);
-		removeButton.setBounds(getBounds().width - WIDTHS[3], 0, WIDTHS[3], HALF_HEIGHT);
+	private void updateCoordinates(Graphics g, int width) {
+		int[] realWidths = new int[PERCENT_WIDTHS.length];
+		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1];
+		for (int i = 0; i < realWidths.length; i++) {
+			if (PERCENT_WIDTHS[i] > 0) {
+				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
+			}
+		}
+		realWidths[0] = FIXED_WIDTHS[0];
+		realWidths[3] = FIXED_WIDTHS[1];
+		methodVisibility.setBounds(0, 0, realWidths[0], HALF_HEIGHT);
+		methodName.setBounds(realWidths[0], 0, realWidths[1], HALF_HEIGHT);
+		if (g != null) {
+			g.drawString(":", realWidths[0] + realWidths[1], 20);
+		}
+		methodType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
 
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		updateCoordinates(g, getBounds().width);
 		super.paint(g);
 	}
 

@@ -51,7 +51,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 25;
-	private final int[] WIDTHS = { 40, -1, 120, 40 };
+	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
+	private final int[] FIXED_WIDTHS = { 40, 50 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
@@ -178,17 +179,34 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	protected void updateCoordinates(Graphics g, int width) {
-		propertyVisibility.setBounds(0, 0, WIDTHS[0], HEIGHT);
-
-		int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
-		propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
+		int[] realWidths = new int[PERCENT_WIDTHS.length];
+		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1];
+		for (int i = 0; i < realWidths.length; i++) {
+			if (PERCENT_WIDTHS[i] > 0) {
+				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
+			}
+		}
+		realWidths[0] = FIXED_WIDTHS[0];
+		realWidths[3] = FIXED_WIDTHS[1];
+		propertyVisibility.setBounds(0, 0, realWidths[0], HEIGHT);
+		propertyName.setBounds(realWidths[0], 0, realWidths[1], HEIGHT);
 		if (g != null) {
-			g.drawString(":", WIDTHS[0] + nameWidth, 20);
+			g.drawString(":", realWidths[0] + realWidths[1], 20);
 		}
-		propertyType.setBounds(width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
+		propertyType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HEIGHT);
 		if (!idProperty) {
-			removeButton.setBounds(width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+			removeButton.setBounds(width - realWidths[3], 0, realWidths[3], HEIGHT);
 		}
+
+		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
+		// propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
+		// if (g != null) {
+		// g.drawString(":", WIDTHS[0] + nameWidth, 20);
+		// }
+		// propertyType.setBounds(width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
+		// if (!idProperty) {
+		// removeButton.setBounds(width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		// }
 	}
 
 	@Override
