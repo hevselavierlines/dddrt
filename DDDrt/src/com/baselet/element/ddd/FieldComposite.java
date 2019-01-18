@@ -189,15 +189,20 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
-		int elementWidth = getRealSize().width;
-		int elementHeight = getRealSize().height;
+		double zoomLevel = getZoom();
+		int elementWidth = getRectangle().width;
+		int elementHeight = getRectangle().height;
+		int realWidth = getRealRectangle().width;
+		int realHeight = getRealRectangle().height;
 		DrawHandler drawer = state.getDrawer();
 		double originalFontSize = drawer.getFontSize();
 		drawer.setFontSize(10.0);
-		drawer.print(getTitle(), new PointDouble(getRealSize().width / 2, 15), AlignHorizontal.CENTER);
+		drawer.print(getTitle(), new PointDouble(realWidth / 2, 15), AlignHorizontal.CENTER);
 
 		drawer.setFontSize(20.0);
-		fieldName.setBounds(10, 15, getRealRectangle().getWidth() - 20, 30);
+		Font currentFont = new Font(compositeFont.getFontName(), compositeFont.getStyle(), (int) (compositeFont.getSize() * zoomLevel));
+		fieldName.setFont(currentFont);
+		fieldName.setBounds(10, 15, elementWidth - 20, (int) (30 * zoomLevel));
 		if (nameValid) {
 			fieldName.setBackground(Color.WHITE);
 			fieldName.setForeground(Color.BLACK);
@@ -208,13 +213,13 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		}
 
 		drawer.setLineType(LineType.DOTTED);
-		drawer.drawLine(0, 45, getRealSize().width, 45);
+		drawer.drawLine(0, 45, realWidth, 45);
 
 		int startHeight = 45;
 		int addHeight = 0;
 
 		// properties
-		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight() + 5;
+		addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.HEIGHT * zoomLevel + propertiesPane.getTitleHeight() + 5);
 		if (propertiesPane.isCollapsed()) {
 			addHeight = propertiesPane.getTitleHeight();
 		}
@@ -241,7 +246,7 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		drawer.setLineWidth(originalLineWidth);
 		drawer.setLineType(LineType.SOLID);
 		drawer.setFontSize(originalFontSize);
-		drawer.drawRectangle(0, 0, elementWidth, elementHeight);
+		drawer.drawRectangle(0, 0, realWidth, realHeight);
 
 		totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
 

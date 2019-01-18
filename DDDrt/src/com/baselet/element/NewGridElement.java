@@ -331,6 +331,14 @@ public abstract class NewGridElement implements GridElement {
 		return new Rectangle(zoom(getRectangle().x), zoom(getRectangle().y), zoom(getRectangle().width), zoom(getRectangle().height));
 	}
 
+	/**
+	 * Retrieves the current zoom level to calculate font sizes or other operations.
+	 * @return the zoom level as double (1.0 for 100%, 1.5 for 150%).
+	 */
+	public double getZoom() {
+		return (double) getGridSize() / SharedConstants.DEFAULT_GRID_SIZE;
+	}
+
 	public int zoom(int val) {
 		return val * SharedConstants.DEFAULT_GRID_SIZE / getGridSize();
 	}
