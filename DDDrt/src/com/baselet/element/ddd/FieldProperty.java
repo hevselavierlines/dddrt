@@ -80,6 +80,24 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		return ret;
 	}
 
+	public static List<String> loadDefaultTypes() {
+		List<String> types = new LinkedList<String>();
+		types.add("String");
+		types.add("int");
+		types.add("boolean");
+		types.add("long");
+		types.add("byte");
+		types.add("char");
+		types.add("float");
+		types.add("double");
+		types.add("short");
+		types.add("Date");
+		types.add("Object");
+		types.add("List");
+		types.add("Map");
+		return types;
+	}
+
 	public FieldProperty() {
 		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
 
@@ -89,19 +107,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		add(propertyVisibility);
 
 		propertyType = new DataTypeComboBox();
-		DEFAULT_TYPES = new LinkedList<String>();
-		DEFAULT_TYPES.add("String");
-		DEFAULT_TYPES.add("int");
-		DEFAULT_TYPES.add("boolean");
-		DEFAULT_TYPES.add("long");
-		DEFAULT_TYPES.add("byte");
-		DEFAULT_TYPES.add("char");
-		DEFAULT_TYPES.add("float");
-		DEFAULT_TYPES.add("double");
-		DEFAULT_TYPES.add("short");
-		DEFAULT_TYPES.add("Object");
-		DEFAULT_TYPES.add("List");
-		DEFAULT_TYPES.add("Map");
+		DEFAULT_TYPES = loadDefaultTypes();
 		propertyType.setEditable(true);
 		propertyType.addPopupMenuListener(this);
 		propertyTypeEditor = (JTextComponent) propertyType.getEditor().getEditorComponent();

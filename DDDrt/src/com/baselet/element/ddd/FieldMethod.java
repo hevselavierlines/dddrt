@@ -59,14 +59,10 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 
 		methodType = new MetalComboBox();
 		methodType.setFont(methodFont);
-		methodType.addItem("void");
-		methodType.addItem("String");
-		methodType.addItem("int");
-		methodType.addItem("long");
-		methodType.addItem("byte");
-		methodType.addItem("char");
-		methodType.addItem("short");
-		methodType.addItem("Object");
+		List<String> defaultTypes = FieldProperty.loadDefaultTypes();
+		for (String defaultType : defaultTypes) {
+			methodType.addItem(defaultType);
+		}
 		methodType.setEditable(true);
 		final JTextComponent tc = (JTextComponent) methodType.getEditor().getEditorComponent();
 		tc.addFocusListener(this);

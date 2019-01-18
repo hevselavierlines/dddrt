@@ -114,7 +114,7 @@ public class Move extends Command {
 	public void execute(DiagramHandler handler) {
 		super.execute(handler);
 		if (useSetLocation) {
-			entity.setRectangleDifference(getX(), getY(), 0, 0, firstDrag, stickables, true);
+			entity.setRectangleDifference(getX(), getY(), 0, 0, firstDrag, stickables, true, insideMovement);
 		}
 		else {
 			entity.drag(resizeDirection, getX(), getY(), getMousePosBeforeDrag(), isShiftKeyDown, firstDrag, stickables, true, insideMovement);

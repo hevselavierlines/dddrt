@@ -138,7 +138,7 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 		cancelButton.addActionListener(this);
 		bottomPanel.add(cancelButton, BorderLayout.EAST);
 
-		errorLabel = new JLabel("TEST");
+		errorLabel = new JLabel();
 		bottomPanel.add(errorLabel, BorderLayout.SOUTH);
 
 		this.add(bottomPanel, BorderLayout.SOUTH);
@@ -148,6 +148,7 @@ public class DatabaseImportDialog extends JDialog implements ActionListener, Win
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		errorLabel.setText("");
 		if (arg0.getSource() == connectButton) {
 			connect();
 		}

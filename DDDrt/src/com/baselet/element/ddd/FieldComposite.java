@@ -334,6 +334,14 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	}
 
 	@Override
+	public void setRectangleDifference(int diffx, int diffy, int diffw, int diffh, boolean firstDrag, StickableMap stickables, boolean undoable, boolean insideMovement) {
+		super.setRectangleDifference(diffx, diffy, diffw, diffh, firstDrag, stickables, undoable, insideMovement);
+		if (!insideMovement) {
+			updateBoundedContextBorder();
+		}
+	}
+
+	@Override
 	public void dragEnd() {
 		updateBoundedContext();
 	}

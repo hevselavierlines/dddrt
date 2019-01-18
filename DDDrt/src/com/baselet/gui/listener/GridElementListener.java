@@ -231,7 +231,10 @@ public class GridElementListener extends UniversalListener {
 			}
 		}
 		if (IS_DRAGGING && !FIRST_DRAG) { // if mouse is dragged and element really has been dragged around execute moveend
-			controller.executeCommand(new MoveEnd(e));
+			for (GridElement selectedElement : diagram.getSelector().getSelectedElements()) {
+				controller.executeCommand(new MoveEnd(selectedElement));
+			}
+
 		}
 
 		DESELECT_MULTISEL = false;
