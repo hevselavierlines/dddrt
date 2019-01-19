@@ -7,8 +7,6 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
-import com.baselet.element.ComponentSwing;
-import com.baselet.element.NewGridElement;
 
 public class ValueObjectProperty extends FieldProperty {
 	private static final long serialVersionUID = -3533886022028899849L;
@@ -40,22 +38,18 @@ public class ValueObjectProperty extends FieldProperty {
 	protected void addPropertyTypes() {
 		Object selection = propertyType.getSelectedItem();
 		propertyType.removeAllItems();
-		java.awt.Component[] container = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().getComponents();
 		List<FieldComposite> sameBoundedContextElements = new LinkedList<FieldComposite>();
 		List<FieldComposite> diffrentBoundedContextElements = new LinkedList<FieldComposite>();
-		for (java.awt.Component cont : container) {
-			if (cont instanceof ComponentSwing) {
-				ComponentSwing cw = (ComponentSwing) cont;
-				NewGridElement gridElement = cw.getGridElement();
-				if (gridElement instanceof ValueObjectComposite) {
-					FieldComposite ec = (FieldComposite) gridElement;
-					if (getParentFieldComposite().isInSameBoundedContext((FieldComposite) gridElement)) {
-						sameBoundedContextElements.add(ec);
-					}
-					else {
-						diffrentBoundedContextElements.add(ec);
-					}
-				}
+		for (ValueObjectComposite ec : CurrentDiagram
+				.getInstance()
+				.getDiagramHandler()
+				.getDrawPanel()
+				.getHelper(ValueObjectComposite.class)) {
+			if (getParentFieldComposite().isInSameBoundedContext(ec)) {
+				sameBoundedContextElements.add(ec);
+			}
+			else {
+				diffrentBoundedContextElements.add(ec);
 			}
 		}
 

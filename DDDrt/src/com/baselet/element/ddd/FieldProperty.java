@@ -113,6 +113,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyType.addPopupMenuListener(this);
 		propertyTypeEditor = (JTextComponent) propertyType.getEditor().getEditorComponent();
 		propertyTypeEditor.addFocusListener(this);
+
 		propertyType.setFont(propertyFont);
 		propertyType.setSelectedItem("String");
 		add(propertyType);
@@ -342,6 +343,20 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (e.getSource() == propertyTypeEditor) {
 			FieldComposite fc = propertyType.getSelection();
 			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
+			if (fc == null) {
+				for (FieldComposite fieldComposite : dp.getHelperAndSub(FieldComposite.class)) {
+					String comparingString = null;
+					if (getParentFieldComposite().isInSameBoundedContext(fieldComposite)) {
+						comparingString = fieldComposite.getName();
+					}
+					else {
+						comparingString = fieldComposite.getFullName();
+					}
+					if (comparingString.equals(propertyTypeEditor.getText())) {
+						fc = fieldComposite;
+					}
+				}
+			}
 			getParentFieldComposite()
 					.getComponent()
 					.getController()

@@ -7,8 +7,6 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
-import com.baselet.element.ComponentSwing;
-import com.baselet.element.NewGridElement;
 
 import at.mic.dddrt.db.model.TableColumn;
 
@@ -56,22 +54,19 @@ public class EntityProperty extends FieldProperty {
 		propertyType.removeAllItems();
 		List<FieldComposite> sameBoundedContextElements = new LinkedList<FieldComposite>();
 		List<FieldComposite> diffrentBoundedContextElements = new LinkedList<FieldComposite>();
-		java.awt.Component[] container = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().getComponents();
-		for (java.awt.Component cont : container) {
-			if (cont instanceof ComponentSwing) {
-				ComponentSwing cw = (ComponentSwing) cont;
-				NewGridElement gridElement = cw.getGridElement();
 
-				if (gridElement instanceof FieldComposite) {
-					FieldComposite ec = (FieldComposite) gridElement;
-					if (getParentFieldComposite().isInSameBoundedContext((FieldComposite) gridElement)) {
-						sameBoundedContextElements.add(ec);
-					}
-					else {
-						diffrentBoundedContextElements.add(ec);
-					}
-				}
+		for (FieldComposite ec : CurrentDiagram
+				.getInstance()
+				.getDiagramHandler()
+				.getDrawPanel()
+				.getHelperAndSub(FieldComposite.class)) {
+			if (getParentFieldComposite().isInSameBoundedContext(ec)) {
+				sameBoundedContextElements.add(ec);
 			}
+			else {
+				diffrentBoundedContextElements.add(ec);
+			}
+
 		}
 
 		Collections.sort(sameBoundedContextElements);
