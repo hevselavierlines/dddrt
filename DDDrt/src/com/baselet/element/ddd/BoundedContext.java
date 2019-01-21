@@ -13,9 +13,11 @@ import org.json.JSONObject;
 
 import com.baselet.control.basics.XValues;
 import com.baselet.control.basics.geom.Point;
+import com.baselet.control.basics.geom.PointDouble;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
+import com.baselet.control.enums.LineType;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
@@ -42,6 +44,7 @@ public class BoundedContext extends NewGridElement {
 	private final JTextField packageName;
 	private ComponentSwing component;
 	private JSONObject jsonAttributes;
+	private static final int CORNER = 12;
 
 	public enum BORDER_STYLE {
 		THICK, NORMAL, NOTHING
@@ -88,17 +91,10 @@ public class BoundedContext extends NewGridElement {
 		public StickingPolygon generateStickingBorder(Rectangle rect) {
 			StickingPolygon p = new StickingPolygon(rect.x, rect.y);
 
-			p.addPoint(rect.width / 4.0, 0);
-			p.addPoint(rect.width * 3.0 / 4, 0);
-
-			p.addPoint(rect.width, rect.height / 4.0);
-			p.addPoint(rect.width, rect.height * 3.0 / 4);
-
-			p.addPoint(rect.width * 3.0 / 4, rect.height);
-			p.addPoint(rect.width / 4.0, rect.height);
-
-			p.addPoint(0, rect.height * 3.0 / 4);
-			p.addPoint(0, (int) (rect.height / 4.0), true);
+			p.addPoint(0, 0);
+			p.addPoint(rect.width, 0);
+			p.addPoint(rect.width, rect.height);
+			p.addPoint(0, rect.height);
 
 			return p;
 		}
@@ -108,19 +104,10 @@ public class BoundedContext extends NewGridElement {
 	public Polygon getBoundingPolygon() {
 		Rectangle rect = getRectangle();
 		Polygon p = new Polygon();
-		p.addPoint((int) (rect.width / 4.0), 0);
-		p.addPoint((int) (rect.width * 3.0 / 4), 0);
-
-		p.addPoint(rect.width, (int) (rect.height / 4.0));
-		p.addPoint(rect.width, (int) (rect.height * 3.0 / 4));
-
-		p.addPoint((int) (rect.width * 3.0 / 4), rect.height);
-		p.addPoint((int) (rect.width / 4.0), rect.height);
-
-		p.addPoint(0, (int) (rect.height * 3.0 / 4));
-		p.addPoint(0, (int) (rect.height / 4.0));
-
-		p.addPoint((int) (rect.width / 4.0), 0);
+		p.addPoint(0, 0);
+		p.addPoint(rect.width, 0);
+		p.addPoint(rect.width, rect.height);
+		p.addPoint(0, rect.height);
 
 		p.translate(rect.x, rect.y);
 
@@ -132,10 +119,21 @@ public class BoundedContext extends NewGridElement {
 		return ElementId.DDDBoundedContext;
 	}
 
+	private PointDouble p(double x, double y) {
+		return new PointDouble(x, y);
+	}
+
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
 		DrawHandler drawer = state.getDrawer();
-		drawer.drawEllipse(0, 0, getRealSize().width, getRealSize().height);
+		int w = getRealSize().width;
+		int h = getRealSize().height;
+		LineType originalLineType = drawer.getLineType();
+		drawer.setLineType(LineType.DASHED);
+		drawer.drawRectangleRound(0, 0, w, h, 25);
+		drawer.setLineType(originalLineType);
+		// drawer.drawLines(p(0, 0), p(w - CORNER, 0), p(w, CORNER), p(w, h), p(0, h), p(0, 0));
+		// drawer.drawLines(p(w - CORNER, 0), p(w - CORNER, CORNER), p(w, CORNER));
 
 		state.setStickingPolygonGenerator(stickingPolygonGenerator);
 
@@ -149,12 +147,12 @@ public class BoundedContext extends NewGridElement {
 		if (borderStyle == BORDER_STYLE.NORMAL) {
 			drawer.setLineWidth(2.0f);
 			drawer.setForegroundColor(ColorOwn.BLUE);
-			drawer.drawEllipse(1, 1, boundsRect.width - 2, boundsRect.height - 2);
+			drawer.drawRectangleRound(1, 1, boundsRect.width - 2, boundsRect.height - 2, 25);
 		}
 		else if (borderStyle == BORDER_STYLE.THICK) {
 			drawer.setLineWidth(5.0f);
 			drawer.setForegroundColor(ColorOwn.BLUE);
-			drawer.drawEllipse(3, 3, boundsRect.width - 6, boundsRect.height - 6);
+			drawer.drawRectangleRound(3, 3, boundsRect.width - 6, boundsRect.height - 6, 25);
 		}
 		drawer.setLineWidth(lineWidth);
 		drawer.setForegroundColor(lineColor);
