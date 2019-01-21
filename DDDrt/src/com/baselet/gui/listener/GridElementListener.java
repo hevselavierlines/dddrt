@@ -180,6 +180,10 @@ public class GridElementListener extends UniversalListener {
 		// if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
 
 		// }
+		if (e instanceof FieldComposite) {
+			FieldComposite selectedField = (FieldComposite) e;
+			selectedField.getPropertyByPosition(mousePressedPoint);
+		}
 
 		IS_DRAGGING = true;
 		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {

@@ -29,7 +29,7 @@ public class CollapsiblePanel extends JLayeredPane {
 		this.title = title;
 		border = BorderFactory.createTitledBorder(title);
 		setBorder(border);
-		addMouseListener(mouseListener);
+		// addMouseListener(mouseListener);
 		collapseListeners = new LinkedList<ICollapseListener>();
 		collapsed = false;
 	}

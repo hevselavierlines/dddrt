@@ -99,6 +99,27 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		nameValid = true;
 	}
 
+	public FieldProperty getPropertyByPosition(Point position) {
+		position.x -= getRectangle().x;
+		position.y -= getRectangle().y;
+		for (java.awt.Component property : propertiesPane.getComponents()) {
+			if (property instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) property;
+				java.awt.Rectangle bounds = fieldProperty.getBounds();
+				bounds.y += propertiesPane.getBounds().y;
+				bounds.x += propertiesPane.getBounds().x;
+				if (bounds.contains(new java.awt.Point(position.x, position.y))) {
+					fieldProperty.setSelection(true);
+				}
+				else {
+					fieldProperty.setSelection(false);
+				}
+				fieldProperty.repaint();
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public String getAdditionalAttributes() {
 		JSONObject entities = jsonAttributes.getJSONObject("entities");

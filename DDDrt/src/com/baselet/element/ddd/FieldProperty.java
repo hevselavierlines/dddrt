@@ -61,6 +61,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private Object originalSelection;
 	private FieldComposite parentFieldComposite;
 	private final JTextComponent propertyTypeEditor;
+	private boolean selection;
 
 	@Override
 	public String toString() {
@@ -180,6 +181,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	protected void updateCoordinates(Graphics g, int width) {
+		int startY = 2;
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
 		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1];
 		for (int i = 0; i < realWidths.length; i++) {
@@ -189,14 +191,14 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		}
 		realWidths[0] = FIXED_WIDTHS[0];
 		realWidths[3] = FIXED_WIDTHS[1];
-		propertyVisibility.setBounds(0, 0, realWidths[0], HEIGHT);
-		propertyName.setBounds(realWidths[0], 0, realWidths[1], HEIGHT);
+		propertyVisibility.setBounds(0, startY, realWidths[0], HEIGHT);
+		propertyName.setBounds(realWidths[0], startY, realWidths[1], HEIGHT);
 		if (g != null) {
 			g.drawString(":", realWidths[0] + realWidths[1], 20);
 		}
-		propertyType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HEIGHT);
+		propertyType.setBounds(realWidths[0] + realWidths[1] + 5, startY, realWidths[2], HEIGHT);
 		if (!idProperty) {
-			removeButton.setBounds(width - realWidths[3], 0, realWidths[3], HEIGHT);
+			removeButton.setBounds(width - realWidths[3], startY, realWidths[3], HEIGHT);
 		}
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
@@ -210,10 +212,20 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		// }
 	}
 
+	public void setSelection(boolean selection) {
+		this.selection = selection;
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		updateCoordinates(g, getBounds().width);
 		super.paint(g);
+		if (selection) {
+			Color originalColor = g.getColor();
+			g.setColor(Color.BLUE);
+			g.drawRect(0, 0, getBounds().width - 1, getBounds().height - 1);
+			g.setColor(originalColor);
+		}
 	}
 
 	@Override
@@ -335,6 +347,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (source instanceof JTextField) {
 			originalString = ((JTextField) source).getText();
 		}
+		setSelection(true);
+		repaint();
 	}
 
 	@Override
@@ -375,6 +389,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			// }
 			// }
 			// dp.repaint();
+			setSelection(false);
+			repaint();
 		}
 		else if (source instanceof JTextField) {
 			String newText = ((JTextField) source).getText();
