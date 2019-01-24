@@ -185,6 +185,7 @@ public class OwnSyntaxPane {
 		table.setRowHeight(30);
 		table.getColumnModel().getColumn(0).setCellEditor(null);
 		table.getColumnModel().getColumn(1).setCellEditor(new PropertyCellEditor());
+
 		table.invalidate();
 	}
 

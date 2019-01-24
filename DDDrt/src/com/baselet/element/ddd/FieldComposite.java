@@ -33,9 +33,11 @@ import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.ComponentSwing;
+import com.baselet.element.FieldTypeChange;
 import com.baselet.element.ICollapseListener;
 import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.TableCellTextFieldBinding;
+import com.baselet.element.TableCellTypeChange;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -55,7 +57,7 @@ import com.baselet.gui.command.TextFieldChange;
 
 import at.mic.dddrt.db.model.Table;
 
-public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
+public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange {
 
 	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
@@ -72,8 +74,6 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private boolean nameValid;
 	private String originalString;
 	private final Font compositeFont;
-
-	private TableCellTextFieldBinding binding;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -186,7 +186,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		this.component = (ComponentSwing) component;
 
-		binding = new TableCellTextFieldBinding(getTableModel(), fieldName, "Class Name");
+		new TableCellTextFieldBinding(getTableModel(), fieldName, "Class Name");
+		new TableCellTypeChange(getTableModel(), "Type", this);
 	}
 
 	protected abstract void createDefaultJSON();
@@ -602,6 +603,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	@Override
 	public int compareTo(FieldComposite o) {
 		return getFullName().compareTo(o.getFullName());
+	}
+
+	@Override
+	public void typeChanged(String newType) {
+		System.out.println("typeChange " + newType);
 	}
 
 }

@@ -66,12 +66,6 @@ public abstract class PropertiesGridElement extends NewGridElement {
 					.append('\n');
 		}
 
-		// for (Entry<String, String> entry : properties.entrySet()) {
-		// stringBuilder.append(entry.getKey());
-		// stringBuilder.append("\\=\\");
-		// stringBuilder.append(entry.getValue());
-		// stringBuilder.append('\n');
-		// }
 		return stringBuilder.toString();
 	}
 
