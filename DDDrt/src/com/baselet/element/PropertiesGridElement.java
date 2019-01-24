@@ -8,6 +8,10 @@ import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
+import com.baselet.element.ddd.AggregateComposite;
+import com.baselet.element.ddd.EntityComposite;
+import com.baselet.element.ddd.ValueObjectComposite;
+
 public abstract class PropertiesGridElement extends NewGridElement {
 
 	private final DefaultTableModel tableModel;
@@ -52,6 +56,17 @@ public abstract class PropertiesGridElement extends NewGridElement {
 	}
 
 	public void addProperty(String key, String value) {
+		if ("Type".equals(key)) {
+			if (this instanceof AggregateComposite) {
+				value = "Aggregate";
+			}
+			else if (this instanceof ValueObjectComposite) {
+				value = "Value Object";
+			}
+			else if (this instanceof EntityComposite) {
+				value = "Entity";
+			}
+		}
 		tableModel.addRow(new String[] { key, value });
 	}
 

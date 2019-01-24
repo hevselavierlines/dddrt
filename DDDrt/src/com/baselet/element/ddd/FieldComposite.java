@@ -52,6 +52,7 @@ import com.baselet.element.settings.SettingsManualResizeTop;
 import com.baselet.element.sticking.StickableMap;
 import com.baselet.gui.command.AddFieldElement;
 import com.baselet.gui.command.Controller;
+import com.baselet.gui.command.FieldCompositeTypeChangeCommand;
 import com.baselet.gui.command.RemoveFieldElement;
 import com.baselet.gui.command.TextFieldChange;
 
@@ -607,7 +608,20 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	@Override
 	public void typeChanged(String newType) {
-		System.out.println("typeChange " + newType);
+		ElementId newId = null;
+		if ("Entity".equals(newType)) {
+			newId = ElementId.DDDEntity;
+		}
+		else if ("Value Object".equalsIgnoreCase(newType)) {
+			newId = ElementId.DDDValueObject;
+		}
+		else if ("Aggregate".equalsIgnoreCase(newType)) {
+			newId = ElementId.DDDAggregate;
+		}
+		if (newId != null) {
+			DiagramHandler diagramHandler = CurrentDiagram.getInstance().getDiagramHandler();
+			diagramHandler.getController().executeCommand(
+					new FieldCompositeTypeChangeCommand(this, newId));
+		}
 	}
-
 }
