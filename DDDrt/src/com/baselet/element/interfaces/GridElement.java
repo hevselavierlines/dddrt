@@ -82,4 +82,6 @@ public interface GridElement extends HasPanelAttributes {
 	GridElementDeprecatedAddons getDeprecatedAddons();
 
 	String getUUID();
+
+	boolean useTableAttributes();
 }

@@ -556,4 +556,8 @@ public abstract class NewGridElement implements GridElement {
 		}
 	}
 
+	@Override
+	public boolean useTableAttributes() {
+		return false;
+	}
 }

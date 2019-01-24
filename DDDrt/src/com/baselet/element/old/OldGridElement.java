@@ -633,4 +633,9 @@ public abstract class OldGridElement extends JComponent implements GridElement, 
 		return null;
 	}
 
+	@Override
+	public boolean useTableAttributes() {
+		return false;
+	}
+
 }

@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Polygon;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -24,7 +25,8 @@ import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ComponentSwing;
-import com.baselet.element.NewGridElement;
+import com.baselet.element.PropertiesGridElement;
+import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -36,7 +38,7 @@ import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 
-public class BoundedContext extends NewGridElement {
+public class BoundedContext extends PropertiesGridElement {
 
 	private static final String JSON_BOUNDEDCONTEXT_PACKAGE = "package";
 	private static final String JSON_BOUNDEDCONTEXT_NAME = "name";
@@ -45,6 +47,7 @@ public class BoundedContext extends NewGridElement {
 	private ComponentSwing component;
 	private JSONObject jsonAttributes;
 	private static final int CORNER = 12;
+	private final List<TableCellTextFieldBinding> bindings;
 
 	public enum BORDER_STYLE {
 		THICK, NORMAL, NOTHING
@@ -67,6 +70,8 @@ public class BoundedContext extends NewGridElement {
 		packageName.setFont(fontPackage);
 		packageName.setBorder(null);
 		borderStyle = BORDER_STYLE.NOTHING;
+
+		bindings = new LinkedList<TableCellTextFieldBinding>();
 	}
 
 	@Override
@@ -84,6 +89,9 @@ public class BoundedContext extends NewGridElement {
 		} catch (Exception ex) {
 			createDefaultJSON();
 		}
+
+		bindings.add(new TableCellTextFieldBinding(getTableModel(), contextName, "Context Name"));
+		bindings.add(new TableCellTextFieldBinding(getTableModel(), packageName, "Package Name"));
 	}
 
 	private final StickingPolygonGenerator stickingPolygonGenerator = new StickingPolygonGenerator() {

@@ -34,7 +34,8 @@ import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.ICollapseListener;
-import com.baselet.element.NewGridElement;
+import com.baselet.element.PropertiesGridElement;
+import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -54,7 +55,7 @@ import com.baselet.gui.command.TextFieldChange;
 
 import at.mic.dddrt.db.model.Table;
 
-public abstract class FieldComposite extends NewGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
+public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite> {
 
 	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
@@ -71,6 +72,8 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 	private boolean nameValid;
 	private String originalString;
 	private final Font compositeFont;
+
+	private TableCellTextFieldBinding binding;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -182,6 +185,8 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 		component.addComponent(methodAddButton);
 
 		this.component = (ComponentSwing) component;
+
+		binding = new TableCellTextFieldBinding(getTableModel(), fieldName, "Class Name");
 	}
 
 	protected abstract void createDefaultJSON();
@@ -206,6 +211,16 @@ public abstract class FieldComposite extends NewGridElement implements ActionLis
 			addHeight = methodsPane.getTitleHeight();
 		}
 		return startHeight + addHeight + FieldMethod.HEIGHT;
+	}
+
+	@Override
+	public String getPanelAttributes() {
+		return super.getPanelAttributes();
+	}
+
+	@Override
+	public List<String> getPanelAttributesAsList() {
+		return super.getPanelAttributesAsList();
 	}
 
 	@Override

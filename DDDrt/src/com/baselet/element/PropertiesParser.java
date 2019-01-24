@@ -44,10 +44,12 @@ public class PropertiesParser {
 	}
 
 	private static void parseFacets(NewGridElement element, PropertiesParserState state, List<String> propertiesText, boolean drawMetaDrawer) {
+
 		List<String> propertiesAfterFirstRun = parseFacets(state.getSettings().getFacetsForFirstRun(), propertiesText, state); // must be before element.drawCommonContent (because bg=... and other settings are set here)
 		element.resetMetaDrawerAndDrawCommonContent(state, drawMetaDrawer); // draw common content like border around classes
-
-		parseFacets(state.getSettings().getFacetsForSecondRun(), propertiesAfterFirstRun, state); // iterate over propertiestext and draw text and resolve second-run facets
+		if (!element.useTableAttributes()) {
+			parseFacets(state.getSettings().getFacetsForSecondRun(), propertiesAfterFirstRun, state); // iterate over propertiestext and draw text and resolve second-run facets
+		}
 	}
 
 	private static List<String> parseFacets(List<? extends Facet> facets, List<String> properties, PropertiesParserState state) {

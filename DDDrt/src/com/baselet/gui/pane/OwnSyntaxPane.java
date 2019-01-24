@@ -8,6 +8,8 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
@@ -26,6 +28,8 @@ import com.baselet.control.basics.Converter;
 import com.baselet.control.config.DerivedConfig;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.draw.helper.ColorOwn;
+import com.baselet.element.PropertiesGridElement;
+import com.baselet.element.PropertyCellEditor;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.gui.AutocompletionText;
 
@@ -45,6 +49,10 @@ public class OwnSyntaxPane {
 	JPanel panel;
 	RSyntaxTextArea textArea;
 	RTextScrollPane scrollPane;
+	private final JScrollPane tableScrollPane;
+	private final JTable table;
+	private PropertiesGridElement propertiesElement;
+	private boolean tableMode;
 
 	public OwnSyntaxPane() {
 
@@ -81,6 +89,7 @@ public class OwnSyntaxPane {
 		JLabel propertyLabel = new JLabel(" Properties");
 		propertyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		propertyLabel.setFont(DerivedConfig.getPanelHeaderFont());
+
 		panel.add(propertyLabel);
 
 		textArea.setAntiAliasingEnabled(true);
@@ -91,7 +100,11 @@ public class OwnSyntaxPane {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panel.add(scrollPane);
 
+		table = new JTable();
+		tableScrollPane = new JScrollPane(table);
+
 		textArea.getDocument().putProperty(PlainDocument.tabSizeAttribute, 3); // Reduce tab size
+		setTableMode(false);
 	}
 
 	/**
@@ -127,7 +140,12 @@ public class OwnSyntaxPane {
 	}
 
 	public String getText() {
-		return textArea.getText();
+		if (tableMode) {
+			return propertiesElement.getPanelAttributes();
+		}
+		else {
+			return textArea.getText();
+		}
 	}
 
 	public JPanel getPanel() {
@@ -144,22 +162,62 @@ public class OwnSyntaxPane {
 
 	public void switchToElement(GridElement e) {
 		words = e.getAutocompletionList();
-		setText(e.getPanelAttributes());
+		if (e instanceof PropertiesGridElement) {
+			propertiesElement = (PropertiesGridElement) e;
+			configurePropertiesElement();
+		}
+		else {
+			propertiesElement = null;
+			configureTextElement(e.getPanelAttributes());
+		}
+
 	}
 
 	public void switchToNonElement(String text) {
 		words = new ArrayList<AutocompletionText>();
-		setText(text);
-
+		propertiesElement = null;
+		configureTextElement(text);
 	}
 
-	private void setText(String text) {
+	private void configurePropertiesElement() {
+		setTableMode(true);
+		table.setModel(propertiesElement.getTableModel());
+		table.setRowHeight(30);
+		table.getColumnModel().getColumn(0).setCellEditor(null);
+		table.getColumnModel().getColumn(1).setCellEditor(new PropertyCellEditor());
+		table.invalidate();
+	}
+
+	private void configureTextElement(String text) {
+		setTableMode(false);
 		if (!textArea.getText().equals(text)) {
 			textArea.setText(text); // Always set text even if they are equal to trigger correct syntax highlighting (if words to highlight have changed but text not)
 		}
 		textArea.setCaretPosition(0);
 		createHightLightMap();
 		createAutocompletionCompletionProvider();
+	}
+
+	public boolean isTableMode() {
+		return tableMode;
+	}
+
+	public void setTableMode(boolean tableMode) {
+		if (this.tableMode != tableMode) {
+			if (tableMode) {
+				panel.remove(scrollPane);
+				panel.add(tableScrollPane);
+				panel.revalidate();
+				panel.repaint();
+			}
+			else {
+				panel.remove(tableScrollPane);
+				panel.add(scrollPane);
+				panel.revalidate();
+				panel.repaint();
+			}
+		}
+		this.tableMode = tableMode;
 	}
 
 }

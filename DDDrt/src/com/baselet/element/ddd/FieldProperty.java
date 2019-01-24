@@ -50,7 +50,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private final JButton removeButton;
 	private boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
-	public final static int HEIGHT = 25;
+	public final static int HEIGHT = 20;
 	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
 	private final int[] FIXED_WIDTHS = { 40, 50 };
 	private ActionListener removeListener;
@@ -101,7 +101,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public FieldProperty() {
-		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
+		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
 
 		propertyVisibility = new VisibilityComboBox();
 		propertyVisibility.setFont(propertyFont);

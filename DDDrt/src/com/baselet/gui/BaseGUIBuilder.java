@@ -161,8 +161,10 @@ public abstract class BaseGUIBuilder {
 	private OwnSyntaxPane createPropertyTextPane() {
 		OwnSyntaxPane propertyTextPane = new OwnSyntaxPane();
 		PropertyPanelListener pListener = new PropertyPanelListener();
+
 		propertyTextPane.getTextComponent().addKeyListener(pListener);
 		propertyTextPane.getTextComponent().getDocument().addDocumentListener(pListener);
+
 		return propertyTextPane;
 	}
 

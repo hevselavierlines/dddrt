@@ -9,7 +9,10 @@
       <w>300</w>
       <h>400</h>
     </coordinates>
-        <panel_attributes>
+        <panel_attributes>Type\=\Entity
+Class Name\=\NewEntity
+Database Name\=\NEW_ENTITY
+Notes\=\Entity
         </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
@@ -22,7 +25,10 @@
       <w>300</w>
       <h>400</h>
     </coordinates>
-        <panel_attributes>
+        <panel_attributes>Type\=\Value Object
+Class Name\=\NewValueObject
+Database Name\=\NEW_VALUE_OBJECT
+Notes\=\Value Object
         </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
@@ -35,7 +41,10 @@
       <w>300</w>
       <h>400</h>
     </coordinates>
-        <panel_attributes>
+        <panel_attributes>Type\=\Aggregate
+Class Name\=\NewAggregate
+Database Name\=\NEW_Aggregate
+Notes\=\Aggregate
         </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
@@ -48,7 +57,9 @@
       <w>480</w>
       <h>390</h>
     </coordinates>
-    <panel_attributes></panel_attributes>
+    <panel_attributes>Context Name\=\Bounded Context
+Package Name\=\com.example.boundedContext
+    </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
 </diagram>
