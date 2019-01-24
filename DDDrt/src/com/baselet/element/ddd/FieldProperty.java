@@ -29,6 +29,8 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
+import com.baselet.element.PropertiesGridElement;
+import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.command.ComboBoxChange;
 import com.baselet.gui.command.Controller;
@@ -62,6 +64,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private FieldComposite parentFieldComposite;
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
+	private final PropertiesGridElement properties;
 
 	@Override
 	public String toString() {
@@ -131,6 +134,15 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		add(removeButton);
 
 		updateCoordinates(null, 200);
+		properties = new PropertiesGridElement();
+		properties.addProperty("Name", propertyName.getText());
+		properties.addProperty("Visibility", getPropertyVisibility());
+		properties.addProperty("Data Type", getPropertyType());
+
+		TableCellTextFieldBinding
+				.createBinding(properties.getTableModel(), propertyName, "Name");
+		TableCellTextFieldBinding
+				.createBinding(properties.getTableModel(), propertyTypeEditor, "Data Type");
 	}
 
 	public FieldProperty(String propertyVisibility,
@@ -153,6 +165,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public void setPropertyName(String propertyName) {
 		this.propertyName.setText(propertyName);
+		properties.addProperty("Name", propertyName);
 	}
 
 	public String getPropertyType() {
@@ -170,6 +183,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			DEFAULT_TYPES.add(0, UNIQUE_ID);
 		}
 		this.propertyType.setSelectedItem(propertyType);
+		properties.addProperty("Data Type", propertyType);
 	}
 
 	public String getPropertyVisibility() {
@@ -178,6 +192,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public void setPropertyVisibility(String propertyVisibility) {
 		this.propertyVisibility.setSelection(propertyVisibility);
+		properties.addProperty("Visibility", propertyVisibility);
 	}
 
 	protected void updateCoordinates(Graphics g, int width) {
@@ -347,7 +362,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (source instanceof JTextField) {
 			originalString = ((JTextField) source).getText();
 		}
-		setSelection(true);
+		getParentFieldComposite().selectProperty(this);
 		repaint();
 	}
 
@@ -389,7 +404,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			// }
 			// }
 			// dp.repaint();
-			setSelection(false);
+			// setSelection(false);
 			repaint();
 		}
 		else if (source instanceof JTextField) {
@@ -439,6 +454,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	@Override
 	public void removeUpdate(DocumentEvent arg0) {
 		updateValidation();
+	}
+
+	public PropertiesGridElement getProperties() {
+		return properties;
 	}
 
 }

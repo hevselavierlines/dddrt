@@ -8,11 +8,14 @@ import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
+import com.baselet.control.enums.ElementId;
 import com.baselet.element.ddd.AggregateComposite;
 import com.baselet.element.ddd.EntityComposite;
 import com.baselet.element.ddd.ValueObjectComposite;
+import com.baselet.element.facet.PropertiesParserState;
+import com.baselet.element.facet.Settings;
 
-public abstract class PropertiesGridElement extends NewGridElement {
+public class PropertiesGridElement extends NewGridElement {
 
 	private final DefaultTableModel tableModel;
 
@@ -28,6 +31,16 @@ public abstract class PropertiesGridElement extends NewGridElement {
 			ret.add((String) tableModel.getValueAt(i, 0));
 		}
 		return ret;
+	}
+
+	private int getRowByKey(String key) {
+		int keyRow = -1;
+		for (int i = 0; i < tableModel.getRowCount() && keyRow < 0; i++) {
+			if (key.equals(tableModel.getValueAt(i, 0))) {
+				keyRow = i;
+			}
+		}
+		return keyRow;
 	}
 
 	public String getTableProperty(String columnName) {
@@ -67,7 +80,13 @@ public abstract class PropertiesGridElement extends NewGridElement {
 				value = "Entity";
 			}
 		}
-		tableModel.addRow(new String[] { key, value });
+		int keyRow = getRowByKey(key);
+		if (keyRow < 0) {
+			tableModel.addRow(new String[] { key, value });
+		}
+		else {
+			tableModel.setValueAt(value, keyRow, 1);
+		}
 	}
 
 	@Override
@@ -109,6 +128,19 @@ public abstract class PropertiesGridElement extends NewGridElement {
 
 	public DefaultTableModel getTableModel() {
 		return tableModel;
+	}
+
+	@Override
+	public ElementId getId() {
+		return null;
+	}
+
+	@Override
+	protected void drawCommonContent(PropertiesParserState state) {}
+
+	@Override
+	protected Settings createSettings() {
+		return null;
 	}
 
 }

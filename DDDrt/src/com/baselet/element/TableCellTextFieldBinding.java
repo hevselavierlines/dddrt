@@ -1,19 +1,50 @@
 package com.baselet.element;
 
-import javax.swing.JTextField;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 
 public class TableCellTextFieldBinding implements DocumentListener, TableModelListener {
 	private final DefaultTableModel tableModel;
-	private final JTextField textField;
+	private final JTextComponent textField;
 	private int rowNum;
+	private static List<TableCellTextFieldBinding> bindings;
 
-	public TableCellTextFieldBinding(DefaultTableModel tableModel, JTextField textField, String rowKey) {
+	public static void createBinding(DefaultTableModel tableModel, JTextComponent textField, String rowKey) {
+		if (bindings == null) {
+			bindings = new LinkedList<TableCellTextFieldBinding>();
+		}
+		bindings.add(new TableCellTextFieldBinding(tableModel, textField, rowKey));
+	}
+
+	public static void removeBinding(DefaultTableModel tableModel) {
+		for (TableCellTextFieldBinding binding : bindings) {
+			if (binding.tableModel == tableModel) {
+				bindings.remove(binding);
+			}
+		}
+	}
+
+	public static void removeBinding(JTextComponent textField) {
+		for (TableCellTextFieldBinding binding : bindings) {
+			if (binding.textField == textField) {
+				bindings.remove(binding);
+			}
+		}
+	}
+
+	public static void clearBindings() {
+		bindings.clear();
+	}
+
+	private TableCellTextFieldBinding(DefaultTableModel tableModel, JTextComponent textField, String rowKey) {
 		super();
 		this.tableModel = tableModel;
 		this.textField = textField;

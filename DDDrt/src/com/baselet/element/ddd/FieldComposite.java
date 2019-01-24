@@ -50,11 +50,13 @@ import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.element.settings.SettingsManualResizeTop;
 import com.baselet.element.sticking.StickableMap;
+import com.baselet.gui.CurrentGui;
 import com.baselet.gui.command.AddFieldElement;
 import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.FieldCompositeTypeChangeCommand;
 import com.baselet.gui.command.RemoveFieldElement;
 import com.baselet.gui.command.TextFieldChange;
+import com.baselet.gui.pane.OwnSyntaxPane;
 
 import at.mic.dddrt.db.model.Table;
 
@@ -75,6 +77,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private boolean nameValid;
 	private String originalString;
 	private final Font compositeFont;
+	private FieldProperty selection;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -103,9 +106,29 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		nameValid = true;
 	}
 
+	public void selectProperty(FieldProperty fieldProperty) {
+		OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
+		deselectAll();
+		selection = fieldProperty;
+		fieldProperty.setSelection(true);
+		fieldProperty.repaint();
+		pane.switchToProperty(fieldProperty);
+	}
+
+	public void deselectAll() {
+		OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
+		if (selection != null) {
+			selection.setSelection(false);
+			pane.deselectProperty();
+			selection.repaint();
+			selection = null;
+		}
+	}
+
 	public FieldProperty getPropertyByPosition(Point position) {
 		position.x -= getRectangle().x;
 		position.y -= getRectangle().y;
+		deselectAll();
 		for (java.awt.Component property : propertiesPane.getComponents()) {
 			if (property instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) property;
@@ -113,12 +136,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				bounds.y += propertiesPane.getBounds().y;
 				bounds.x += propertiesPane.getBounds().x;
 				if (bounds.contains(new java.awt.Point(position.x, position.y))) {
-					fieldProperty.setSelection(true);
+					selectProperty(fieldProperty);
 				}
-				else {
-					fieldProperty.setSelection(false);
-				}
-				fieldProperty.repaint();
 			}
 		}
 		return null;
@@ -187,7 +206,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		this.component = (ComponentSwing) component;
 
-		new TableCellTextFieldBinding(getTableModel(), fieldName, "Class Name");
+		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
 		new TableCellTypeChange(getTableModel(), "Type", this);
 	}
 
@@ -411,10 +430,12 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		deselectAll();
 		if (e.getSource() == propertyAddButton) {
 			FieldProperty newProperty = createProperty();
 			newProperty.setRemovedListener(this);
 			component.getController().executeCommand(new AddFieldElement(newProperty, propertiesPane, this));
+			selectProperty(newProperty);
 		}
 		else if (e.getSource() == methodAddButton) {
 			FieldMethod newMethod = createMethod();

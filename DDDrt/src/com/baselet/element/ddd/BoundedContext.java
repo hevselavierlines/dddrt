@@ -90,8 +90,8 @@ public class BoundedContext extends PropertiesGridElement {
 			createDefaultJSON();
 		}
 
-		bindings.add(new TableCellTextFieldBinding(getTableModel(), contextName, "Context Name"));
-		bindings.add(new TableCellTextFieldBinding(getTableModel(), packageName, "Package Name"));
+		TableCellTextFieldBinding.createBinding(getTableModel(), contextName, "Context Name");
+		TableCellTextFieldBinding.createBinding(getTableModel(), packageName, "Package Name");
 	}
 
 	private final StickingPolygonGenerator stickingPolygonGenerator = new StickingPolygonGenerator() {

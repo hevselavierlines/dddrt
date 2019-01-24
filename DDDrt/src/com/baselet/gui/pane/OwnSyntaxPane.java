@@ -30,6 +30,8 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.PropertyCellEditor;
+import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.FieldProperty;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.gui.AutocompletionText;
 
@@ -53,6 +55,8 @@ public class OwnSyntaxPane {
 	private final JTable table;
 	private PropertiesGridElement propertiesElement;
 	private boolean tableMode;
+	private FieldProperty selectedProperty;
+	private FieldComposite parentFieldComposite;
 
 	public OwnSyntaxPane() {
 
@@ -160,20 +164,38 @@ public class OwnSyntaxPane {
 		return textArea;
 	}
 
+	public void switchToProperty(FieldProperty fieldProperty) {
+		parentFieldComposite = fieldProperty.getParentFieldComposite();
+		propertiesElement = fieldProperty.getProperties();
+		configurePropertiesElement();
+	}
+
+	public void deselectProperty() {
+		parentFieldComposite = null;
+		propertiesElement = null;
+	}
+
 	public void switchToElement(GridElement e) {
 		words = e.getAutocompletionList();
-		if (e instanceof PropertiesGridElement) {
-			propertiesElement = (PropertiesGridElement) e;
-			configurePropertiesElement();
+		if (parentFieldComposite == null || e != parentFieldComposite) {
+			if (parentFieldComposite != null) {
+				parentFieldComposite.deselectAll();
+			}
+			if (e instanceof PropertiesGridElement) {
+				propertiesElement = (PropertiesGridElement) e;
+				configurePropertiesElement();
+			}
+			else {
+				propertiesElement = null;
+				configureTextElement(e.getPanelAttributes());
+			}
 		}
-		else {
-			propertiesElement = null;
-			configureTextElement(e.getPanelAttributes());
-		}
-
 	}
 
 	public void switchToNonElement(String text) {
+		if (parentFieldComposite != null) {
+			parentFieldComposite.deselectAll();
+		}
 		words = new ArrayList<AutocompletionText>();
 		propertiesElement = null;
 		configureTextElement(text);
