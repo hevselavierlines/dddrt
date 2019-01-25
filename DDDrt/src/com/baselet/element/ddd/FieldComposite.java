@@ -9,6 +9,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -78,6 +79,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private String originalString;
 	private final Font compositeFont;
 	private FieldProperty selection;
+	private TableCellTypeChange tableCellTypeChange;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -207,7 +209,23 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		this.component = (ComponentSwing) component;
 
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
-		new TableCellTypeChange(getTableModel(), "Type", this);
+		tableCellTypeChange = new TableCellTypeChange(getTableModel(), "Type", this);
+	}
+
+	public void updateTypeOnTable() {
+		String type = "Entity";
+		if (this instanceof AggregateComposite) {
+			type = "Aggregate";
+		}
+		else if (this instanceof EntityComposite) {
+			type = "Entity";
+		}
+		else if (this instanceof ValueObjectComposite) {
+			type = "Value Object";
+		}
+		tableCellTypeChange.preventUpdate();
+		addProperty("Type", type);
+		tableCellTypeChange.stopPreventUpdate();
 	}
 
 	protected abstract void createDefaultJSON();
@@ -501,8 +519,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	private void getAbsolutePositionRecursively(java.awt.Component currentComponent, java.awt.Point point) {
 		if (currentComponent != null && !(currentComponent instanceof DrawPanel)) {
-			point.x += currentComponent.getLocation().x;
-			point.y += currentComponent.getLocation().y;
+			point.x += currentComponent.getBounds().x;
+			point.y += currentComponent.getBounds().y;
 			getAbsolutePositionRecursively(currentComponent.getParent(), point);
 		}
 	}
@@ -518,6 +536,19 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			}
 		}
 		return element;
+	}
+
+	public List<FieldProperty> getPropertiesWithRelation() {
+		List<FieldProperty> properties = new LinkedList<FieldProperty>();
+		for (java.awt.Component property : propertiesPane.getComponents()) {
+			if (property instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) property;
+				if (fieldProperty.getRelation() != null) {
+					properties.add(fieldProperty);
+				}
+			}
+		}
+		return properties;
 	}
 
 	public void updateBoundedContext(BoundedContext boundedContext) {

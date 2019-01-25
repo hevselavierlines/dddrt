@@ -11,6 +11,15 @@ public class TableCellTypeChange implements TableModelListener {
 	private final FieldTypeChange typeChange;
 	private String originalType;
 	private int rowNum;
+	private boolean changing;
+
+	public void preventUpdate() {
+		changing = true;
+	}
+
+	public void stopPreventUpdate() {
+		changing = false;
+	}
 
 	public TableCellTypeChange(DefaultTableModel tableModel, String rowKey, FieldTypeChange typeChange) {
 		super();
@@ -36,10 +45,14 @@ public class TableCellTypeChange implements TableModelListener {
 
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
-		String newType = (String) tableModel.getValueAt(rowNum, 1);
-		if (typeChange != null && newType != null && !newType.equals(originalType)) {
-			originalType = newType;
-			typeChange.typeChanged(newType);
+		if (!changing) {
+			String newType = (String) tableModel.getValueAt(rowNum, 1);
+			if (typeChange != null && newType != null && !newType.equals(originalType)) {
+				changing = true;
+				originalType = newType;
+				typeChange.typeChanged(newType);
+				changing = false;
+			}
 		}
 	}
 

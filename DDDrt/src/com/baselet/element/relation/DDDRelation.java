@@ -1,6 +1,5 @@
 package com.baselet.element.relation;
 
-import com.baselet.control.SharedUtils;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
 import com.baselet.diagram.CurrentDiagram;
@@ -23,6 +22,22 @@ public class DDDRelation extends Relation {
 	@Override
 	public ElementId getId() {
 		return ElementId.DDDRelation;
+	}
+
+	public void changeFieldComposite(FieldComposite oldComposite, FieldComposite newComposite) {
+		FieldComposite startComposite = startProperty.getParentFieldComposite();
+		if (startComposite != null && startComposite == oldComposite) {
+			FieldProperty newFieldProperty = newComposite.getPropertyByName(startProperty.getPropertyName());
+			if (newFieldProperty != null) {
+				startProperty.setRelation(null);
+				newFieldProperty.setRelation(this);
+				startProperty = newFieldProperty;
+			}
+		}
+		else if (endComposite == oldComposite) {
+			endComposite = newComposite;
+		}
+		updateModelFromText();
 	}
 
 	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite) {
@@ -97,10 +112,10 @@ public class DDDRelation extends Relation {
 		startPoint.x -= minX;
 		startPoint.y -= minY;
 
-		endPoint.x = SharedUtils.realignToGridRoundToNearest(true, endPoint.x);
-		endPoint.y = SharedUtils.realignToGridRoundToNearest(true, endPoint.y);
-		startPoint.x = SharedUtils.realignToGridRoundToNearest(true, startPoint.x);
-		startPoint.y = SharedUtils.realignToGridRoundToNearest(true, startPoint.y);
+		// endPoint.x = SharedUtils.realignToGridRoundToNearest(true, endPoint.x);
+		// endPoint.y = SharedUtils.realignToGridRoundToNearest(true, endPoint.y);
+		// startPoint.x = SharedUtils.realignToGridRoundToNearest(true, startPoint.x);
+		// startPoint.y = SharedUtils.realignToGridRoundToNearest(true, startPoint.y);
 
 		RelationPointList pointList = new RelationPointList();
 		pointList.add(endPoint.x, endPoint.y);

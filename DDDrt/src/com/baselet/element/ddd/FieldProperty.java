@@ -352,6 +352,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	protected abstract void addPropertyTypes();
 
+	public DDDRelation getRelation() {
+		return relationLineRef;
+	}
+
 	public void setRelation(DDDRelation relation) {
 		relationLineRef = relation;
 	}
