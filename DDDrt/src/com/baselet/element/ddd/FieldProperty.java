@@ -23,6 +23,7 @@ import javax.swing.text.JTextComponent;
 
 import org.json.JSONObject;
 
+import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.design.metal.DataTypeComboBox;
 import com.baselet.design.metal.VisibilityComboBox;
 import com.baselet.diagram.CurrentDiagram;
@@ -306,11 +307,18 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public java.awt.Point getAbsolutePosition(boolean right) {
 		Point p = new Point();
-		getAbsolutePositionRecursively(this, p);
+		// getAbsolutePositionRecursively(this, p);
+		FieldComposite fieldComposite = getParentFieldComposite();
+		Rectangle rect = fieldComposite.getRealRectangle();
+
+		p.x = rect.x;
+		p.y = rect.y;
+
+		p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + HEIGHT / 2);
 		if (right) {
-			p.x += getWidth() + 6;
+			// p.x += getWidth() + 6;
 		}
-		p.y += HEIGHT / 2;
+		// p.y += HEIGHT / 2;
 		return p;
 	}
 

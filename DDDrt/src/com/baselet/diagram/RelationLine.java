@@ -28,7 +28,7 @@ public class RelationLine {
 		if (startPoint.x < endPoint.x) {
 			startPoint = startProperty.getAbsolutePosition(true);
 		}
-		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
+		if (startPoint.y > endPoint.y + endComposite.getRealRectangle().height / 2) {
 			endPoint = endComposite.getAbsolutePosition(true);
 		}
 	}

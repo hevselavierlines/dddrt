@@ -509,10 +509,13 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	public java.awt.Point getAbsolutePosition(boolean bottom) {
 		java.awt.Point p = new java.awt.Point();
-		getAbsolutePositionRecursively(component, p);
-		p.x += component.getWidth() / 2;
+
+		// getAbsolutePositionRecursively(component, p);
+		p.x = getRealRectangle().x;
+		p.y = getRealRectangle().y;
+		p.x += getRealRectangle().getWidth() / 2;
 		if (bottom) {
-			p.y += component.getHeight() - 1.0f;
+			p.y += getRealRectangle().getHeight() - 1.0f;
 		}
 		return p;
 	}
