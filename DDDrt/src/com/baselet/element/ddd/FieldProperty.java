@@ -316,7 +316,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 		p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + HEIGHT / 2);
 		if (right) {
-			// p.x += getWidth() + 6;
+			p.x += fieldComposite.zoom(getParent().getWidth());
 		}
 		// p.y += HEIGHT / 2;
 		return p;

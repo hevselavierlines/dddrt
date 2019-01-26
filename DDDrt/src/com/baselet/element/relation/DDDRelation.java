@@ -99,12 +99,12 @@ public class DDDRelation extends Relation {
 	public void createRelationLine() {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
 		java.awt.Point endPoint = endComposite.getAbsolutePosition(false);
-		// if (startPoint.x + startProperty.getWidth() / 2 < endPoint.x) {
-		// startPoint = startProperty.getAbsolutePosition(true);
-		// }
-		// if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
-		// endPoint = endComposite.getAbsolutePosition(true);
-		// }
+		if (startPoint.x + endComposite.zoom(startProperty.getWidth()) / 2 < endPoint.x) {
+			startPoint = startProperty.getAbsolutePosition(true);
+		}
+		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
+			endPoint = endComposite.getAbsolutePosition(true);
+		}
 		// endPoint.x -= minX;
 		// endPoint.y -= minY;
 		// startPoint.x -= minX;

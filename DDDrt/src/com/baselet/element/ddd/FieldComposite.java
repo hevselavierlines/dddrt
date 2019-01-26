@@ -515,7 +515,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		p.y = getRealRectangle().y;
 		p.x += getRealRectangle().getWidth() / 2;
 		if (bottom) {
-			p.y += getRealRectangle().getHeight() - 1.0f;
+			p.y += getRealRectangle().getHeight();// - 1.0f;
 		}
 		return p;
 	}

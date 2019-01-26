@@ -339,6 +339,10 @@ public abstract class NewGridElement implements GridElement {
 		return (double) getGridSize() / SharedConstants.DEFAULT_GRID_SIZE;
 	}
 
+	public int revertZoom(int val) {
+		return (int) (val * getZoom());
+	}
+
 	public int zoom(int val) {
 		return val * SharedConstants.DEFAULT_GRID_SIZE / getGridSize();
 	}
