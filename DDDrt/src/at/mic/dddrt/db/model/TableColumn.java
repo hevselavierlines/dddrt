@@ -21,8 +21,20 @@ public class TableColumn {
 		return columnName;
 	}
 
+	public static String convertType(String dbType) {
+		if ("NUMBER".equals(dbType)) {
+			return "long";
+		}
+		else if ("DATE".equals(dbType)) {
+			return "Date";
+		}
+		else {
+			return "String";
+		}
+	}
+
 	public String getColumnType() {
-		return columnType;
+		return convertType(columnType);
 	}
 
 	public long getLength() {

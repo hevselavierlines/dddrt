@@ -30,7 +30,7 @@ public class DatabaseImport extends Command {
 	public void execute(DiagramHandler handler) {
 		List<SortableElement> sortableElements = new ArrayList<SortableElement>(elements.size());
 		for (FieldComposite element : elements) {
-			sortableElements.add(new SortableElement(element, element.getName()));
+			sortableElements.add(new SortableElement(element, element.getTableProperty("Database Name")));
 		}
 		new AlphabetLayout().layout(sortableElements);
 		addElementsToDiagram(elements, handler);

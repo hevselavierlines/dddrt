@@ -38,7 +38,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
 	private final VisibilityComboBox methodVisibility;
-	public final static int HEIGHT = 50;
+	public final static int HEIGHT = 40;
 	public final static int HALF_HEIGHT = HEIGHT / 2;
 	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
 	private final int[] FIXED_WIDTHS = { 40, 50 };
@@ -51,7 +51,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final Font methodFont;
 
 	public FieldMethod() {
-		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
+		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
 
 		methodVisibility = new VisibilityComboBox();
 		methodVisibility.addPopupMenuListener(this);
@@ -124,10 +124,10 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		methodVisibility.setBounds(0, 0, realWidths[0], HALF_HEIGHT);
 		methodName.setBounds(realWidths[0], 0, realWidths[1], HALF_HEIGHT);
 		if (g != null) {
-			g.drawString(":", realWidths[0] + realWidths[1], 20);
+			g.drawString(":", realWidths[0] + realWidths[1], 15);
 		}
 		methodType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
-
+		removeButton.setBounds(width - realWidths[3] + 5, 0, realWidths[3] - 5, HALF_HEIGHT);
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
 	}
 

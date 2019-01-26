@@ -208,6 +208,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		this.component = (ComponentSwing) component;
 
+		addProperty("Type", "Entity");
+		addProperty("Class Name", getName());
+		addProperty("Database Name", getName());
+		addProperty("Notes", getName());
+
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
 		tableCellTypeChange = new TableCellTypeChange(getTableModel(), "Type", this);
 	}
@@ -489,9 +494,13 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	}
 
 	public void initFromDatabase(Table table) {
-		fieldName.setText(table.getTableName());
+		fieldName.setText(table.getTableNameAsCamelCase());
 		propertiesPane.removeAll();
 		methodsPane.removeAll();
+		addProperty("Type", "Entity");
+		addProperty("Class Name", table.getTableNameAsCamelCase());
+		addProperty("Database Name", table.getTableName());
+		addProperty("Notes", table.generateNotes());
 		for (at.mic.dddrt.db.model.TableColumn column : table.getColumns()) {
 			FieldProperty property = addPropertyFromDatabaseColumn(column);
 			propertiesPane.add(property);
@@ -561,6 +570,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	public boolean isInBoundedContext(BoundedContext boundedContext) {
 		return boundedContext != null && this.boundedContext != null &&
 				this.boundedContext == boundedContext;
+	}
+
+	public BoundedContext getBoundedContext() {
+		return boundedContext;
 	}
 
 	public String getBoundedContextUUID() {

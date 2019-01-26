@@ -38,6 +38,8 @@ public class FieldCompositeTypeChangeCommand extends Command {
 		drawPanel.removeElement(originalFieldComposite);
 		drawPanel.getSelector().deselectAll();
 		drawPanel.getSelector().select(newFieldComposite);
+
+		newFieldComposite.updateBoundedContext(originalFieldComposite.getBoundedContext());
 	}
 
 	@Override

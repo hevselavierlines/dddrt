@@ -210,11 +210,11 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyVisibility.setBounds(0, startY, realWidths[0], HEIGHT);
 		propertyName.setBounds(realWidths[0], startY, realWidths[1], HEIGHT);
 		if (g != null) {
-			g.drawString(":", realWidths[0] + realWidths[1], 20);
+			g.drawString(":", realWidths[0] + realWidths[1], 17);
 		}
 		propertyType.setBounds(realWidths[0] + realWidths[1] + 5, startY, realWidths[2], HEIGHT);
 		if (!idProperty) {
-			removeButton.setBounds(width - realWidths[3], startY, realWidths[3], HEIGHT);
+			removeButton.setBounds(width - realWidths[3] + 5, startY, realWidths[3] - 5, HEIGHT);
 		}
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
