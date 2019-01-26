@@ -1,12 +1,18 @@
 package com.baselet.element.ddd;
 
+import java.awt.Image;
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
+import com.baselet.element.TableCellPrimaryKeyBinding;
 
 import at.mic.dddrt.db.model.TableColumn;
 
@@ -37,8 +43,23 @@ public class EntityProperty extends FieldProperty {
 		}
 	}
 
+	public void createPrimaryKey() {
+		try {
+			primaryKeyIcon = ImageIO.read(new File("img/primarykey.png"));
+			primaryKeyIcon = primaryKeyIcon.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+			if (idProperty && primaryKeyIcon != null) {
+				keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		new TableCellPrimaryKeyBinding(properties.getTableModel(), this, "Primary Key");
+	}
+
 	protected EntityProperty() {
 		super();
+		createPrimaryKey();
 	}
 
 	protected EntityProperty(String propertyVisibility,
@@ -46,6 +67,7 @@ public class EntityProperty extends FieldProperty {
 			String propertyName,
 			boolean idProperty) {
 		super(propertyVisibility, propertyType, propertyName, idProperty);
+		createPrimaryKey();
 	}
 
 	@Override

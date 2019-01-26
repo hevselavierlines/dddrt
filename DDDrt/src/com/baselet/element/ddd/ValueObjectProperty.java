@@ -25,6 +25,7 @@ public class ValueObjectProperty extends FieldProperty {
 
 	protected ValueObjectProperty() {
 		super();
+		init();
 	}
 
 	protected ValueObjectProperty(String propertyVisibility,
@@ -32,6 +33,11 @@ public class ValueObjectProperty extends FieldProperty {
 			String propertyName,
 			boolean idProperty) {
 		super(propertyVisibility, propertyType, propertyName, idProperty);
+		init();
+	}
+
+	private void init() {
+		FIXED_WIDTHS[0] = 0;
 	}
 
 	@Override

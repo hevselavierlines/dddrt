@@ -3,14 +3,18 @@ package com.baselet.element.ddd;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
@@ -51,11 +55,12 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected final DataTypeComboBox propertyType;
 	private final VisibilityComboBox propertyVisibility;
 	private final JButton removeButton;
-	private boolean idProperty;
+	protected final JButton keyButton;
+	protected boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
 	public final static int HEIGHT = 20;
-	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
-	private final int[] FIXED_WIDTHS = { 40, 50 };
+	private final int[] PERCENT_WIDTHS = { -1, -1, 60, 40, -1 };
+	protected int[] FIXED_WIDTHS = { 30, 40, 30 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
@@ -65,7 +70,8 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private FieldComposite parentFieldComposite;
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
-	private final PropertiesGridElement properties;
+	protected final PropertiesGridElement properties;
+	protected Image primaryKeyIcon;
 
 	@Override
 	public String toString() {
@@ -107,6 +113,13 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public FieldProperty() {
 		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
 
+		keyButton = new JButton("");
+		keyButton.setBorderPainted(false);
+		keyButton.setFocusPainted(false);
+		keyButton.setContentAreaFilled(false);
+		keyButton.addActionListener(this);
+		add(keyButton);
+
 		propertyVisibility = new VisibilityComboBox();
 		propertyVisibility.setFont(propertyFont);
 		propertyVisibility.addPopupMenuListener(this);
@@ -129,8 +142,19 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyName.getDocument().addDocumentListener(this);
 		add(propertyName);
 
-		removeButton = new JButton("x");
-		removeButton.setFont(propertyFont);
+		removeButton = new JButton("");
+		try {
+			Image img = ImageIO.read(new File("img/x-button.png"));
+			img = img.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+			removeButton.setIcon(new ImageIcon(img));
+			removeButton.setBorderPainted(false);
+			removeButton.setFocusPainted(false);
+			removeButton.setContentAreaFilled(false);
+		} catch (Exception ex) {
+			removeButton.setText("X");
+			removeButton.setFont(propertyFont);
+			System.out.println(ex);
+		}
 		removeButton.addActionListener(this);
 		add(removeButton);
 
@@ -139,6 +163,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		properties.addProperty("Name", propertyName.getText());
 		properties.addProperty("Visibility", getPropertyVisibility());
 		properties.addProperty("Data Type", getPropertyType());
+		properties.addProperty("Primary Key", "false");
 
 		TableCellTextFieldBinding
 				.createBinding(properties.getTableModel(), propertyName, "Name");
@@ -151,13 +176,12 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			String propertyName,
 			boolean idProperty) {
 		this();
-		if (idProperty) {
-			this.remove(removeButton);
-		}
 		this.idProperty = idProperty;
 		setPropertyVisibility(propertyVisibility);
 		setPropertyType(propertyType);
 		setPropertyName(propertyName);
+
+		properties.addProperty("Primary Key", idProperty ? "true" : "false");
 	}
 
 	public String getPropertyName() {
@@ -187,6 +211,24 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		properties.addProperty("Data Type", propertyType);
 	}
 
+	public void setIdProperty(boolean idProperty) {
+		if (this.idProperty == false && idProperty == true) {
+			DEFAULT_TYPES.add(0, UNIQUE_ID);
+		}
+		else if (this.idProperty == true && idProperty == false) {
+			DEFAULT_TYPES.remove(UNIQUE_ID);
+		}
+		this.idProperty = idProperty;
+
+		if (idProperty) {
+			keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+		}
+		else {
+			keyButton.setIcon(null);
+		}
+
+	}
+
 	public String getPropertyVisibility() {
 		return propertyVisibility.getSelectedItem().toString();
 	}
@@ -199,23 +241,30 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected void updateCoordinates(Graphics g, int width) {
 		int startY = 2;
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
-		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1];
+		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1] - FIXED_WIDTHS[2];
 		for (int i = 0; i < realWidths.length; i++) {
 			if (PERCENT_WIDTHS[i] > 0) {
 				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
 			}
 		}
 		realWidths[0] = FIXED_WIDTHS[0];
-		realWidths[3] = FIXED_WIDTHS[1];
-		propertyVisibility.setBounds(0, startY, realWidths[0], HEIGHT);
-		propertyName.setBounds(realWidths[0], startY, realWidths[1], HEIGHT);
+		realWidths[1] = FIXED_WIDTHS[1];
+		realWidths[4] = FIXED_WIDTHS[2];
+		int offsetX = 0;
+		keyButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
+		offsetX += realWidths[0];
+		propertyVisibility.setBounds(offsetX, startY, realWidths[1], HEIGHT);
+		offsetX += realWidths[1];
+		propertyName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
+		offsetX += realWidths[2];
 		if (g != null) {
-			g.drawString(":", realWidths[0] + realWidths[1], 17);
+			g.drawString(":", offsetX, 17);
 		}
-		propertyType.setBounds(realWidths[0] + realWidths[1] + 5, startY, realWidths[2], HEIGHT);
-		if (!idProperty) {
-			removeButton.setBounds(width - realWidths[3] + 5, startY, realWidths[3] - 5, HEIGHT);
-		}
+		offsetX += 5;
+		propertyType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
+		// if (!idProperty) {
+		removeButton.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
+		// }
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
 		// propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
@@ -256,14 +305,19 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
-		if (relationLineRef != null) {
-			dp.removeRelation(relationLineRef);
-			relationLineRef = null;
-			dp.repaint();
+		if (e.getSource() == removeButton) {
+			DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+			if (relationLineRef != null) {
+				dp.removeRelation(relationLineRef);
+				relationLineRef = null;
+				dp.repaint();
+			}
+			if (removeListener != null) {
+				removeListener.actionPerformed(new ActionEvent(this, 0, REMOVED_COMMAND));
+			}
 		}
-		if (removeListener != null) {
-			removeListener.actionPerformed(new ActionEvent(this, 0, REMOVED_COMMAND));
+		else if (e.getSource() == keyButton) {
+			getParentFieldComposite().selectProperty(this);
 		}
 	}
 

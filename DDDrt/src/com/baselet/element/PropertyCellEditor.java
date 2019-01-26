@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -28,6 +29,7 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 
 	private JTextField textField;
 	private JComboBox<String> comboBox;
+	private JCheckBox checkBox;
 	private JTextArea textArea;
 	private JTable table;
 	private int row, column;
@@ -80,6 +82,11 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 			textField.addKeyListener(this);
 			editor = new DefaultCellEditor(textField);
 		}
+		else if ("Primary Key".equals(key)) {
+			checkBox = new JCheckBox();
+			checkBox.addItemListener(this);
+			editor = new DefaultCellEditor(checkBox);
+		}
 		else {
 			textField = new JTextField();
 			textField.getDocument().addDocumentListener(this);
@@ -105,10 +112,19 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 	public void tableChanged(TableModelEvent e) {
 		updating = true;
 		String value = table.getModel().getValueAt(row, column).toString();
-		String editorValue = (String) editor.getCellEditorValue();
-		if (!value.equals(editorValue)) {
-			if (textField != null) {
-				textField.setText(value);
+		Object editorValueObj = editor.getCellEditorValue();
+		if (editorValueObj instanceof String) {
+			String editorValue = (String) editorValueObj;
+			if (!value.equals(editorValue)) {
+				if (textField != null) {
+					textField.setText(value);
+				}
+			}
+		}
+		else if (editorValueObj instanceof Boolean) {
+			boolean editorValue = (Boolean) editorValueObj;
+			if (checkBox != null) {
+				checkBox.setSelected(editorValue);
 			}
 		}
 		updating = false;
@@ -131,7 +147,12 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 	@Override
 	public void itemStateChanged(ItemEvent arg0) {
 		if (!updating) {
-			table.getModel().setValueAt(comboBox.getSelectedItem(), row, column);
+			if (arg0.getSource() instanceof JCheckBox) {
+				table.getModel().setValueAt(checkBox.isSelected() ? "true" : "false", row, column);
+			}
+			else if (arg0.getSource() instanceof JComboBox<?>) {
+				table.getModel().setValueAt(comboBox.getSelectedItem(), row, column);
+			}
 		}
 	}
 }

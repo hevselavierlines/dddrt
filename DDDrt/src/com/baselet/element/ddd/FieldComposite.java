@@ -3,15 +3,19 @@ package com.baselet.element.ddd;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -63,6 +67,7 @@ import at.mic.dddrt.db.model.Table;
 
 public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange {
 
+	private static final int ADD_BUTTON_HEIGHT = 25;
 	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
@@ -98,13 +103,31 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		methodsPane.setLayout(new GridLayout(0, 1));
 		methodsPane.addCollapseListener(this);
 		methodsPane.setTitleFont(compositeFont);
-		propertyAddButton = new MetalButton("+");
-		propertyAddButton.addActionListener(this);
-		propertyAddButton.setFont(compositeFont);
+		propertyAddButton = new MetalButton("");
+		methodAddButton = new MetalButton("");
+		try {
+			Image img = ImageIO.read(new File("img/add_button.png"));
+			img = img.getScaledInstance(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT, Image.SCALE_FAST);
+			propertyAddButton.setIcon(new ImageIcon(img));
+			propertyAddButton.setBorderPainted(false);
+			propertyAddButton.setFocusPainted(false);
+			propertyAddButton.setContentAreaFilled(false);
 
-		methodAddButton = new MetalButton("+");
-		methodAddButton.setFont(compositeFont);
+			methodAddButton.setIcon(new ImageIcon(img));
+			methodAddButton.setBorderPainted(false);
+			methodAddButton.setFocusPainted(false);
+			methodAddButton.setContentAreaFilled(false);
+		} catch (Exception ex) {
+			propertyAddButton.setText("+");
+			propertyAddButton.setFont(compositeFont);
+
+			methodAddButton.setText("+");
+			methodAddButton.setFont(compositeFont);
+		}
+
 		methodAddButton.addActionListener(this);
+		propertyAddButton.addActionListener(this);
+
 		nameValid = true;
 	}
 
@@ -228,7 +251,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		else if (this instanceof ValueObjectComposite) {
 			type = "Value Object";
 		}
-		tableCellTypeChange.preventUpdate();
+		tableCellTypeChange.preventUpdate(type);
 		addProperty("Type", type);
 		tableCellTypeChange.stopPreventUpdate();
 	}
@@ -306,7 +329,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
 
 		double originalLineWidth = drawer.getLineWidth();
-		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
+		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, ADD_BUTTON_HEIGHT);
 
 		// methods
 		startHeight += addHeight + 35;
@@ -321,7 +344,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				addHeight += FieldMethod.HEIGHT;
 			}
 		}
-		methodAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, 30);
+		methodAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, ADD_BUTTON_HEIGHT);
 
 		drawer.setLineWidth(originalLineWidth);
 		drawer.setLineType(LineType.SOLID);

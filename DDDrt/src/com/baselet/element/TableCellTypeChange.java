@@ -13,8 +13,9 @@ public class TableCellTypeChange implements TableModelListener {
 	private int rowNum;
 	private boolean changing;
 
-	public void preventUpdate() {
+	public void preventUpdate(String originalType) {
 		changing = true;
+		this.originalType = originalType;
 	}
 
 	public void stopPreventUpdate() {
