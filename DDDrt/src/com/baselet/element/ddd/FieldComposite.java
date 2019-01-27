@@ -322,9 +322,16 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		int addHeight = 0;
 
 		// properties
-		addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.HEIGHT * zoomLevel + propertiesPane.getTitleHeight() + 5);
+		addHeight = propertiesPane.getTitleHeight();
+		// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
+		for (java.awt.Component component : propertiesPane.getComponents()) {
+			if (component instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) component;
+				addHeight += fieldProperty.getFieldHeight();
+			}
+		}
 		if (propertiesPane.isCollapsed()) {
-			addHeight = propertiesPane.getTitleHeight();
+			addHeight += propertiesPane.getTitleHeight();
 		}
 		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
 

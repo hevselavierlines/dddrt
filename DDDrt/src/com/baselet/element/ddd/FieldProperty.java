@@ -73,6 +73,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected final PropertiesGridElement properties;
 	protected Image primaryKeyIcon;
 
+	public int getFieldHeight() {
+		return HEIGHT + 2;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -285,7 +289,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (selection) {
 			Color originalColor = g.getColor();
 			g.setColor(Color.BLUE);
-			g.drawRect(0, 0, getBounds().width - 1, getBounds().height - 1);
+			g.drawRect(0, 1, getBounds().width - 2, HEIGHT);
 			g.setColor(originalColor);
 		}
 	}
