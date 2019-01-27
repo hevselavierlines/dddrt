@@ -163,7 +163,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		properties.addProperty("Name", propertyName.getText());
 		properties.addProperty("Visibility", getPropertyVisibility());
 		properties.addProperty("Data Type", getPropertyType());
-		properties.addProperty("Primary Key", "false");
 
 		TableCellTextFieldBinding
 				.createBinding(properties.getTableModel(), propertyName, "Name");
@@ -180,8 +179,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		setPropertyVisibility(propertyVisibility);
 		setPropertyType(propertyType);
 		setPropertyName(propertyName);
-
-		properties.addProperty("Primary Key", idProperty ? "true" : "false");
 	}
 
 	public String getPropertyName() {

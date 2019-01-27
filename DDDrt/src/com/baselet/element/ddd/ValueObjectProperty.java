@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import com.baselet.diagram.CurrentDiagram;
 
+import at.mic.dddrt.db.model.TableColumn;
+
 public class ValueObjectProperty extends FieldProperty {
 	private static final long serialVersionUID = -3533886022028899849L;
 
@@ -17,6 +19,18 @@ public class ValueObjectProperty extends FieldProperty {
 			String type = property.getString(JSON_TYPE);
 			String name = property.getString(JSON_NAME);
 			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
+			return new ValueObjectProperty(visibility, type, name, idProperty);
+		} catch (Exception ex) {
+			return new ValueObjectProperty();
+		}
+	}
+
+	public static ValueObjectProperty createFromDatabaseColumn(TableColumn column) {
+		try {
+			String visibility = "private";
+			String type = column.getColumnType();
+			String name = column.getColumnName();
+			boolean idProperty = column.isIDColumn();
 			return new ValueObjectProperty(visibility, type, name, idProperty);
 		} catch (Exception ex) {
 			return new ValueObjectProperty();

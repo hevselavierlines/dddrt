@@ -49,6 +49,10 @@ public class EntityProperty extends FieldProperty {
 			primaryKeyIcon = primaryKeyIcon.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
 			if (idProperty && primaryKeyIcon != null) {
 				keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+				properties.addProperty("Primary Key", "true");
+			}
+			else {
+				properties.addProperty("Primary Key", "false");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
