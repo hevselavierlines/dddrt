@@ -44,6 +44,7 @@ import com.baselet.diagram.Notifier;
 import com.baselet.diagram.PaletteHandler;
 import com.baselet.diagram.io.OpenFileChooser;
 import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.Service;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.BaseGUI;
@@ -391,6 +392,9 @@ public class Main implements CanCloseProgram, CanOpenDiagram {
 			}
 			for (FieldComposite fieldComposite : dp.getHelperAndSub(FieldComposite.class)) {
 				fieldComposite.initBoundedContext(dp);
+			}
+			for (Service service : dp.getHelper(Service.class)) {
+				service.initBoundedContext(dp);
 			}
 		}
 	}

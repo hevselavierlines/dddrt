@@ -26,6 +26,7 @@ import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.PaletteHandler;
 import com.baselet.diagram.SelectorFrame;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
@@ -323,7 +324,7 @@ public class GridElementListener extends UniversalListener {
 			DrawPanel drawPanel = handler.getDrawPanel();
 			if (movingElement instanceof BoundedContext) {
 				BoundedContext bc = (BoundedContext) movingElement;
-				for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
+				for (NewGridElement fieldComposite : drawPanel.getBoundedContextChildren(bc)) {
 					if (!entitiesToBeMoved.contains(fieldComposite) && (directions == null || directions.isEmpty())) {
 						moveCommands.add(new Move(directions, fieldComposite, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables, true));
 					}

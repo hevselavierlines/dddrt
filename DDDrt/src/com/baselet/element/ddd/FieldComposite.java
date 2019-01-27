@@ -381,7 +381,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		DrawPanel drawPanel = component.getDrawPanel();
 		if (drawPanel != null) {
 			for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
-				if (boundedContext.getRectangle().contains(getRectangle())) {
+				if (boundedContext.getRectangle().intersects(getRectangle())) {
 					boundedContext.setBorderThick();
 				}
 				else {
@@ -402,7 +402,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				BoundedContext rightContext = null;
 				for (BoundedContext boundedContext : drawPanel.getHelper(BoundedContext.class)) {
 					boundedContext.setBorderNothing();
-					if (boundedContext.getRectangle().contains(rect)) {
+					if (boundedContext.getRectangle().intersects(rect)) {
 						rightContext = boundedContext;
 					}
 				}

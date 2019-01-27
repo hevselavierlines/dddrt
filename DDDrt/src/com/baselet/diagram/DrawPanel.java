@@ -39,6 +39,7 @@ import com.baselet.control.util.Utils;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.Service;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -210,11 +211,16 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		return returnList;
 	}
 
-	public List<com.baselet.element.ddd.FieldComposite> getBoundedContextChildren(BoundedContext boundedContext) {
-		List<FieldComposite> ret = new ArrayList<FieldComposite>();
+	public List<NewGridElement> getBoundedContextChildren(BoundedContext boundedContext) {
+		List<NewGridElement> ret = new ArrayList<NewGridElement>();
 		for (FieldComposite fieldComposite : getHelperAndSub(FieldComposite.class)) {
 			if (fieldComposite.isInBoundedContext(boundedContext)) {
 				ret.add(fieldComposite);
+			}
+		}
+		for (Service service : getHelper(Service.class)) {
+			if (service.isInBoundedContext(boundedContext)) {
+				ret.add(service);
 			}
 		}
 		return ret;

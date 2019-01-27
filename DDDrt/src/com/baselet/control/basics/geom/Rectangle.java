@@ -11,6 +11,10 @@ public class Rectangle {
 		super();
 	}
 
+	public java.awt.Rectangle convertToAwt() {
+		return new java.awt.Rectangle(x, y, width, height);
+	}
+
 	/**
 	 * TODO as with DimensionDouble and PointDouble, Rectangle should also contain only double values in future!
 	 */

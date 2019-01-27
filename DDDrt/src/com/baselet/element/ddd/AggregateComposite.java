@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.baselet.control.enums.ElementId;
+import com.baselet.element.NewGridElement;
 
 public class AggregateComposite extends EntityComposite {
 	@Override
@@ -17,7 +18,7 @@ public class AggregateComposite extends EntityComposite {
 	public boolean isRootAggregates() {
 		if (boundedContext != null) {
 			List<AggregateComposite> aggregates = new LinkedList<AggregateComposite>();
-			for (FieldComposite fieldComp : getComponent().getDrawPanel().getBoundedContextChildren(boundedContext)) {
+			for (NewGridElement fieldComp : getComponent().getDrawPanel().getBoundedContextChildren(boundedContext)) {
 				if (fieldComp instanceof AggregateComposite) {
 					aggregates.add((AggregateComposite) fieldComp);
 				}

@@ -5,6 +5,7 @@ import com.baselet.element.NewGridElement;
 import com.baselet.element.ddd.AggregateComposite;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.EntityComposite;
+import com.baselet.element.ddd.Service;
 import com.baselet.element.ddd.ValueObjectComposite;
 import com.baselet.element.elementnew.plot.PlotGrid;
 import com.baselet.element.elementnew.uml.ActivityObject;
@@ -78,6 +79,8 @@ public abstract class ElementFactory {
 				return new DDDRelation();
 			case DDDBoundedContext:
 				return new BoundedContext();
+			case DDDService:
+				return new Service();
 			default:
 				throw new RuntimeException("Unknown class id: " + id);
 		}

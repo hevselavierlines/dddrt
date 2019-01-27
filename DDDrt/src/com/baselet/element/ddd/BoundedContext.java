@@ -25,6 +25,7 @@ import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ComponentSwing;
+import com.baselet.element.NewGridElement;
 import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.facet.Facet;
@@ -103,6 +104,7 @@ public class BoundedContext extends PropertiesGridElement {
 			p.addPoint(rect.width, 0);
 			p.addPoint(rect.width, rect.height);
 			p.addPoint(0, rect.height);
+			p.addPoint(0, 0);
 
 			return p;
 		}
@@ -140,8 +142,6 @@ public class BoundedContext extends PropertiesGridElement {
 		drawer.setLineType(LineType.DASHED);
 		drawer.drawRectangleRound(0, 0, w, h, 25);
 		drawer.setLineType(originalLineType);
-		// drawer.drawLines(p(0, 0), p(w - CORNER, 0), p(w, CORNER), p(w, h), p(0, h), p(0, 0));
-		// drawer.drawLines(p(w - CORNER, 0), p(w - CORNER, CORNER), p(w, CORNER));
 
 		state.setStickingPolygonGenerator(stickingPolygonGenerator);
 
@@ -234,9 +234,12 @@ public class BoundedContext extends PropertiesGridElement {
 	public boolean validateNames() {
 		DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
 		HashMap<String, FieldComposite> boundedContextNames = new HashMap<String, FieldComposite>();
-		for (FieldComposite fieldComposite : drawPanel.getBoundedContextChildren(this)) {
-			FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
-			fieldComposite.setNameValidity(previous);
+		for (NewGridElement gridElement : drawPanel.getBoundedContextChildren(this)) {
+			if (gridElement instanceof FieldComposite) {
+				FieldComposite fieldComposite = (FieldComposite) gridElement;
+				FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
+				fieldComposite.setNameValidity(previous);
+			}
 		}
 		return true;
 	}

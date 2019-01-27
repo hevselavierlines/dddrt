@@ -52,14 +52,26 @@ Notes\=\Aggregate
   <element>
   	<id>DDDBoundedContext</id>
     <coordinates>
-      <x>0</x>
-      <y>700</y>
+      <x>100</x>
+      <y>560</y>
       <w>480</w>
-      <h>390</h>
+      <h>400</h>
     </coordinates>
     <panel_attributes>Context Name\=\Bounded Context
 Package Name\=\com.example.boundedContext
     </panel_attributes>
     <additional_attributes></additional_attributes>
+  </element>
+  
+  <element>
+  	<id>DDDService</id>
+  	<coordinates>
+  		<x>140</x>
+  		<y>960</y>
+  		<w>80</w>
+  		<h>80</h>
+  	</coordinates>
+  	<panel_attributes></panel_attributes>
+  	<additional_attributes></additional_attributes>
   </element>
 </diagram>
