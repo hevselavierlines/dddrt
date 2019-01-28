@@ -231,10 +231,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		this.component = (ComponentSwing) component;
 
-		addProperty("Type", "Entity");
-		addProperty("Class Name", getName());
-		addProperty("Database Name", getName());
-		addProperty("Notes", getName());
+		addProperty("Type", "Entity", false);
+		addProperty("Class Name", getName(), false);
+		addProperty("Database Name", getName(), false);
+		addProperty("Notes", getName(), false);
 
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
 		tableCellTypeChange = new TableCellTypeChange(getTableModel(), "Type", this);

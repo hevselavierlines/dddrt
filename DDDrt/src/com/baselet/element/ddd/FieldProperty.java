@@ -164,9 +164,9 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 		updateCoordinates(null, 200);
 		properties = new PropertiesGridElement();
-		properties.addProperty("Name", propertyName.getText());
-		properties.addProperty("Visibility", getPropertyVisibility());
-		properties.addProperty("Data Type", getPropertyType());
+		properties.addProperty("Name", propertyName.getText(), false);
+		properties.addProperty("Visibility", getPropertyVisibility(), false);
+		properties.addProperty("Data Type", getPropertyType(), false);
 
 		TableCellTextFieldBinding
 				.createBinding(properties.getTableModel(), propertyName, "Name");
@@ -191,7 +191,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public void setPropertyName(String propertyName) {
 		this.propertyName.setText(propertyName);
-		properties.addProperty("Name", propertyName);
+		properties.addProperty("Name", propertyName, true);
 	}
 
 	public String getPropertyType() {
@@ -209,7 +209,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			DEFAULT_TYPES.add(0, UNIQUE_ID);
 		}
 		this.propertyType.setSelectedItem(propertyType);
-		properties.addProperty("Data Type", propertyType);
+		properties.addProperty("Data Type", propertyType, true);
 	}
 
 	public void setIdProperty(boolean idProperty) {
@@ -236,7 +236,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public void setPropertyVisibility(String propertyVisibility) {
 		this.propertyVisibility.setSelection(propertyVisibility);
-		properties.addProperty("Visibility", propertyVisibility);
+		properties.addProperty("Visibility", propertyVisibility, true);
 	}
 
 	protected void updateCoordinates(Graphics g, int width) {

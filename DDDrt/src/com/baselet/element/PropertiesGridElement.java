@@ -69,6 +69,10 @@ public class PropertiesGridElement extends NewGridElement {
 	}
 
 	public void addProperty(String key, String value) {
+		addProperty(key, value, true);
+	}
+
+	public void addProperty(String key, String value, boolean override) {
 		if ("Type".equals(key)) {
 			if (this instanceof AggregateComposite) {
 				value = "Aggregate";
@@ -85,7 +89,9 @@ public class PropertiesGridElement extends NewGridElement {
 			tableModel.addRow(new String[] { key, value });
 		}
 		else {
-			tableModel.setValueAt(value, keyRow, 1);
+			if (override) {
+				tableModel.setValueAt(value, keyRow, 1);
+			}
 		}
 	}
 
@@ -115,7 +121,7 @@ public class PropertiesGridElement extends NewGridElement {
 			for (String line : panelAttributes.split("\n")) {
 				String[] keyValue = line.split("\\\\=\\\\");
 				if (keyValue.length == 2) {
-					addProperty(keyValue[0], keyValue[1]);
+					addProperty(keyValue[0], keyValue[1], true);
 				}
 			}
 		}
