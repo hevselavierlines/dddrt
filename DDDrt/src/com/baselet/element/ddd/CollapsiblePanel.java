@@ -24,6 +24,8 @@ public class CollapsiblePanel extends JLayeredPane {
 	private String title;
 	TitledBorder border;
 	private final List<ICollapseListener> collapseListeners;
+	private Font fontComposite;
+	public static final int DEFAULT_FONT_SIZE = 15;
 
 	public CollapsiblePanel(String title) {
 		this.title = title;
@@ -32,9 +34,12 @@ public class CollapsiblePanel extends JLayeredPane {
 		// addMouseListener(mouseListener);
 		collapseListeners = new LinkedList<ICollapseListener>();
 		collapsed = false;
+
+		fontComposite = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
 	}
 
 	public void setTitleFont(Font font) {
+		fontComposite = font;
 		border.setTitleFont(font);
 	}
 
@@ -56,6 +61,7 @@ public class CollapsiblePanel extends JLayeredPane {
 			updateBorderTitle();
 		}
 	};
+	private double currentZoomLevel = 1.0;
 
 	public String getTitle() {
 		return title;
@@ -151,7 +157,7 @@ public class CollapsiblePanel extends JLayeredPane {
 	}
 
 	public int getTitleHeight() {
-		return 30;
+		return (int) (currentZoomLevel * 30);
 	}
 
 	@Override
@@ -171,6 +177,13 @@ public class CollapsiblePanel extends JLayeredPane {
 		for (ICollapseListener listener : collapseListeners) {
 			listener.collapseStateChange(collapsed);
 		}
+	}
+
+	public void setZoomLevel(double zoomLevel) {
+		currentZoomLevel = zoomLevel;
+		int newFontSize = (int) (currentZoomLevel * DEFAULT_FONT_SIZE);
+		fontComposite = fontComposite.deriveFont(Font.PLAIN, newFontSize);
+		border.setTitleFont(fontComposite);
 	}
 
 }

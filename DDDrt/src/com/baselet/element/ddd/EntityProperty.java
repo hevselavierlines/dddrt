@@ -1,5 +1,6 @@
 package com.baselet.element.ddd;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import at.mic.dddrt.db.model.TableColumn;
 
 public class EntityProperty extends FieldProperty {
 	private static final long serialVersionUID = 6298444413188448662L;
+	public static Image PRIMARY_KEY_ICON;
 
 	public static EntityProperty createFromJSON(JSONObject property) {
 		try {
@@ -45,8 +47,10 @@ public class EntityProperty extends FieldProperty {
 
 	public void createPrimaryKey() {
 		try {
-			primaryKeyIcon = ImageIO.read(new File("img/primarykey.png"));
-			primaryKeyIcon = primaryKeyIcon.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+			if (PRIMARY_KEY_ICON == null) {
+				PRIMARY_KEY_ICON = ImageIO.read(new File("img/primarykey.png"));
+			}
+			primaryKeyIcon = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
 			if (idProperty && primaryKeyIcon != null) {
 				keyButton.setIcon(new ImageIcon(primaryKeyIcon));
 				properties.addProperty("Primary Key", "true");
@@ -112,6 +116,14 @@ public class EntityProperty extends FieldProperty {
 		else {
 			propertyType.setSelectedIndex(0);
 		}
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+
+		Image img = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+		keyButton.setIcon(new ImageIcon(img));
 	}
 
 }

@@ -3,15 +3,19 @@ package com.baselet.element.ddd;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
@@ -38,20 +42,26 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final JTextField methodName;
 	private final JComboBox<String> methodType;
 	private final VisibilityComboBox methodVisibility;
-	public final static int HEIGHT = 40;
-	public final static int HALF_HEIGHT = HEIGHT / 2;
+
+	public final static int DEFAULT_HEIGHT = 40;
+	public final static int DEFAULT_HALF_HEIGHT = DEFAULT_HEIGHT / 2;
+	public final static int DEFAULT_FONT_SIZE = 12;
+	private int HEIGHT = 40;
+	private int HALF_HEIGHT = HEIGHT / 2;
 	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
-	private final int[] FIXED_WIDTHS = { 40, 50 };
+	private final int[] FIXED_WIDTHS = { 40, 30 };
 	private final JTextField textParameters;
 	private final JButton removeButton;
 	private ActionListener removeListener;
 	private FieldComposite parentFieldComposite;
 	private String originalString;
 	private Object originalSelection;
-	private final Font methodFont;
+	private Font methodFont;
+	private double currentZoomLevel;
+	private static Image deleteButton;
 
 	public FieldMethod() {
-		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
+		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
 
 		methodVisibility = new VisibilityComboBox();
 		methodVisibility.addPopupMenuListener(this);
@@ -97,8 +107,21 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		textParameters.addFocusListener(this);
 		add(textParameters);
 
-		removeButton = new JButton("x");
-		removeButton.setFont(methodFont);
+		removeButton = new JButton("");
+		try {
+			if (deleteButton == null) {
+				deleteButton = ImageIO.read(new File("img/x-button.png"));
+			}
+			Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
+			removeButton.setIcon(new ImageIcon(img));
+			removeButton.setBorderPainted(false);
+			removeButton.setFocusPainted(false);
+			removeButton.setContentAreaFilled(false);
+		} catch (Exception ex) {
+			removeButton.setText("X");
+			removeButton.setFont(methodFont);
+			System.out.println(ex);
+		}
 		removeButton.addActionListener(this);
 		add(removeButton);
 	}
@@ -111,16 +134,24 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		setMethodParameters(parameters);
 	}
 
+	public int getFieldHeight() {
+		return HEIGHT + 2;
+	}
+
 	private void updateCoordinates(Graphics g, int width) {
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
-		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1];
+		int[] fixedWidths = new int[FIXED_WIDTHS.length];
+		for (int i = 0; i < fixedWidths.length; i++) {
+			fixedWidths[i] = (int) (currentZoomLevel * FIXED_WIDTHS[i]);
+		}
+		int percentFullWidth = width - fixedWidths[0] - fixedWidths[1];
 		for (int i = 0; i < realWidths.length; i++) {
 			if (PERCENT_WIDTHS[i] > 0) {
 				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
 			}
 		}
-		realWidths[0] = FIXED_WIDTHS[0];
-		realWidths[3] = FIXED_WIDTHS[1];
+		realWidths[0] = fixedWidths[0];
+		realWidths[3] = fixedWidths[1];
 		methodVisibility.setBounds(0, 0, realWidths[0], HALF_HEIGHT);
 		methodName.setBounds(realWidths[0], 0, realWidths[1], HALF_HEIGHT);
 		if (g != null) {
@@ -128,6 +159,8 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		}
 		methodType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
 		removeButton.setBounds(width - realWidths[3] + 5, 0, realWidths[3] - 5, HALF_HEIGHT);
+		Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
+		removeButton.setIcon(new ImageIcon(img));
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
 	}
 
@@ -398,5 +431,20 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 										originalString));
 			}
 		}
+	}
+
+	public void setZoomLevel(double zoomLevel) {
+		currentZoomLevel = zoomLevel;
+
+		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
+		HALF_HEIGHT = HEIGHT / 2;
+
+		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
+		methodFont = methodFont.deriveFont(Font.PLAIN, newFontSize);
+
+		methodName.setFont(methodFont);
+		methodVisibility.setFont(methodFont);
+		methodType.setFont(methodFont);
+		textParameters.setFont(methodFont);
 	}
 }

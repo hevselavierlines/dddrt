@@ -46,14 +46,11 @@ import com.baselet.element.TableCellTypeChange;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
-import com.baselet.element.facet.common.SeparatorLineWithHalignChangeFacet;
-import com.baselet.element.facet.specific.ActiveClassFacet;
-import com.baselet.element.facet.specific.InnerClassFacet;
-import com.baselet.element.facet.specific.TemplateClassFacet;
+import com.baselet.element.facet.common.SeparatorLineFacet;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 import com.baselet.element.relation.DDDRelation;
-import com.baselet.element.settings.SettingsManualResizeTop;
+import com.baselet.element.settings.SettingsManualresizeCenter;
 import com.baselet.element.sticking.StickableMap;
 import com.baselet.gui.CurrentGui;
 import com.baselet.gui.command.AddFieldElement;
@@ -85,6 +82,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private final Font compositeFont;
 	private FieldProperty selection;
 	private TableCellTypeChange tableCellTypeChange;
+	protected static Image addButtomImage;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -106,8 +104,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		propertyAddButton = new MetalButton("");
 		methodAddButton = new MetalButton("");
 		try {
-			Image img = ImageIO.read(new File("img/add_button.png"));
-			img = img.getScaledInstance(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT, Image.SCALE_FAST);
+			if (addButtomImage == null) {
+				addButtomImage = ImageIO.read(new File("img/add_button.png"));
+			}
+			Image img = addButtomImage.getScaledInstance(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT, Image.SCALE_FAST);
 			propertyAddButton.setIcon(new ImageIcon(img));
 			propertyAddButton.setBorderPainted(false);
 			propertyAddButton.setFocusPainted(false);
@@ -262,22 +262,22 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		int startHeight = 0;
 		int addHeight = 0;
 		// properties
-		addHeight = propertiesPane.getComponentCount() * FieldProperty.HEIGHT + propertiesPane.getTitleHeight() + 5;
+		addHeight = propertiesPane.getComponentCount() * FieldProperty.DEFAULT_HEIGHT + propertiesPane.getTitleHeight() + 5;
 		if (propertiesPane.isCollapsed()) {
 			addHeight = propertiesPane.getTitleHeight();
 		}
 		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getTitleHeight() + 5;
 		if (methodsPane.isCollapsed()) {
 			addHeight = methodsPane.getTitleHeight();
 		}
 		// methods
 		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getTitleHeight() + 5;
 		if (methodsPane.isCollapsed()) {
 			addHeight = methodsPane.getTitleHeight();
 		}
-		return startHeight + addHeight + FieldMethod.HEIGHT;
+		return startHeight + addHeight + FieldMethod.DEFAULT_HEIGHT;
 	}
 
 	@Override
@@ -300,12 +300,15 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		DrawHandler drawer = state.getDrawer();
 		double originalFontSize = drawer.getFontSize();
 		drawer.setFontSize(10.0);
+		int offsetY = 0;
+		offsetY += (int) (zoomLevel * 15);
 		drawer.print(getTitle(), new PointDouble(realWidth / 2, 15), AlignHorizontal.CENTER);
 
 		drawer.setFontSize(20.0);
 		Font currentFont = new Font(compositeFont.getFontName(), compositeFont.getStyle(), (int) (compositeFont.getSize() * zoomLevel));
 		fieldName.setFont(currentFont);
-		fieldName.setBounds(10, 15, elementWidth - 20, (int) (30 * zoomLevel));
+		fieldName.setBounds(10, offsetY, elementWidth - 20, (int) (30 * zoomLevel));
+		offsetY += (int) (30 * zoomLevel);
 		if (nameValid) {
 			fieldName.setBackground(Color.WHITE);
 			fieldName.setForeground(Color.BLACK);
@@ -318,50 +321,76 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		drawer.setLineType(LineType.DOTTED);
 		drawer.drawLine(0, 45, realWidth, 45);
 
-		int startHeight = 45;
+		int startHeight = offsetY;
 		int addHeight = 0;
 
+		propertiesPane.setVisible(true);
+
 		// properties
+		propertiesPane.setZoomLevel(zoomLevel);
 		addHeight = propertiesPane.getTitleHeight();
 		// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
 		for (java.awt.Component component : propertiesPane.getComponents()) {
 			if (component instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) component;
+				fieldProperty.setZoomLevel(zoomLevel);
 				addHeight += fieldProperty.getFieldHeight();
 			}
 		}
-		if (propertiesPane.isCollapsed()) {
-			addHeight += propertiesPane.getTitleHeight();
-		}
+		// if (propertiesPane.isCollapsed()) {
+		// addHeight += propertiesPane.getTitleHeight();
+		// }
 		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
 
 		double originalLineWidth = drawer.getLineWidth();
-		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, ADD_BUTTON_HEIGHT);
+		propertyAddButton.setVisible(true);
+		int addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
+		Image img = addButtomImage.getScaledInstance(addButtonHeight, addButtonHeight, Image.SCALE_FAST);
+		propertyAddButton.setIcon(new ImageIcon(img));
+		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
 
 		// methods
-		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
-		if (methodsPane.isCollapsed()) {
-			addHeight = methodsPane.getTitleHeight();
-		}
-		methodsPane.setBounds(0, startHeight, elementWidth, addHeight);
-		for (java.awt.Component comp : component.getAllComponents()) {
-			if (comp instanceof FieldMethod) {
-				comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldMethod.HEIGHT);
-				addHeight += FieldMethod.HEIGHT;
+		startHeight += addHeight + addButtonHeight;
+		addHeight = methodsPane.getTitleHeight();
+		methodsPane.setVisible(true);
+		methodsPane.setZoomLevel(zoomLevel);
+		for (java.awt.Component component : methodsPane.getComponents()) {
+			if (component instanceof FieldMethod) {
+				FieldMethod fieldMethod = (FieldMethod) component;
+				fieldMethod.setZoomLevel(zoomLevel);
+				addHeight += fieldMethod.getFieldHeight();
 			}
 		}
-		methodAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, ADD_BUTTON_HEIGHT);
+		// addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
+		// if (methodsPane.isCollapsed()) {
+		// addHeight = methodsPane.getTitleHeight();
+		// }
+		methodsPane.setBounds(0, startHeight, elementWidth, addHeight);
+		// for (java.awt.Component comp : component.getAllComponents()) {
+		// if (comp instanceof FieldMethod) {
+		// comp.setBounds(2, startHeight + addHeight, elementWidth - 4, FieldMethod.HEIGHT);
+		// addHeight += FieldMethod.HEIGHT;
+		// }
+		// }
+		methodAddButton.setVisible(true);
+		startHeight += addHeight;
+		methodAddButton.setIcon(new ImageIcon(img));
+		methodAddButton.setBounds(10, startHeight, elementWidth - 20, addButtonHeight);
+
+		startHeight += addButtonHeight + 10;
 
 		drawer.setLineWidth(originalLineWidth);
 		drawer.setLineType(LineType.SOLID);
 		drawer.setFontSize(originalFontSize);
-		drawer.drawRectangle(0, 0, realWidth, realHeight);
 
-		totalHeight = startHeight + addHeight + FieldMethod.HEIGHT;
+		totalHeight = startHeight;
 
 		updateCompositeHeight();
+
+		drawer.drawRectangle(0, 0, realWidth, getRealRectangle().height);
+
 		validateNames();
+
 	}
 
 	public void validateNames() {
@@ -465,10 +494,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	@Override
 	protected Settings createSettings() {
-		return new SettingsManualResizeTop() {
+		return new SettingsManualresizeCenter() {
+
 			@Override
 			protected List<Facet> createFacets() {
-				return listOf(super.createFacets(), InnerClassFacet.INSTANCE, SeparatorLineWithHalignChangeFacet.INSTANCE, ActiveClassFacet.INSTANCE, TemplateClassFacet.INSTANCE);
+				return listOf(super.createFacets(), SeparatorLineFacet.INSTANCE);
 			}
 		};
 	}

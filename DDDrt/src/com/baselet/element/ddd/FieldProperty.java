@@ -58,13 +58,15 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected final JButton keyButton;
 	protected boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
-	public final static int HEIGHT = 20;
+	protected int HEIGHT = 20;
+	public final static int DEFAULT_HEIGHT = 20;
+	public final static int DEFAULT_FONT_SIZE = 12;
 	private final int[] PERCENT_WIDTHS = { -1, -1, 60, 40, -1 };
 	protected int[] FIXED_WIDTHS = { 30, 40, 30 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
-	private final Font propertyFont;
+	private Font propertyFont;
 	private String originalString;
 	private Object originalSelection;
 	private FieldComposite parentFieldComposite;
@@ -72,9 +74,12 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private boolean selection;
 	protected final PropertiesGridElement properties;
 	protected Image primaryKeyIcon;
+	private double currentZoomLevel;
+	public static Image deleteButton;
+	public static Image primaryKeyButton;
 
 	public int getFieldHeight() {
-		return HEIGHT + 2;
+		return HEIGHT + 3;
 	}
 
 	@Override
@@ -148,8 +153,10 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 		removeButton = new JButton("");
 		try {
-			Image img = ImageIO.read(new File("img/x-button.png"));
-			img = img.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+			if (deleteButton == null) {
+				deleteButton = ImageIO.read(new File("img/x-button.png"));
+			}
+			Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
 			removeButton.setIcon(new ImageIcon(img));
 			removeButton.setBorderPainted(false);
 			removeButton.setFocusPainted(false);
@@ -242,15 +249,19 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected void updateCoordinates(Graphics g, int width) {
 		int startY = 2;
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
-		int percentFullWidth = width - FIXED_WIDTHS[0] - FIXED_WIDTHS[1] - FIXED_WIDTHS[2];
+		int[] fixedWidths = new int[FIXED_WIDTHS.length];
+		for (int i = 0; i < fixedWidths.length; i++) {
+			fixedWidths[i] = (int) (currentZoomLevel * FIXED_WIDTHS[i]);
+		}
+		int percentFullWidth = width - fixedWidths[0] - fixedWidths[1] - fixedWidths[2];
 		for (int i = 0; i < realWidths.length; i++) {
 			if (PERCENT_WIDTHS[i] > 0) {
 				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
 			}
 		}
-		realWidths[0] = FIXED_WIDTHS[0];
-		realWidths[1] = FIXED_WIDTHS[1];
-		realWidths[4] = FIXED_WIDTHS[2];
+		realWidths[0] = fixedWidths[0];
+		realWidths[1] = fixedWidths[1];
+		realWidths[4] = fixedWidths[2];
 		int offsetX = 0;
 		keyButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
 		offsetX += realWidths[0];
@@ -259,12 +270,15 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
 		offsetX += realWidths[2];
 		if (g != null) {
-			g.drawString(":", offsetX, 17);
+			g.setFont(propertyFont);
+			g.drawString(":", offsetX, (int) (currentZoomLevel * 17));
 		}
 		offsetX += 5;
 		propertyType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
 		// if (!idProperty) {
 		removeButton.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
+		Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+		removeButton.setIcon(new ImageIcon(img));
 		// }
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
@@ -525,6 +539,18 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public PropertiesGridElement getProperties() {
 		return properties;
+	}
+
+	public void setZoomLevel(double zoomLevel) {
+		currentZoomLevel = zoomLevel;
+		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
+
+		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
+		propertyFont = propertyFont.deriveFont(Font.PLAIN, newFontSize);
+
+		propertyName.setFont(propertyFont);
+		propertyVisibility.setFont(propertyFont);
+		propertyType.setFont(propertyFont);
 	}
 
 }
