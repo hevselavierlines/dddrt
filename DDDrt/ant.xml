@@ -47,7 +47,6 @@
 	
 	<!-- Generates the parser from the grammar -->
 	<target name="gen_custom_drawing_parser" >
-		<ant dir="${elements.dir}" target="javacc_custdraw" />
 	</target>
 
 	<!-- Update MANIFEST.MF and includes new version and libs -->

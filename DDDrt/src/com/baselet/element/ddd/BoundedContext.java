@@ -146,6 +146,7 @@ public class BoundedContext extends PropertiesGridElement {
 		state.setStickingPolygonGenerator(stickingPolygonGenerator);
 
 		Rectangle boundsRect = getRectangle();
+		Rectangle boundsRealRectangle = getRealRectangle();
 		contextName.setBounds(boundsRect.width / 2 - 100, 20, 200, 15);
 		packageName.setBounds(boundsRect.width / 2 - 150, 35, 300, 10);
 
@@ -155,12 +156,12 @@ public class BoundedContext extends PropertiesGridElement {
 		if (borderStyle == BORDER_STYLE.NORMAL) {
 			drawer.setLineWidth(2.0f);
 			drawer.setForegroundColor(ColorOwn.BLUE);
-			drawer.drawRectangleRound(1, 1, boundsRect.width - 2, boundsRect.height - 2, 25);
+			drawer.drawRectangleRound(1, 1, boundsRealRectangle.width - 2, boundsRealRectangle.height - 2, 25);
 		}
 		else if (borderStyle == BORDER_STYLE.THICK) {
 			drawer.setLineWidth(5.0f);
 			drawer.setForegroundColor(ColorOwn.BLUE);
-			drawer.drawRectangleRound(3, 3, boundsRect.width - 6, boundsRect.height - 6, 25);
+			drawer.drawRectangleRound(3, 3, boundsRealRectangle.width - 6, boundsRealRectangle.height - 6, 25);
 		}
 		drawer.setLineWidth(lineWidth);
 		drawer.setForegroundColor(lineColor);

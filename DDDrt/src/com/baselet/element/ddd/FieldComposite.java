@@ -573,6 +573,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		addProperty("Notes", table.generateNotes());
 		for (at.mic.dddrt.db.model.TableColumn column : table.getColumns()) {
 			FieldProperty property = addPropertyFromDatabaseColumn(column);
+			property.setRemovedListener(this);
 			propertiesPane.add(property);
 		}
 	}
