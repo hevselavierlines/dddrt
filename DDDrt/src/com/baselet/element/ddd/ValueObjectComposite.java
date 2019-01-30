@@ -1,5 +1,7 @@
 package com.baselet.element.ddd;
 
+import java.awt.Color;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -75,6 +77,11 @@ public class ValueObjectComposite extends FieldComposite {
 	@Override
 	protected FieldProperty addPropertyFromDatabaseColumn(TableColumn column) {
 		return ValueObjectProperty.createFromDatabaseColumn(column);
+	}
+
+	@Override
+	protected Color getBackgroundColor() {
+		return new Color(0xced7dc);
 	}
 
 }

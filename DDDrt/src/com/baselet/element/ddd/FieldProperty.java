@@ -310,7 +310,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void print(Graphics g) {
-		updateCoordinates(g, getWidth());
+		updateCoordinates(g, getBounds().width);
 		super.print(g);
 	}
 

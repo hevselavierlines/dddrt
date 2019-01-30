@@ -27,4 +27,6 @@ public interface Component {
 	public DrawPanel getDrawPanel();
 
 	Controller getController();
+
+	void setDrawBackground(boolean background);
 }

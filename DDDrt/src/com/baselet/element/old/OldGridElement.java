@@ -638,4 +638,7 @@ public abstract class OldGridElement extends JComponent implements GridElement, 
 		return false;
 	}
 
+	@Override
+	public void setDrawBackground(boolean background) {}
+
 }

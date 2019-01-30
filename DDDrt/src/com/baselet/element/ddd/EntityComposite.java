@@ -1,5 +1,7 @@
 package com.baselet.element.ddd;
 
+import java.awt.Color;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,6 +24,8 @@ public class EntityComposite extends FieldComposite {
 	@Override
 	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
 		super.init(bounds, panelAttributes, additionalAttributes, component, handler);
+
+		this.component.setBackground(Color.GREEN);
 	}
 
 	@Override
@@ -73,6 +77,11 @@ public class EntityComposite extends FieldComposite {
 	@Override
 	protected FieldMethod createMethod() {
 		return new FieldMethod();
+	}
+
+	@Override
+	protected Color getBackgroundColor() {
+		return new Color(0xffefcd);
 	}
 
 }

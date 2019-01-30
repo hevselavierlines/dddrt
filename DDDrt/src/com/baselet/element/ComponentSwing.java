@@ -3,6 +3,7 @@ package com.baselet.element;
 import java.awt.Graphics;
 
 import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
 
 import com.baselet.control.Main;
 import com.baselet.control.basics.Converter;
@@ -22,6 +23,8 @@ public class ComponentSwing extends JComponent implements Component {
 	private final DrawHandlerSwing metaDrawer;
 	private final NewGridElement gridElement;
 
+	private boolean drawBackground;
+
 	public ComponentSwing(NewGridElement gridElement) {
 		this.gridElement = gridElement;
 		drawer = new DrawHandlerSwing(gridElement);
@@ -30,6 +33,10 @@ public class ComponentSwing extends JComponent implements Component {
 
 	@Override
 	public void paint(Graphics g) {
+		if (drawBackground) {
+			g.setColor(getBackground());
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
 		super.paint(g);
 		drawer.setGraphics(g);
 		metaDrawer.setGraphics(g);
@@ -123,7 +130,7 @@ public class ComponentSwing extends JComponent implements Component {
 
 	@Override
 	public void addComponent(java.awt.Component component) {
-		add(component);
+		add(component, JLayeredPane.MODAL_LAYER);
 	}
 
 	@Override
@@ -133,6 +140,11 @@ public class ComponentSwing extends JComponent implements Component {
 
 	public NewGridElement getGridElement() {
 		return gridElement;
+	}
+
+	@Override
+	public void setDrawBackground(boolean background) {
+		drawBackground = background;
 	}
 
 }

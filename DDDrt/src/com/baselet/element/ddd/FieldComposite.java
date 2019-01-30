@@ -37,6 +37,7 @@ import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
+import com.baselet.diagram.draw.DrawHandler.Layer;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.FieldTypeChange;
 import com.baselet.element.ICollapseListener;
@@ -75,7 +76,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	protected JSONArray jProperties;
 	protected JSONArray jMethods;
 	private int totalHeight;
-	private ComponentSwing component;
+	protected ComponentSwing component;
 	protected BoundedContext boundedContext;
 	private boolean nameValid;
 	private String originalString;
@@ -90,6 +91,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		fieldName = new JTextField();
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
+		fieldName.setBackground(new Color(0, 0, 0, 0));
+		fieldName.setOpaque(false);
 		fieldName.getDocument().addDocumentListener(this);
 		fieldName.addFocusListener(this);
 		fieldName.setFont(compositeFont);
@@ -195,7 +198,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	@Override
 	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler, String uuid) {
 		super.init(bounds, panelAttributes, additionalAttributes, component, handler, uuid);
-
+		component.setDrawBackground(true);
 		jProperties = null;
 		try {
 			jsonAttributes = new JSONObject(additionalAttributes);
@@ -230,6 +233,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		component.addComponent(methodAddButton);
 
 		this.component = (ComponentSwing) component;
+		this.component.setBackground(getBackgroundColor());
 
 		addProperty("Type", "Entity", false);
 		addProperty("Class Name", getName(), false);
@@ -239,6 +243,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
 		tableCellTypeChange = new TableCellTypeChange(getTableModel(), "Type", this);
 	}
+
+	protected abstract Color getBackgroundColor();
 
 	public void updateTypeOnTable() {
 		String type = "Entity";
@@ -298,6 +304,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		int realWidth = getRealRectangle().width;
 		int realHeight = getRealRectangle().height;
 		DrawHandler drawer = state.getDrawer();
+		drawer.setLayer(Layer.Foreground);
 		double originalFontSize = drawer.getFontSize();
 		drawer.setFontSize(10.0);
 		int offsetY = 0;
@@ -387,7 +394,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		updateCompositeHeight();
 
+		drawer.setLayer(Layer.Background);
+		// drawer.setBackgroundColor(ColorOwn.CYAN);
 		drawer.drawRectangle(0, 0, realWidth, getRealRectangle().height);
+		drawer.setLayer(Layer.Foreground);
 
 		validateNames();
 
@@ -584,7 +594,8 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		p.y = getRealRectangle().y;
 		p.x += getRealRectangle().getWidth() / 2;
 		if (bottom) {
-			p.y += getRealRectangle().getHeight();// - 1.0f;
+			p.y += zoom(totalHeight);
+			// p.y += getRealRectangle().getHeight();// - 1.0f;
 		}
 		return p;
 	}
