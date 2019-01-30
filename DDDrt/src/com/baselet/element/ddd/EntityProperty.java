@@ -119,21 +119,18 @@ public class EntityProperty extends FieldProperty {
 	}
 
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void setZoomLevel(double zoomLevel) {
+		super.setZoomLevel(zoomLevel);
 
-		if (idProperty && PRIMARY_KEY_ICON != null) {
-			Image img = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			keyButton.setIcon(new ImageIcon(img));
+		if (idProperty) {
+			primaryKeyIcon = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+			keyButton.setIcon(new ImageIcon(primaryKeyIcon));
 		}
 	}
 
 	@Override
-	public void print(Graphics g) {
-		if (idProperty && PRIMARY_KEY_ICON != null) {
-			Image img = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			keyButton.setIcon(new ImageIcon(img));
-		}
+	public void paint(Graphics g) {
+		super.paint(g);
 	}
 
 }

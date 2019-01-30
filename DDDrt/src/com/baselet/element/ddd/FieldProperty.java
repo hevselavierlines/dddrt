@@ -229,6 +229,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		this.idProperty = idProperty;
 
 		if (idProperty) {
+			setZoomLevel(getParentFieldComposite().getZoom());
 			keyButton.setIcon(new ImageIcon(primaryKeyIcon));
 		}
 		else {
@@ -277,8 +278,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
 		// if (!idProperty) {
 		removeButton.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
-		Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-		removeButton.setIcon(new ImageIcon(img));
 		// }
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
@@ -551,6 +550,9 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyName.setFont(propertyFont);
 		propertyVisibility.setFont(propertyFont);
 		propertyType.setFont(propertyFont);
+
+		Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
+		removeButton.setIcon(new ImageIcon(img));
 	}
 
 }

@@ -159,8 +159,6 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		}
 		methodType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
 		removeButton.setBounds(width - realWidths[3] + 5, 0, realWidths[3] - 5, HALF_HEIGHT);
-		Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
-		removeButton.setIcon(new ImageIcon(img));
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
 	}
 
@@ -446,5 +444,8 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		methodVisibility.setFont(methodFont);
 		methodType.setFont(methodFont);
 		textParameters.setFont(methodFont);
+		
+		Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
+		removeButton.setIcon(new ImageIcon(img));
 	}
 }
