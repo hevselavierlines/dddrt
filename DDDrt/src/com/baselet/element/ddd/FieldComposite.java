@@ -17,7 +17,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -33,6 +32,7 @@ import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.LineType;
 import com.baselet.design.metal.MetalButton;
+import com.baselet.design.metal.MetalTextField;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
@@ -62,14 +62,16 @@ import com.baselet.gui.command.TextFieldChange;
 import com.baselet.gui.pane.OwnSyntaxPane;
 
 import at.mic.dddrt.db.model.Table;
+import tk.baumi.main.ExportProperty;
+import tk.baumi.main.IFieldComposite;
 
-public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange {
+public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange, IFieldComposite {
 
 	private static final int ADD_BUTTON_HEIGHT = 25;
 	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
 	private final JButton methodAddButton;
-	private final JTextField fieldName;
+	private final MetalTextField fieldName;
 	private final CollapsiblePanel propertiesPane;
 	private final CollapsiblePanel methodsPane;
 	protected JSONObject jsonAttributes;
@@ -88,7 +90,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
 
-		fieldName = new JTextField();
+		fieldName = new MetalTextField();
 		fieldName.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldName.setBorder(null);
 		fieldName.setBackground(new Color(0, 0, 0, 0));
@@ -764,4 +766,18 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 					new FieldCompositeTypeChangeCommand(this, newId));
 		}
 	}
+
+	@Override
+	public List<ExportProperty> getProperties() {
+		List<ExportProperty> properties = new LinkedList<ExportProperty>();
+		for (java.awt.Component component : propertiesPane.getComponents()) {
+			if (component instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) component;
+				ExportProperty export = new ExportProperty(fieldProperty.getPropertyVisibility(), fieldProperty.getPropertyName(), fieldProperty.getPropertyType());
+				properties.add(export);
+			}
+		}
+		return properties;
+	}
+
 }

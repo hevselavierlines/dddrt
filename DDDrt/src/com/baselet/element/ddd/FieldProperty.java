@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.design.metal.DataTypeComboBox;
+import com.baselet.design.metal.MetalTextField;
 import com.baselet.design.metal.VisibilityComboBox;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
@@ -51,7 +52,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected static final String JSON_VISIBILITY = "visibility";
 	protected static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
-	private final JTextField propertyName;
+	private final MetalTextField propertyName;
 	protected final DataTypeComboBox propertyType;
 	private final VisibilityComboBox propertyVisibility;
 	private final JButton removeButton;
@@ -145,7 +146,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		propertyType.setSelectedItem("String");
 		add(propertyType);
 
-		propertyName = new JTextField("newProperty");
+		propertyName = new MetalTextField("newProperty");
 		propertyName.setFont(propertyFont);
 		propertyName.addFocusListener(this);
 		propertyName.getDocument().addDocumentListener(this);
