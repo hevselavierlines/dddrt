@@ -16,9 +16,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -28,8 +26,6 @@ import javax.swing.text.JTextComponent;
 
 import org.json.JSONObject;
 
-import com.baselet.design.metal.MetalComboBox;
-import com.baselet.design.metal.VisibilityComboBox;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
@@ -37,11 +33,8 @@ import com.baselet.gui.command.ComboBoxChange;
 import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.TextFieldChange;
 
-public class FieldMethod extends JLayeredPane implements ActionListener, DocumentListener, FocusListener, PopupMenuListener {
+public class FieldMethod extends FieldElement implements ActionListener, DocumentListener, FocusListener, PopupMenuListener {
 	private static final long serialVersionUID = -6900199799847961884L;
-	private final JTextField methodName;
-	private final JComboBox<String> methodType;
-	private final VisibilityComboBox methodVisibility;
 
 	public final static int DEFAULT_HEIGHT = 40;
 	public final static int DEFAULT_HALF_HEIGHT = DEFAULT_HEIGHT / 2;
@@ -51,7 +44,6 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
 	private final int[] FIXED_WIDTHS = { 40, 30 };
 	private final JTextField textParameters;
-	private final JButton removeButton;
 	private ActionListener removeListener;
 	private FieldComposite parentFieldComposite;
 	private String originalString;
@@ -61,29 +53,27 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	private static Image deleteButton;
 
 	public FieldMethod() {
+		super();
 		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
 
-		methodVisibility = new VisibilityComboBox();
-		methodVisibility.addPopupMenuListener(this);
-		methodVisibility.setFont(methodFont);
-		add(methodVisibility);
+		elementVisibility.addPopupMenuListener(this);
+		elementVisibility.setFont(methodFont);
+		add(elementVisibility);
 
-		methodType = new MetalComboBox();
-		methodType.setFont(methodFont);
+		elementType.setFont(methodFont);
 		List<String> defaultTypes = FieldProperty.loadDefaultTypes();
 		for (String defaultType : defaultTypes) {
-			methodType.addItem(defaultType);
+			elementType.addItem(defaultType);
 		}
-		methodType.setEditable(true);
-		final JTextComponent tc = (JTextComponent) methodType.getEditor().getEditorComponent();
+		elementType.setEditable(true);
+		final JTextComponent tc = (JTextComponent) elementType.getEditor().getEditorComponent();
 		tc.addFocusListener(this);
-		add(methodType);
+		add(elementType);
 
-		methodName = new JTextField("newmethod");
-		methodName.setFont(methodFont);
-		methodName.getDocument().addDocumentListener(this);
-		methodName.addFocusListener(this);
-		add(methodName);
+		elementName.setFont(methodFont);
+		elementName.getDocument().addDocumentListener(this);
+		elementName.addFocusListener(this);
+		add(elementName);
 
 		textParameters = new JTextField("()");
 		textParameters.setFont(methodFont);
@@ -107,23 +97,22 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		textParameters.addFocusListener(this);
 		add(textParameters);
 
-		removeButton = new JButton("");
 		try {
 			if (deleteButton == null) {
 				deleteButton = ImageIO.read(new File("img/x-button.png"));
 			}
 			Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
-			removeButton.setIcon(new ImageIcon(img));
-			removeButton.setBorderPainted(false);
-			removeButton.setFocusPainted(false);
-			removeButton.setContentAreaFilled(false);
+			elementRemove.setIcon(new ImageIcon(img));
+			elementRemove.setBorderPainted(false);
+			elementRemove.setFocusPainted(false);
+			elementRemove.setContentAreaFilled(false);
 		} catch (Exception ex) {
-			removeButton.setText("X");
-			removeButton.setFont(methodFont);
+			elementRemove.setText("X");
+			elementRemove.setFont(methodFont);
 			System.out.println(ex);
 		}
-		removeButton.addActionListener(this);
-		add(removeButton);
+		elementRemove.addActionListener(this);
+		add(elementRemove);
 	}
 
 	public FieldMethod(String methodVisibility, String methodType, String methodName, String parameters) {
@@ -152,13 +141,13 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		}
 		realWidths[0] = fixedWidths[0];
 		realWidths[3] = fixedWidths[1];
-		methodVisibility.setBounds(0, 0, realWidths[0], HALF_HEIGHT);
-		methodName.setBounds(realWidths[0], 0, realWidths[1], HALF_HEIGHT);
+		elementVisibility.setBounds(0, 0, realWidths[0], HALF_HEIGHT);
+		elementName.setBounds(realWidths[0], 0, realWidths[1], HALF_HEIGHT);
 		if (g != null) {
 			g.drawString(":", realWidths[0] + realWidths[1], 15);
 		}
-		methodType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
-		removeButton.setBounds(width - realWidths[3] + 5, 0, realWidths[3] - 5, HALF_HEIGHT);
+		elementType.setBounds(realWidths[0] + realWidths[1] + 5, 0, realWidths[2], HALF_HEIGHT);
+		elementRemove.setBounds(width - realWidths[3] + 5, 0, realWidths[3] - 5, HALF_HEIGHT);
 		textParameters.setBounds(0, HALF_HEIGHT, (int) getBounds().getWidth(), HALF_HEIGHT);
 	}
 
@@ -190,27 +179,27 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 	}
 
 	public String getMethodName() {
-		return methodName.getText();
+		return elementName.getText();
 	}
 
 	public void setMethodName(String methodName) {
-		this.methodName.setText(methodName);
+		elementName.setText(methodName);
 	}
 
 	public String getMethodType() {
-		return methodType.getSelectedItem().toString();
+		return elementType.getSelectedItem().toString();
 	}
 
 	public void setMethodType(String methodType) {
-		this.methodType.setSelectedItem(methodType);
+		elementType.setSelectedItem(methodType);
 	}
 
 	public String getMethodVisibility() {
-		return methodVisibility.getSelectedItem().toString();
+		return elementVisibility.getSelectedItem().toString();
 	}
 
 	public void setMethodVisibility(String methodVisibility) {
-		this.methodVisibility.setSelection(methodVisibility);
+		elementVisibility.setSelection(methodVisibility);
 	}
 
 	public String getMethodParameters() {
@@ -327,17 +316,16 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 
 	public void setNameValidity(FieldMethod previous) {
 		if (previous != null) {
-			methodName.setBackground(Color.WHITE);
-			methodName.setForeground(Color.RED);
-			methodName.setToolTipText("Duplicated name " + previous.getMethodName());
+			elementName.setForeground(Color.RED);
+			elementName.setToolTipText("Duplicated name " + previous.getMethodName());
 		}
 		else {
-			methodName.setBackground(Color.WHITE);
-			methodName.setForeground(Color.BLACK);
-			methodName.setToolTipText(null);
+			elementName.setForeground(Color.BLACK);
+			elementName.setToolTipText(null);
 		}
 	}
 
+	@Override
 	public FieldComposite getParentFieldComposite() {
 		if (parentFieldComposite != null) {
 			return parentFieldComposite;
@@ -393,7 +381,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 
 	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-		if (e.getSource() == methodVisibility) {
+		if (e.getSource() == elementVisibility) {
 			Controller controller = CurrentDiagram.getInstance().getDiagramHandler().getController();
 			controller.executeCommand(new ComboBoxChange((JComboBox<?>) e.getSource(), originalSelection));
 		}
@@ -401,7 +389,7 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-		if (e.getSource() == methodVisibility) {
+		if (e.getSource() == elementVisibility) {
 			originalSelection = ((JComboBox<?>) e.getSource()).getSelectedItem();
 		}
 	}
@@ -440,12 +428,12 @@ public class FieldMethod extends JLayeredPane implements ActionListener, Documen
 		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
 		methodFont = methodFont.deriveFont(Font.PLAIN, newFontSize);
 
-		methodName.setFont(methodFont);
-		methodVisibility.setFont(methodFont);
-		methodType.setFont(methodFont);
+		elementName.setFont(methodFont);
+		elementVisibility.setFont(methodFont);
+		elementType.setFont(methodFont);
 		textParameters.setFont(methodFont);
-		
+
 		Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
-		removeButton.setIcon(new ImageIcon(img));
+		elementRemove.setIcon(new ImageIcon(img));
 	}
 }

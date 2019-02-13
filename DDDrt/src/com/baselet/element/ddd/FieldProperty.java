@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -28,13 +27,8 @@ import javax.swing.text.JTextComponent;
 import org.json.JSONObject;
 
 import com.baselet.control.basics.geom.Rectangle;
-import com.baselet.design.metal.DataTypeComboBox;
-import com.baselet.design.metal.MetalTextField;
-import com.baselet.design.metal.VisibilityComboBox;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
-import com.baselet.element.ComponentSwing;
-import com.baselet.element.NewGridElement;
 import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.relation.DDDRelation;
@@ -43,7 +37,7 @@ import com.baselet.gui.command.Controller;
 import com.baselet.gui.command.PropertyDataTypeChange;
 import com.baselet.gui.command.TextFieldChange;
 
-public abstract class FieldProperty extends JLayeredPane implements ActionListener, PopupMenuListener, FocusListener, DocumentListener {
+public abstract class FieldProperty extends FieldElement implements ActionListener, PopupMenuListener, FocusListener, DocumentListener {
 
 	protected static final String REMOVED_COMMAND = "removed";
 	protected static final String JSON_IDPROPERTY = "idproperty";
@@ -52,10 +46,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	protected static final String JSON_VISIBILITY = "visibility";
 	protected static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
-	private final MetalTextField propertyName;
-	protected final DataTypeComboBox propertyType;
-	private final VisibilityComboBox propertyVisibility;
-	private final JButton removeButton;
+
 	protected final JButton keyButton;
 	protected boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
@@ -70,7 +61,6 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	private Font propertyFont;
 	private String originalString;
 	private Object originalSelection;
-	private FieldComposite parentFieldComposite;
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
 	protected final PropertiesGridElement properties;
@@ -121,6 +111,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public FieldProperty() {
+		super();
 		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
 
 		keyButton = new JButton("");
@@ -130,56 +121,55 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		keyButton.addActionListener(this);
 		add(keyButton);
 
-		propertyVisibility = new VisibilityComboBox();
-		propertyVisibility.setFont(propertyFont);
-		propertyVisibility.addPopupMenuListener(this);
-		add(propertyVisibility);
+		elementVisibility.setFont(propertyFont);
+		elementVisibility.addPopupMenuListener(this);
+		add(elementVisibility);
 
-		propertyType = new DataTypeComboBox();
 		DEFAULT_TYPES = loadDefaultTypes();
-		propertyType.setEditable(true);
-		propertyType.addPopupMenuListener(this);
-		propertyTypeEditor = (JTextComponent) propertyType.getEditor().getEditorComponent();
+		elementType.setEditable(true);
+		elementType.addPopupMenuListener(this);
+		propertyTypeEditor = (JTextComponent) elementType.getEditor().getEditorComponent();
 		propertyTypeEditor.addFocusListener(this);
 
-		propertyType.setFont(propertyFont);
-		propertyType.setSelectedItem("String");
-		add(propertyType);
+		elementType.setFont(propertyFont);
+		elementType.setSelectedItem("String");
+		add(elementType);
 
-		propertyName = new MetalTextField("newProperty");
-		propertyName.setFont(propertyFont);
-		propertyName.addFocusListener(this);
-		propertyName.getDocument().addDocumentListener(this);
-		add(propertyName);
+		elementName.setFont(propertyFont);
+		elementName.addFocusListener(this);
+		elementName.getDocument().addDocumentListener(this);
+		add(elementName);
 
-		removeButton = new JButton("");
 		try {
 			if (deleteButton == null) {
 				deleteButton = ImageIO.read(new File("img/x-button.png"));
 			}
 			Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			removeButton.setIcon(new ImageIcon(img));
-			removeButton.setBorderPainted(false);
-			removeButton.setFocusPainted(false);
-			removeButton.setContentAreaFilled(false);
+			elementRemove.setIcon(new ImageIcon(img));
+			elementRemove.setBorderPainted(false);
+			elementRemove.setFocusPainted(false);
+			elementRemove.setContentAreaFilled(false);
 		} catch (Exception ex) {
-			removeButton.setText("X");
-			removeButton.setFont(propertyFont);
+			elementRemove.setText("X");
+			elementRemove.setFont(propertyFont);
 			System.out.println(ex);
 		}
-		removeButton.addActionListener(this);
-		add(removeButton);
+		elementRemove.addActionListener(this);
+		add(elementRemove);
 
 		updateCoordinates(null, 200);
 		properties = new PropertiesGridElement();
-		properties.addProperty("Name", propertyName.getText(), false);
+		properties.addProperty("Name", elementName.getText(), false);
 		properties.addProperty("Visibility", getPropertyVisibility(), false);
 		properties.addProperty("Data Type", getPropertyType(), false);
 
+		setPropertyName("newProperty");
+
 		TableCellTextFieldBinding
-				.createBinding(properties.getTableModel(), propertyName, "Name");
+				.createBinding(properties.getTableModel(), elementName, "Name");
 		TableCellTextFieldBinding
 				.createBinding(properties.getTableModel(), propertyTypeEditor, "Data Type");
+
 	}
 
 	public FieldProperty(String propertyVisibility,
@@ -194,16 +184,16 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public String getPropertyName() {
-		return propertyName.getText();
+		return elementName.getText();
 	}
 
 	public void setPropertyName(String propertyName) {
-		this.propertyName.setText(propertyName);
+		elementName.setText(propertyName);
 		properties.addProperty("Name", propertyName, true);
 	}
 
 	public String getPropertyType() {
-		Object selItem = propertyType.getSelectedItem();
+		Object selItem = elementType.getSelectedItem();
 		if (selItem != null) {
 			return selItem.toString();
 		}
@@ -216,7 +206,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (idProperty) {
 			DEFAULT_TYPES.add(0, UNIQUE_ID);
 		}
-		this.propertyType.setSelectedItem(propertyType);
+		elementType.setSelectedItem(propertyType);
 		properties.addProperty("Data Type", propertyType, true);
 	}
 
@@ -240,11 +230,11 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	}
 
 	public String getPropertyVisibility() {
-		return propertyVisibility.getSelectedItem().toString();
+		return elementVisibility.getSelectedItem().toString();
 	}
 
 	public void setPropertyVisibility(String propertyVisibility) {
-		this.propertyVisibility.setSelection(propertyVisibility);
+		elementVisibility.setSelection(propertyVisibility);
 		properties.addProperty("Visibility", propertyVisibility, true);
 	}
 
@@ -267,18 +257,18 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		int offsetX = 0;
 		keyButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
 		offsetX += realWidths[0];
-		propertyVisibility.setBounds(offsetX, startY, realWidths[1], HEIGHT);
+		elementVisibility.setBounds(offsetX, startY, realWidths[1], HEIGHT);
 		offsetX += realWidths[1];
-		propertyName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
+		elementName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
 		offsetX += realWidths[2];
 		if (g != null) {
 			g.setFont(propertyFont);
 			g.drawString(":", offsetX, (int) (currentZoomLevel * 17));
 		}
 		offsetX += 5;
-		propertyType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
+		elementType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
 		// if (!idProperty) {
-		removeButton.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
+		elementRemove.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
 		// }
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
@@ -320,7 +310,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == removeButton) {
+		if (e.getSource() == elementRemove) {
 			DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
 			if (relationLineRef != null) {
 				dp.removeRelation(relationLineRef);
@@ -341,7 +331,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-		if (e.getSource() == propertyType) {
+		if (e.getSource() == elementType) {
 			// FieldComposite fc = propertyType.getSelection();
 			// DrawPanel dp = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
 			// if (fc != null) {
@@ -360,7 +350,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			getParentFieldComposite().getComponent().requestFocus();
 			// dp.repaint();
 		}
-		else if (e.getSource() == propertyVisibility) {
+		else if (e.getSource() == elementVisibility) {
 			Controller controller = CurrentDiagram.getInstance().getDiagramHandler().getController();
 			controller.executeCommand(new ComboBoxChange((JComboBox<?>) e.getSource(), originalSelection));
 		}
@@ -368,7 +358,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	@Override
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-		if (e.getSource() == propertyType) {
+		if (e.getSource() == elementType) {
 			addPropertyTypes();
 		}
 		originalSelection = ((JComboBox<?>) e.getSource()).getSelectedItem();
@@ -387,44 +377,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		if (right) {
 			p.x += fieldComposite.zoom(getParent().getWidth());
 		}
-		// p.y += HEIGHT / 2;
 		return p;
-	}
-
-	private void getAbsolutePositionRecursively(java.awt.Component currentComponent, java.awt.Point point) {
-		if (currentComponent != null && !(currentComponent instanceof DrawPanel)) {
-			point.x += currentComponent.getLocation().x;
-			point.y += currentComponent.getLocation().y;
-			getAbsolutePositionRecursively(currentComponent.getParent(), point);
-		}
-	}
-
-	public FieldComposite getParentFieldComposite() {
-		if (parentFieldComposite != null) {
-			return parentFieldComposite;
-		}
-		NewGridElement element = getParentFieldCompositeRecursively(this);
-		if (element instanceof FieldComposite) {
-			return (FieldComposite) element;
-		}
-		else {
-			return null;
-		}
-	}
-
-	private NewGridElement getParentFieldCompositeRecursively(java.awt.Component currentComponent) {
-		if (currentComponent != null) {
-			if (currentComponent instanceof ComponentSwing) {
-				ComponentSwing swing = (ComponentSwing) currentComponent;
-				return swing.getGridElement();
-			}
-			else {
-				return getParentFieldCompositeRecursively(currentComponent.getParent());
-			}
-		}
-		else {
-			return null;
-		}
 	}
 
 	protected abstract void addPropertyTypes();
@@ -451,7 +404,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 	public void focusLost(FocusEvent e) {
 		Object source = e.getSource();
 		if (e.getSource() == propertyTypeEditor) {
-			FieldComposite fc = propertyType.getSelection();
+			FieldComposite fc = elementType.getSelection();
 			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
 			if (fc == null) {
 				for (FieldComposite fieldComposite : dp.getHelperAndSub(FieldComposite.class)) {
@@ -470,7 +423,7 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 			getParentFieldComposite()
 					.getComponent()
 					.getController()
-					.executeCommand(new PropertyDataTypeChange(this, fc, dp, relationLineRef, propertyType, originalString));
+					.executeCommand(new PropertyDataTypeChange(this, fc, dp, relationLineRef, elementType, originalString));
 			// if (fc != null) {
 			// if (relationLineRef != null) {
 			// dp.removeRelation(relationLineRef);
@@ -504,14 +457,14 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 
 	public void setNameValidity(FieldProperty previous) {
 		if (previous != null) {
-			propertyName.setBackground(Color.WHITE);
-			propertyName.setForeground(Color.RED);
-			propertyName.setToolTipText("Duplicated name " + previous.getPropertyName());
+			// elementName.setBackground(Color.WHITE);
+			elementName.setForeground(Color.RED);
+			elementName.setToolTipText("Duplicated name " + previous.getPropertyName());
 		}
 		else {
-			propertyName.setBackground(Color.WHITE);
-			propertyName.setForeground(Color.BLACK);
-			propertyName.setToolTipText(null);
+			// elementName.setBackground(Color.WHITE);
+			elementName.setForeground(Color.BLACK);
+			elementName.setToolTipText(null);
 		}
 	}
 
@@ -548,12 +501,12 @@ public abstract class FieldProperty extends JLayeredPane implements ActionListen
 		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
 		propertyFont = propertyFont.deriveFont(Font.PLAIN, newFontSize);
 
-		propertyName.setFont(propertyFont);
-		propertyVisibility.setFont(propertyFont);
-		propertyType.setFont(propertyFont);
+		elementName.setFont(propertyFont);
+		elementVisibility.setFont(propertyFont);
+		elementType.setFont(propertyFont);
 
 		Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-		removeButton.setIcon(new ImageIcon(img));
+		elementRemove.setIcon(new ImageIcon(img));
 	}
 
 }

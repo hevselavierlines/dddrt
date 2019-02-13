@@ -20,6 +20,8 @@ public class MetalTextField extends JTextField implements FocusListener {
 	public MetalTextField() {
 		super();
 		init();
+
+		setBorder(new DDDRoundBorder());
 	}
 
 	public MetalTextField(String arg0) {
@@ -66,5 +68,4 @@ public class MetalTextField extends JTextField implements FocusListener {
 			parentFieldComposite.deselectAll();
 		}
 	}
-
 }

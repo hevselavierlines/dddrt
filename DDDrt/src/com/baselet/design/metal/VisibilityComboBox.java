@@ -1,16 +1,11 @@
 package com.baselet.design.metal;
 
 import java.awt.Component;
-import java.awt.Rectangle;
 
-import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.plaf.basic.BasicComboPopup;
-import javax.swing.plaf.basic.ComboPopup;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 
-public class VisibilityComboBox extends JComboBox<VisibilityItem> {
+public class VisibilityComboBox extends MetalComboBox<VisibilityItem> {
 	private static final long serialVersionUID = 1385934107040563411L;
 
 	public VisibilityComboBox() {
@@ -21,7 +16,7 @@ public class VisibilityComboBox extends JComboBox<VisibilityItem> {
 		addItem(new VisibilityItem("#", "protected"));
 		addItem(new VisibilityItem("+", "public"));
 		setRenderer(new ItemRenderer());
-		setUI(new VisibilityComboBoxUI());
+		setPopupMinimumSize(100, 0);
 	}
 
 	public void setSelection(String selectionString) {
@@ -80,20 +75,5 @@ class VisibilityItem {
 	@Override
 	public String toString() {
 		return id;
-	}
-}
-
-class VisibilityComboBoxUI extends MetalComboBoxUI {
-	@Override
-	protected ComboPopup createPopup() {
-		BasicComboPopup popup = new BasicComboPopup(comboBox) {
-			@Override
-			protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
-				return super.computePopupBounds(
-						px, py, Math.max(100, pw), ph);
-			}
-		};
-		popup.getAccessibleContext().setAccessibleParent(comboBox);
-		return popup;
 	}
 }

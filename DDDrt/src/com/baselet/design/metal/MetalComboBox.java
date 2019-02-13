@@ -1,13 +1,20 @@
 package com.baselet.design.metal;
 
 import javax.swing.JComboBox;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 
-public class MetalComboBox extends JComboBox<String> {
+public class MetalComboBox<T> extends JComboBox<T> {
 	private static final long serialVersionUID = -8192247366525092104L;
+	private final DDDComboBoxUI comboUI;
 
 	public MetalComboBox() {
 		super();
-		setUI(new MetalComboBoxUI());
+		comboUI = new DDDComboBoxUI();
+		this.setUI(comboUI);
+		setBorder(new DDDRoundBorder());
 	}
+
+	public void setPopupMinimumSize(int width, int height) {
+		comboUI.setPopupMinimumSize(width, height);
+	}
+
 }

@@ -24,8 +24,6 @@ public class EntityComposite extends FieldComposite {
 	@Override
 	public void init(Rectangle bounds, String panelAttributes, String additionalAttributes, Component component, DrawHandlerInterface handler) {
 		super.init(bounds, panelAttributes, additionalAttributes, component, handler);
-
-		this.component.setBackground(Color.GREEN);
 	}
 
 	@Override

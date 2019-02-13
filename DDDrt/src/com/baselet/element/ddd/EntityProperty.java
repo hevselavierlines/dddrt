@@ -80,8 +80,8 @@ public class EntityProperty extends FieldProperty {
 
 	@Override
 	protected void addPropertyTypes() {
-		Object selection = propertyType.getSelectedItem();
-		propertyType.removeAllItems();
+		Object selection = elementType.getSelectedItem();
+		elementType.removeAllItems();
 		List<FieldComposite> sameBoundedContextElements = new LinkedList<FieldComposite>();
 		List<FieldComposite> diffrentBoundedContextElements = new LinkedList<FieldComposite>();
 
@@ -102,19 +102,19 @@ public class EntityProperty extends FieldProperty {
 		Collections.sort(sameBoundedContextElements);
 		Collections.sort(diffrentBoundedContextElements);
 		for (FieldComposite fc : sameBoundedContextElements) {
-			propertyType.addItem(fc.getName(), fc);
+			elementType.addItem(fc.getName(), fc);
 		}
 		for (String DEFAULT_TYPE : DEFAULT_TYPES) {
-			propertyType.addItem(DEFAULT_TYPE);
+			elementType.addItem(DEFAULT_TYPE);
 		}
 		for (FieldComposite fc : diffrentBoundedContextElements) {
-			propertyType.addItem(fc.getFullName(), fc);
+			elementType.addItem(fc.getFullName(), fc);
 		}
 		if (selection != null) {
-			propertyType.setSelectedItem(selection);
+			elementType.setSelectedItem(selection);
 		}
 		else {
-			propertyType.setSelectedIndex(0);
+			elementType.setSelectedIndex(0);
 		}
 	}
 

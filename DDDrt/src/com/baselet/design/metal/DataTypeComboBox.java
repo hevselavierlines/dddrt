@@ -1,23 +1,18 @@
 package com.baselet.design.metal;
 
 import java.awt.Component;
-import java.awt.Rectangle;
 
-import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import javax.swing.plaf.basic.BasicComboPopup;
-import javax.swing.plaf.basic.ComboPopup;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import com.baselet.element.ddd.FieldComposite;
 
-public class DataTypeComboBox extends JComboBox<DataTypeItem> {
+public class DataTypeComboBox extends MetalComboBox<DataTypeItem> {
 	public DataTypeComboBox() {
 		super();
 
 		setRenderer(new DataTypeItemRenderer());
-		setUI(new DataTypeComboBoxUI());
+		setPopupMinimumSize(250, 250);
 	}
 
 	public void setSelection(String selectionString) {
@@ -94,20 +89,5 @@ class DataTypeItem {
 	@Override
 	public String toString() {
 		return typeName;
-	}
-}
-
-class DataTypeComboBoxUI extends MetalComboBoxUI {
-	@Override
-	protected ComboPopup createPopup() {
-		BasicComboPopup popup = new BasicComboPopup(comboBox) {
-			@Override
-			protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
-				return super.computePopupBounds(
-						px, py, Math.max(250, pw), Math.max(250, ph));
-			}
-		};
-		popup.getAccessibleContext().setAccessibleParent(comboBox);
-		return popup;
 	}
 }
