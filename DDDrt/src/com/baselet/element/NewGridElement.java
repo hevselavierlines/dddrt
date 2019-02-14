@@ -21,6 +21,7 @@ import com.baselet.control.basics.geom.Point;
 import com.baselet.control.basics.geom.PointDouble;
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.config.SharedConfig;
+import com.baselet.control.constants.Constants;
 import com.baselet.control.constants.SharedConstants;
 import com.baselet.control.enums.AlignHorizontal;
 import com.baselet.control.enums.Direction;
@@ -335,8 +336,8 @@ public abstract class NewGridElement implements GridElement {
 	 * Retrieves the current zoom level to calculate font sizes or other operations.
 	 * @return the zoom level as double (1.0 for 100%, 1.5 for 150%).
 	 */
-	public double getZoom() {
-		return (double) getGridSize() / SharedConstants.DEFAULT_GRID_SIZE;
+	public float getZoom() {
+		return (float) getGridSize() / (float) Constants.DEFAULTGRIDSIZE;
 	}
 
 	public int revertZoom(int val) {

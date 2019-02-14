@@ -1,7 +1,6 @@
 package com.baselet.element.ddd;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -26,6 +25,7 @@ import javax.swing.text.JTextComponent;
 
 import org.json.JSONObject;
 
+import com.baselet.design.metal.DDDRoundBorder;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
@@ -39,8 +39,8 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 	public final static int DEFAULT_HEIGHT = 40;
 	public final static int DEFAULT_HALF_HEIGHT = DEFAULT_HEIGHT / 2;
 	public final static int DEFAULT_FONT_SIZE = 12;
-	private int HEIGHT = 40;
-	private int HALF_HEIGHT = HEIGHT / 2;
+	private int FULL_HEIGHT = 40;
+	private int HALF_HEIGHT = FULL_HEIGHT / 2;
 	private final int[] PERCENT_WIDTHS = { -1, 60, 40, -1 };
 	private final int[] FIXED_WIDTHS = { 40, 30 };
 	private final JTextField textParameters;
@@ -48,19 +48,17 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 	private FieldComposite parentFieldComposite;
 	private String originalString;
 	private Object originalSelection;
-	private Font methodFont;
 	private double currentZoomLevel;
 	private static Image deleteButton;
 
 	public FieldMethod() {
 		super();
-		methodFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
 
 		elementVisibility.addPopupMenuListener(this);
-		elementVisibility.setFont(methodFont);
+		elementVisibility.setFont(elementFont);
 		add(elementVisibility);
 
-		elementType.setFont(methodFont);
+		elementType.setFont(elementFont);
 		List<String> defaultTypes = FieldProperty.loadDefaultTypes();
 		for (String defaultType : defaultTypes) {
 			elementType.addItem(defaultType);
@@ -70,13 +68,13 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 		tc.addFocusListener(this);
 		add(elementType);
 
-		elementName.setFont(methodFont);
+		elementName.setFont(elementFont);
 		elementName.getDocument().addDocumentListener(this);
 		elementName.addFocusListener(this);
 		add(elementName);
 
 		textParameters = new JTextField("()");
-		textParameters.setFont(methodFont);
+		textParameters.setFont(elementFont);
 		textParameters.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -95,6 +93,9 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 			}
 		});
 		textParameters.addFocusListener(this);
+		textParameters.setBorder(new DDDRoundBorder());
+		textParameters.setBackground(new Color(0, 0, 0, 0));
+		textParameters.setOpaque(false);
 		add(textParameters);
 
 		try {
@@ -108,7 +109,7 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 			elementRemove.setContentAreaFilled(false);
 		} catch (Exception ex) {
 			elementRemove.setText("X");
-			elementRemove.setFont(methodFont);
+			elementRemove.setFont(elementFont);
 			System.out.println(ex);
 		}
 		elementRemove.addActionListener(this);
@@ -124,7 +125,7 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 	}
 
 	public int getFieldHeight() {
-		return HEIGHT + 2;
+		return FULL_HEIGHT + 2;
 	}
 
 	private void updateCoordinates(Graphics g, int width) {
@@ -419,21 +420,14 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 		}
 	}
 
+	@Override
 	public void setZoomLevel(double zoomLevel) {
 		currentZoomLevel = zoomLevel;
 
-		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
-		HALF_HEIGHT = HEIGHT / 2;
+		FULL_HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
+		HALF_HEIGHT = FULL_HEIGHT / 2;
+		super.setZoomLevel(zoomLevel);
 
-		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
-		methodFont = methodFont.deriveFont(Font.PLAIN, newFontSize);
-
-		elementName.setFont(methodFont);
-		elementVisibility.setFont(methodFont);
-		elementType.setFont(methodFont);
-		textParameters.setFont(methodFont);
-
-		Image img = deleteButton.getScaledInstance(HALF_HEIGHT, HALF_HEIGHT, Image.SCALE_FAST);
-		elementRemove.setIcon(new ImageIcon(img));
+		textParameters.setFont(elementFont);
 	}
 }

@@ -20,11 +20,11 @@ public class DDDRoundBorder extends AbstractBorder {
 
 	@Override
 	public Insets getBorderInsets(Component c) {
-		return new Insets(2, 4, 2, 0);
+		return new Insets(1, 4, 1, 0);
 	}
 
 	@Override
 	public Insets getBorderInsets(Component c, Insets insets) {
-		return new Insets(2, 4, 2, 4);
+		return new Insets(0, 4, 0, 4);
 	}
 }

@@ -1,7 +1,6 @@
 package com.baselet.element.ddd;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -9,12 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -27,6 +23,8 @@ import javax.swing.text.JTextComponent;
 import org.json.JSONObject;
 
 import com.baselet.control.basics.geom.Rectangle;
+import com.baselet.design.metal.DeleteButton;
+import com.baselet.design.metal.PrimaryKeyButton;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.element.PropertiesGridElement;
@@ -51,23 +49,17 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	protected boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
 	protected int HEIGHT = 20;
-	public final static int DEFAULT_HEIGHT = 20;
-	public final static int DEFAULT_FONT_SIZE = 12;
 	private final int[] PERCENT_WIDTHS = { -1, -1, 60, 40, -1 };
 	protected int[] FIXED_WIDTHS = { 30, 40, 30 };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
-	private Font propertyFont;
 	private String originalString;
 	private Object originalSelection;
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
 	protected final PropertiesGridElement properties;
-	protected Image primaryKeyIcon;
-	private double currentZoomLevel;
 	public static Image deleteButton;
-	public static Image primaryKeyButton;
 
 	public int getFieldHeight() {
 		return HEIGHT + 3;
@@ -112,7 +104,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 	public FieldProperty() {
 		super();
-		propertyFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 12);
 
 		keyButton = new JButton("");
 		keyButton.setBorderPainted(false);
@@ -121,7 +112,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		keyButton.addActionListener(this);
 		add(keyButton);
 
-		elementVisibility.setFont(propertyFont);
+		elementVisibility.setFont(elementFont);
 		elementVisibility.addPopupMenuListener(this);
 		add(elementVisibility);
 
@@ -131,27 +122,28 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		propertyTypeEditor = (JTextComponent) elementType.getEditor().getEditorComponent();
 		propertyTypeEditor.addFocusListener(this);
 
-		elementType.setFont(propertyFont);
+		elementType.setFont(elementFont);
 		elementType.setSelectedItem("String");
 		add(elementType);
 
-		elementName.setFont(propertyFont);
+		elementName.setFont(elementFont);
 		elementName.addFocusListener(this);
 		elementName.getDocument().addDocumentListener(this);
 		add(elementName);
 
 		try {
-			if (deleteButton == null) {
-				deleteButton = ImageIO.read(new File("img/x-button.png"));
-			}
-			Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			elementRemove.setIcon(new ImageIcon(img));
+			// if (deleteButton == null) {
+			// deleteButton = ImageIO.read(new File("img/x-button.png"));
+			// }
+			// Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_SMOOTH);
+			// elementRemove.setIcon(new ImageIcon(img));
+			elementRemove.setIcon(new DeleteButton(HEIGHT, HEIGHT));
 			elementRemove.setBorderPainted(false);
 			elementRemove.setFocusPainted(false);
 			elementRemove.setContentAreaFilled(false);
 		} catch (Exception ex) {
 			elementRemove.setText("X");
-			elementRemove.setFont(propertyFont);
+			elementRemove.setFont(elementFont);
 			System.out.println(ex);
 		}
 		elementRemove.addActionListener(this);
@@ -221,7 +213,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 		if (idProperty) {
 			setZoomLevel(getParentFieldComposite().getZoom());
-			keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+			keyButton.setIcon(new PrimaryKeyButton(HEIGHT, HEIGHT));
 		}
 		else {
 			keyButton.setIcon(null);
@@ -262,7 +254,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		elementName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
 		offsetX += realWidths[2];
 		if (g != null) {
-			g.setFont(propertyFont);
+			g.setFont(elementFont);
 			g.drawString(":", offsetX, (int) (currentZoomLevel * 17));
 		}
 		offsetX += 5;
@@ -494,19 +486,11 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		return properties;
 	}
 
+	@Override
 	public void setZoomLevel(double zoomLevel) {
 		currentZoomLevel = zoomLevel;
 		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
-
-		int newFontSize = (int) (zoomLevel * DEFAULT_FONT_SIZE);
-		propertyFont = propertyFont.deriveFont(Font.PLAIN, newFontSize);
-
-		elementName.setFont(propertyFont);
-		elementVisibility.setFont(propertyFont);
-		elementType.setFont(propertyFont);
-
-		Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-		elementRemove.setIcon(new ImageIcon(img));
+		super.setZoomLevel(zoomLevel);
 	}
 
 }

@@ -3,19 +3,15 @@ package com.baselet.element.ddd;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -31,6 +27,7 @@ import com.baselet.control.enums.AlignHorizontal;
 import com.baselet.control.enums.Direction;
 import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.LineType;
+import com.baselet.design.metal.AddButton;
 import com.baselet.design.metal.MetalButton;
 import com.baselet.design.metal.MetalTextField;
 import com.baselet.diagram.CurrentDiagram;
@@ -85,7 +82,6 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private final Font compositeFont;
 	private FieldProperty selection;
 	private TableCellTypeChange tableCellTypeChange;
-	protected static Image addButtomImage;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -109,16 +105,13 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		propertyAddButton = new MetalButton("");
 		methodAddButton = new MetalButton("");
 		try {
-			if (addButtomImage == null) {
-				addButtomImage = ImageIO.read(new File("img/add_button.png"));
-			}
-			Image img = addButtomImage.getScaledInstance(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT, Image.SCALE_FAST);
-			propertyAddButton.setIcon(new ImageIcon(img));
+
+			propertyAddButton.setIcon(new AddButton(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT));
 			propertyAddButton.setBorderPainted(false);
 			propertyAddButton.setFocusPainted(false);
 			propertyAddButton.setContentAreaFilled(false);
 
-			methodAddButton.setIcon(new ImageIcon(img));
+			methodAddButton.setIcon(new AddButton(ADD_BUTTON_HEIGHT, ADD_BUTTON_HEIGHT));
 			methodAddButton.setBorderPainted(false);
 			methodAddButton.setFocusPainted(false);
 			methodAddButton.setContentAreaFilled(false);
@@ -354,8 +347,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		double originalLineWidth = drawer.getLineWidth();
 		propertyAddButton.setVisible(true);
 		int addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
-		Image img = addButtomImage.getScaledInstance(addButtonHeight, addButtonHeight, Image.SCALE_FAST);
-		propertyAddButton.setIcon(new ImageIcon(img));
+		propertyAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
 		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
 
 		// methods
@@ -383,7 +375,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		// }
 		methodAddButton.setVisible(true);
 		startHeight += addHeight;
-		methodAddButton.setIcon(new ImageIcon(img));
+		methodAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
 		methodAddButton.setBounds(10, startHeight, elementWidth - 20, addButtonHeight);
 
 		startHeight += addButtonHeight + 10;

@@ -1,17 +1,13 @@
 package com.baselet.element.ddd;
 
 import java.awt.Graphics;
-import java.awt.Image;
-import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import org.json.JSONObject;
 
+import com.baselet.design.metal.PrimaryKeyButton;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.element.TableCellPrimaryKeyBinding;
 
@@ -19,7 +15,6 @@ import at.mic.dddrt.db.model.TableColumn;
 
 public class EntityProperty extends FieldProperty {
 	private static final long serialVersionUID = 6298444413188448662L;
-	public static Image PRIMARY_KEY_ICON;
 
 	public static EntityProperty createFromJSON(JSONObject property) {
 		try {
@@ -47,12 +42,8 @@ public class EntityProperty extends FieldProperty {
 
 	public void createPrimaryKey() {
 		try {
-			if (PRIMARY_KEY_ICON == null) {
-				PRIMARY_KEY_ICON = ImageIO.read(new File("img/primarykey.png"));
-			}
-			primaryKeyIcon = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			if (idProperty && primaryKeyIcon != null) {
-				keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+			if (idProperty) {
+				keyButton.setIcon(new PrimaryKeyButton(HEIGHT, HEIGHT));
 				properties.addProperty("Primary Key", "true");
 			}
 			else {
@@ -123,8 +114,7 @@ public class EntityProperty extends FieldProperty {
 		super.setZoomLevel(zoomLevel);
 
 		if (idProperty) {
-			primaryKeyIcon = PRIMARY_KEY_ICON.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_FAST);
-			keyButton.setIcon(new ImageIcon(primaryKeyIcon));
+			keyButton.setIcon(new PrimaryKeyButton(HEIGHT, HEIGHT));
 		}
 	}
 

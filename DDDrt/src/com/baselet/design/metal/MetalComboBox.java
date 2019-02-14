@@ -10,6 +10,7 @@ public class MetalComboBox<T> extends JComboBox<T> {
 		super();
 		comboUI = new DDDComboBoxUI();
 		this.setUI(comboUI);
+		setOpaque(false);
 		setBorder(new DDDRoundBorder());
 	}
 

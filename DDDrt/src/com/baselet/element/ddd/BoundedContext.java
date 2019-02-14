@@ -147,8 +147,8 @@ public class BoundedContext extends PropertiesGridElement {
 
 		Rectangle boundsRect = getRectangle();
 		Rectangle boundsRealRectangle = getRealRectangle();
-		contextName.setBounds(boundsRect.width / 2 - 100, 20, 200, 15);
-		packageName.setBounds(boundsRect.width / 2 - 150, 35, 300, 10);
+		contextName.setBounds(0, (int) (20 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
+		packageName.setBounds(0, (int) (35 * getZoom()), boundsRect.width, (int) (10 * getZoom()));
 
 		double lineWidth = drawer.getLineWidth();
 		ColorOwn lineColor = drawer.getForegroundColor();
