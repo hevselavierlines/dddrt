@@ -55,20 +55,24 @@ public class BoundedContext extends PropertiesGridElement {
 	};
 
 	private BORDER_STYLE borderStyle;
+	private final Font originalContextNameFont;
+	private final Font originalPackageNameFont;
+	private final int CONTEXT_FONT_SIZE = 15;
+	private final int PACKAGE_FONT_SIZE = 10;
 
 	public BoundedContext() {
 		super();
 		contextName = new JTextField("BoundedContext1");
 		contextName.setHorizontalAlignment(SwingConstants.CENTER);
 		String originalFontName = contextName.getFont().getFontName();
-		Font fontName = new Font(originalFontName, Font.PLAIN, 15);
-		contextName.setFont(fontName);
+		originalContextNameFont = new Font(originalFontName, Font.PLAIN, CONTEXT_FONT_SIZE);
+		contextName.setFont(originalContextNameFont);
 		contextName.setBorder(null);
 
 		packageName = new JTextField("com.example.model.context1");
 		packageName.setHorizontalAlignment(SwingConstants.CENTER);
-		Font fontPackage = new Font(originalFontName, Font.PLAIN, 10);
-		packageName.setFont(fontPackage);
+		originalPackageNameFont = new Font(originalFontName, Font.PLAIN, PACKAGE_FONT_SIZE);
+		packageName.setFont(originalPackageNameFont);
 		packageName.setBorder(null);
 		borderStyle = BORDER_STYLE.NOTHING;
 
@@ -147,8 +151,12 @@ public class BoundedContext extends PropertiesGridElement {
 
 		Rectangle boundsRect = getRectangle();
 		Rectangle boundsRealRectangle = getRealRectangle();
-		contextName.setBounds(0, (int) (20 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
-		packageName.setBounds(0, (int) (35 * getZoom()), boundsRect.width, (int) (10 * getZoom()));
+		Font newContextFont = originalContextNameFont.deriveFont(Font.BOLD, (int) (CONTEXT_FONT_SIZE * getZoom()));
+		Font newPackageFont = originalPackageNameFont.deriveFont(Font.PLAIN, (int) (PACKAGE_FONT_SIZE * getZoom()));
+		contextName.setFont(newContextFont);
+		contextName.setBounds(0, (int) (10 * getZoom()), boundsRect.width, (int) (20 * getZoom()));
+		packageName.setFont(newPackageFont);
+		packageName.setBounds(0, (int) (28 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
 
 		double lineWidth = drawer.getLineWidth();
 		ColorOwn lineColor = drawer.getForegroundColor();
