@@ -2,6 +2,7 @@ package com.baselet.element.ddd;
 
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -11,10 +12,9 @@ import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
-import javax.swing.border.TitledBorder;
 
+import com.baselet.design.metal.ElementPanelBorder;
 import com.baselet.element.ICollapseListener;
 
 public class CollapsiblePanel extends JLayeredPane {
@@ -22,19 +22,24 @@ public class CollapsiblePanel extends JLayeredPane {
 	private static final long serialVersionUID = 6477443706241182651L;
 	private boolean collapsed;
 	private String title;
-	TitledBorder border;
+	private ElementPanelBorder border;
 	private final List<ICollapseListener> collapseListeners;
 	private Font fontComposite;
 	public static final int DEFAULT_FONT_SIZE = 15;
+	protected int DEFAULT_TITLE_HEIGHT = 20;
+	protected int DEFAULT_BOTTOM_HEIGHT = 4;
 
 	public CollapsiblePanel(String title) {
 		this.title = title;
-		border = BorderFactory.createTitledBorder(title);
+		border = new ElementPanelBorder(DEFAULT_TITLE_HEIGHT, 5);
 		setBorder(border);
 		// addMouseListener(mouseListener);
 		collapseListeners = new LinkedList<ICollapseListener>();
 		collapsed = false;
-
+		GridLayout gridLayout = new GridLayout(0, 1);
+		gridLayout.setHgap(0);
+		gridLayout.setVgap(0);
+		setLayout(gridLayout);
 		fontComposite = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
 	}
 
@@ -157,7 +162,15 @@ public class CollapsiblePanel extends JLayeredPane {
 	}
 
 	public int getTitleHeight() {
-		return (int) (currentZoomLevel * 30);
+		return (int) (currentZoomLevel * DEFAULT_TITLE_HEIGHT);
+	}
+
+	public int getBottomHeight() {
+		return (int) (currentZoomLevel * DEFAULT_BOTTOM_HEIGHT);
+	}
+
+	public int getFullHeight() {
+		return getTitleHeight() + getBottomHeight();
 	}
 
 	@Override
@@ -183,7 +196,9 @@ public class CollapsiblePanel extends JLayeredPane {
 		currentZoomLevel = zoomLevel;
 		int newFontSize = (int) (currentZoomLevel * DEFAULT_FONT_SIZE);
 		fontComposite = fontComposite.deriveFont(Font.PLAIN, newFontSize);
+		border = new ElementPanelBorder(border, getTitleHeight(), getBottomHeight());
 		border.setTitleFont(fontComposite);
+		setBorder(border);
 	}
 
 }

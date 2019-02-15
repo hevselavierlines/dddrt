@@ -2,7 +2,6 @@ package com.baselet.element.ddd;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,8 +48,11 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	protected boolean idProperty;
 	protected final static String UNIQUE_ID = "UUID";
 	protected int HEIGHT = 20;
-	private final int[] PERCENT_WIDTHS = { -1, -1, 60, 40, -1 };
-	protected int[] FIXED_WIDTHS = { 30, 40, 30 };
+	private final JButton leftConnectionButton;
+	private final JButton rightConnectionButton;
+	private final int[] PERCENT_WIDTHS = { -1, -1, -1, 60, 40, -1, -1 };
+	protected final int RING_WIDTH = 10;
+	protected int[] FIXED_WIDTHS = { RING_WIDTH, 20, 40, 25, RING_WIDTH };
 	private ActionListener removeListener;
 	protected final List<String> DEFAULT_TYPES;
 	private DDDRelation relationLineRef;
@@ -59,7 +61,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
 	protected final PropertiesGridElement properties;
-	public static Image deleteButton;
 
 	public int getFieldHeight() {
 		return HEIGHT + 3;
@@ -131,23 +132,27 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		elementName.getDocument().addDocumentListener(this);
 		add(elementName);
 
-		try {
-			// if (deleteButton == null) {
-			// deleteButton = ImageIO.read(new File("img/x-button.png"));
-			// }
-			// Image img = deleteButton.getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_SMOOTH);
-			// elementRemove.setIcon(new ImageIcon(img));
-			elementRemove.setIcon(new DeleteButton(HEIGHT, HEIGHT));
-			elementRemove.setBorderPainted(false);
-			elementRemove.setFocusPainted(false);
-			elementRemove.setContentAreaFilled(false);
-		} catch (Exception ex) {
-			elementRemove.setText("X");
-			elementRemove.setFont(elementFont);
-			System.out.println(ex);
-		}
+		elementRemove.setIcon(new DeleteButton(HEIGHT, HEIGHT));
+		elementRemove.setBorderPainted(false);
+		elementRemove.setFocusPainted(false);
+		elementRemove.setContentAreaFilled(false);
 		elementRemove.addActionListener(this);
 		add(elementRemove);
+
+		leftConnectionButton = new JButton("");
+		leftConnectionButton.setIcon(new CircleIcon(10, HEIGHT));
+		leftConnectionButton.setOpaque(false);
+		leftConnectionButton.setBorderPainted(false);
+		leftConnectionButton.setFocusPainted(false);
+		leftConnectionButton.setContentAreaFilled(false);
+		add(leftConnectionButton);
+		rightConnectionButton = new JButton("");
+		rightConnectionButton.setIcon(new CircleIcon(10, HEIGHT));
+		rightConnectionButton.setOpaque(false);
+		rightConnectionButton.setBorderPainted(false);
+		rightConnectionButton.setFocusPainted(false);
+		rightConnectionButton.setContentAreaFilled(false);
+		add(rightConnectionButton);
 
 		updateCoordinates(null, 200);
 		properties = new PropertiesGridElement();
@@ -230,6 +235,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		properties.addProperty("Visibility", propertyVisibility, true);
 	}
 
+	@Override
 	protected void updateCoordinates(Graphics g, int width) {
 		int startY = 2;
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
@@ -237,30 +243,40 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		for (int i = 0; i < fixedWidths.length; i++) {
 			fixedWidths[i] = (int) (currentZoomLevel * FIXED_WIDTHS[i]);
 		}
-		int percentFullWidth = width - fixedWidths[0] - fixedWidths[1] - fixedWidths[2];
+		int percentFullWidth = width;
+		for (int fixedWidth : fixedWidths) {
+			percentFullWidth -= fixedWidth;
+		}
+		int j = 0;
 		for (int i = 0; i < realWidths.length; i++) {
 			if (PERCENT_WIDTHS[i] > 0) {
 				realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
 			}
+			else {
+				realWidths[i] = fixedWidths[j];
+				j++;
+			}
 		}
-		realWidths[0] = fixedWidths[0];
-		realWidths[1] = fixedWidths[1];
-		realWidths[4] = fixedWidths[2];
 		int offsetX = 0;
-		keyButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
+		leftConnectionButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
 		offsetX += realWidths[0];
-		elementVisibility.setBounds(offsetX, startY, realWidths[1], HEIGHT);
+		keyButton.setBounds(offsetX, startY, realWidths[1], HEIGHT);
 		offsetX += realWidths[1];
-		elementName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
+		elementVisibility.setBounds(offsetX, startY, realWidths[2], HEIGHT);
 		offsetX += realWidths[2];
+		elementName.setBounds(offsetX, startY, realWidths[3], HEIGHT);
+		offsetX += realWidths[3];
 		if (g != null) {
 			g.setFont(elementFont);
 			g.drawString(":", offsetX, (int) (currentZoomLevel * 17));
 		}
 		offsetX += 5;
-		elementType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
+		elementType.setBounds(offsetX, startY, realWidths[4], HEIGHT);
+		offsetX += realWidths[4] - 3;
 		// if (!idProperty) {
-		elementRemove.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
+		elementRemove.setBounds(offsetX, startY, realWidths[5], HEIGHT);
+		offsetX += realWidths[5];
+		rightConnectionButton.setBounds(width - realWidths[6], startY, realWidths[6], HEIGHT);
 		// }
 
 		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
@@ -365,10 +381,14 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		p.x = rect.x;
 		p.y = rect.y;
 
-		p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + HEIGHT / 2);
+		p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + leftConnectionButton.getBounds().height / 2);
 		if (right) {
-			p.x += fieldComposite.zoom(getParent().getWidth());
+			p.x += fieldComposite.zoom(getParent().getWidth() - rightConnectionButton.getBounds().width / 2);
 		}
+		else {
+			p.x += fieldComposite.zoom(leftConnectionButton.getBounds().width / 2);
+		}
+
 		return p;
 	}
 
@@ -490,6 +510,9 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	public void setZoomLevel(double zoomLevel) {
 		currentZoomLevel = zoomLevel;
 		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
+		int circleWidth = (int) (zoomLevel * RING_WIDTH);
+		leftConnectionButton.setIcon(new CircleIcon(circleWidth, HEIGHT));
+		rightConnectionButton.setIcon(new CircleIcon(circleWidth, HEIGHT));
 		super.setZoomLevel(zoomLevel);
 	}
 

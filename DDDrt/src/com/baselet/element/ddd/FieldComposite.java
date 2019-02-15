@@ -2,7 +2,6 @@ package com.baselet.element.ddd;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -97,9 +96,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		propertiesPane = new CollapsiblePanel("Properties");
 		propertiesPane.setTitleFont(compositeFont);
 		propertiesPane.addCollapseListener(this);
-		propertiesPane.setLayout(new GridLayout(0, 1));
 		methodsPane = new CollapsiblePanel("Methods");
-		methodsPane.setLayout(new GridLayout(0, 1));
 		methodsPane.addCollapseListener(this);
 		methodsPane.setTitleFont(compositeFont);
 		propertyAddButton = new MetalButton("");
@@ -263,20 +260,20 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		int startHeight = 0;
 		int addHeight = 0;
 		// properties
-		addHeight = propertiesPane.getComponentCount() * FieldProperty.DEFAULT_HEIGHT + propertiesPane.getTitleHeight() + 5;
+		addHeight = propertiesPane.getComponentCount() * FieldElement.DEFAULT_HEIGHT + propertiesPane.getFullHeight() + 5;
 		if (propertiesPane.isCollapsed()) {
-			addHeight = propertiesPane.getTitleHeight();
+			addHeight = propertiesPane.getFullHeight();
 		}
 		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getTitleHeight() + 5;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getFullHeight() + 5;
 		if (methodsPane.isCollapsed()) {
-			addHeight = methodsPane.getTitleHeight();
+			addHeight = methodsPane.getFullHeight();
 		}
 		// methods
 		startHeight += addHeight + 35;
-		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getTitleHeight() + 5;
+		addHeight = methodsPane.getComponentCount() * FieldMethod.DEFAULT_HEIGHT + methodsPane.getFullHeight() + 5;
 		if (methodsPane.isCollapsed()) {
-			addHeight = methodsPane.getTitleHeight();
+			addHeight = methodsPane.getFullHeight();
 		}
 		return startHeight + addHeight + FieldMethod.DEFAULT_HEIGHT;
 	}
@@ -330,7 +327,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		// properties
 		propertiesPane.setZoomLevel(zoomLevel);
-		addHeight = propertiesPane.getTitleHeight();
+		addHeight = propertiesPane.getFullHeight();
 		// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
 		for (java.awt.Component component : propertiesPane.getComponents()) {
 			if (component instanceof FieldProperty) {
@@ -352,7 +349,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		// methods
 		startHeight += addHeight + addButtonHeight;
-		addHeight = methodsPane.getTitleHeight();
+		addHeight = methodsPane.getFullHeight();
 		methodsPane.setVisible(true);
 		methodsPane.setZoomLevel(zoomLevel);
 		for (java.awt.Component component : methodsPane.getComponents()) {

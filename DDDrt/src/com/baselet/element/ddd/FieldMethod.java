@@ -128,7 +128,8 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 		return FULL_HEIGHT + 2;
 	}
 
-	private void updateCoordinates(Graphics g, int width) {
+	@Override
+	protected void updateCoordinates(Graphics g, int width) {
 		int[] realWidths = new int[PERCENT_WIDTHS.length];
 		int[] fixedWidths = new int[FIXED_WIDTHS.length];
 		for (int i = 0; i < fixedWidths.length; i++) {

@@ -51,7 +51,7 @@ public class ValueObjectProperty extends FieldProperty {
 	}
 
 	private void init() {
-		FIXED_WIDTHS[0] = 0;
+		FIXED_WIDTHS[1] = 0;
 	}
 
 	@Override

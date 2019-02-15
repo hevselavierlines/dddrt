@@ -74,6 +74,50 @@ public abstract class FieldElement extends JLayeredPane {
 		super.paint(g);
 	}
 
+	protected void updateCoordinates(Graphics g, int width) {
+		// int startY = 2;
+		// int[] realWidths = new int[PERCENT_WIDTHS.length];
+		// int[] fixedWidths = new int[FIXED_WIDTHS.length];
+		// for (int i = 0; i < fixedWidths.length; i++) {
+		// fixedWidths[i] = (int) (currentZoomLevel * FIXED_WIDTHS[i]);
+		// }
+		// int percentFullWidth = width - fixedWidths[0] - fixedWidths[1] - fixedWidths[2];
+		// for (int i = 0; i < realWidths.length; i++) {
+		// if (PERCENT_WIDTHS[i] > 0) {
+		// realWidths[i] = (int) (percentFullWidth * ((double) PERCENT_WIDTHS[i] / 100));
+		// }
+		// }
+		// realWidths[0] = fixedWidths[0];
+		// realWidths[1] = fixedWidths[1];
+		// realWidths[4] = fixedWidths[2];
+		// int offsetX = 0;
+		// keyButton.setBounds(offsetX, startY, realWidths[0], HEIGHT);
+		// offsetX += realWidths[0];
+		// elementVisibility.setBounds(offsetX, startY, realWidths[1], HEIGHT);
+		// offsetX += realWidths[1];
+		// elementName.setBounds(offsetX, startY, realWidths[2], HEIGHT);
+		// offsetX += realWidths[2];
+		// if (g != null) {
+		// g.setFont(elementFont);
+		// g.drawString(":", offsetX, (int) (currentZoomLevel * 17));
+		// }
+		// offsetX += 5;
+		// elementType.setBounds(offsetX, startY, realWidths[3], HEIGHT);
+		// // if (!idProperty) {
+		// elementRemove.setBounds(width - realWidths[4] + 5, startY, realWidths[4] - 5, HEIGHT);
+		// // }
+
+		// int nameWidth = width - WIDTHS[0] - WIDTHS[2] - WIDTHS[3];
+		// propertyName.setBounds(WIDTHS[0], 0, nameWidth, HEIGHT);
+		// if (g != null) {
+		// g.drawString(":", WIDTHS[0] + nameWidth, 20);
+		// }
+		// propertyType.setBounds(width - WIDTHS[3] - WIDTHS[2] + 5, 0, WIDTHS[2] - 5, HEIGHT);
+		// if (!idProperty) {
+		// removeButton.setBounds(width - WIDTHS[3], 0, WIDTHS[3], HEIGHT);
+		// }
+	}
+
 	public void setZoomLevel(double zoomLevel) {
 		currentZoomLevel = zoomLevel;
 		int newHeight = (int) (zoomLevel * DEFAULT_HEIGHT);
