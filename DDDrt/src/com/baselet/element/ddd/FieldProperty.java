@@ -140,14 +140,14 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		add(elementRemove);
 
 		leftConnectionButton = new JButton("");
-		leftConnectionButton.setIcon(new CircleIcon(10, HEIGHT));
+		leftConnectionButton.setIcon(new CircleIcon(10, 10));
 		leftConnectionButton.setOpaque(false);
 		leftConnectionButton.setBorderPainted(false);
 		leftConnectionButton.setFocusPainted(false);
 		leftConnectionButton.setContentAreaFilled(false);
 		add(leftConnectionButton);
 		rightConnectionButton = new JButton("");
-		rightConnectionButton.setIcon(new CircleIcon(10, HEIGHT));
+		rightConnectionButton.setIcon(new CircleIcon(10, 10));
 		rightConnectionButton.setOpaque(false);
 		rightConnectionButton.setBorderPainted(false);
 		rightConnectionButton.setFocusPainted(false);
@@ -511,8 +511,8 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		currentZoomLevel = zoomLevel;
 		HEIGHT = (int) (zoomLevel * DEFAULT_HEIGHT);
 		int circleWidth = (int) (zoomLevel * RING_WIDTH);
-		leftConnectionButton.setIcon(new CircleIcon(circleWidth, HEIGHT));
-		rightConnectionButton.setIcon(new CircleIcon(circleWidth, HEIGHT));
+		leftConnectionButton.setIcon(new CircleIcon(circleWidth, circleWidth));
+		rightConnectionButton.setIcon(new CircleIcon(circleWidth, circleWidth));
 		super.setZoomLevel(zoomLevel);
 	}
 
