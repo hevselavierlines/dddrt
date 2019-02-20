@@ -1,15 +1,12 @@
 package com.baselet.element.ddd;
 
 import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.enums.ElementId;
-import com.baselet.element.NewGridElement;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
@@ -26,34 +23,9 @@ public class AggregateComposite extends EntityComposite {
 		// this.component.setBackground(Color.pink);
 	}
 
-	public boolean isRootAggregates() {
-		if (boundedContext != null) {
-			List<AggregateComposite> aggregates = new LinkedList<AggregateComposite>();
-			for (NewGridElement fieldComp : getComponent().getDrawPanel().getBoundedContextChildren(boundedContext)) {
-				if (fieldComp instanceof AggregateComposite) {
-					aggregates.add((AggregateComposite) fieldComp);
-				}
-			}
-			if (aggregates.size() == 1) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	}
-
 	@Override
 	protected String getTitle() {
-		if (isRootAggregates()) {
-			return "<<Root Aggregate>>";
-		}
-		else {
-			return "<<Aggregate>>";
-		}
+		return "<<Root Aggregate>>";
 	}
 
 	@Override
