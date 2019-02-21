@@ -58,6 +58,7 @@ import com.baselet.gui.command.TextFieldChange;
 import com.baselet.gui.pane.OwnSyntaxPane;
 
 import at.mic.dddrt.db.model.Table;
+import tk.baumi.main.ExportMethod;
 import tk.baumi.main.ExportProperty;
 import tk.baumi.main.IFieldComposite;
 
@@ -767,6 +768,19 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			}
 		}
 		return properties;
+	}
+
+	@Override
+	public List<ExportMethod> getMethods() {
+		List<ExportMethod> methods = new LinkedList<ExportMethod>();
+		for (java.awt.Component component : methodsPane.getComponents()) {
+			if (component instanceof FieldMethod) {
+				FieldMethod fieldMethod = new FieldMethod();
+				ExportMethod method = new ExportMethod(fieldMethod.getMethodVisibility(), fieldMethod.getMethodName(), fieldMethod.getMethodType());
+				methods.add(method);
+			}
+		}
+		return methods;
 	}
 
 }

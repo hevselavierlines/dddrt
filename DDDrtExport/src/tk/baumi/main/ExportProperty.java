@@ -10,6 +10,4 @@ public class ExportProperty {
 		this.name = name;
 		this.type = type;
 	}
-	
-	
 }

@@ -2,6 +2,7 @@ package com.baselet.element.ddd;
 
 import java.awt.Font;
 import java.awt.Polygon;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,7 +40,10 @@ import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 
-public class BoundedContext extends PropertiesGridElement {
+import tk.baumi.main.IBoundedContext;
+import tk.baumi.main.IFieldComposite;
+
+public class BoundedContext extends PropertiesGridElement implements IBoundedContext {
 
 	private static final String JSON_BOUNDEDCONTEXT_PACKAGE = "package";
 	private static final String JSON_BOUNDEDCONTEXT_NAME = "name";
@@ -253,8 +257,14 @@ public class BoundedContext extends PropertiesGridElement {
 		return true;
 	}
 
+	@Override
 	public String getContextName() {
 		return contextName.getText();
+	}
+
+	@Override
+	public String getPackageName() {
+		return packageName.getText();
 	}
 
 	public void setBorderThick() {
@@ -270,6 +280,18 @@ public class BoundedContext extends PropertiesGridElement {
 	public void setBorderNothing() {
 		borderStyle = BORDER_STYLE.NOTHING;
 		updateModelFromText();
+	}
+
+	@Override
+	public List<IFieldComposite> getContainingComposites() {
+		List<NewGridElement> elements = component.getDrawPanel().getBoundedContextChildren(this);
+		List<IFieldComposite> fieldComposites = new ArrayList<IFieldComposite>(elements.size());
+		for (NewGridElement element : elements) {
+			if (element instanceof IFieldComposite) {
+				fieldComposites.add((IFieldComposite) element);
+			}
+		}
+		return fieldComposites;
 	}
 
 }

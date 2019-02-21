@@ -75,6 +75,8 @@ import com.baselet.gui.command.Paste;
 import com.baselet.gui.command.RemoveElement;
 
 import at.mic.dddrt.db.DatabaseImportDialog;
+import tk.baumi.main.ExportTask;
+import tk.baumi.main.IBoundedContext;
 
 public class MenuFactory {
 
@@ -234,6 +236,12 @@ public class MenuFactory {
 					DatabaseImportDialog importDialog = new DatabaseImportDialog(CurrentGui.getInstance().getGui().getMainFrame());
 					importDialog.setAlwaysOnTop(true);
 					importDialog.setVisible(true);
+				}
+				else if (menuItem.equals(MenuConstants.EXPORT_JAVA)) {
+					if (diagramHandler != null) {
+						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
+						ExportTask.exportBoundedContexts(boundedContexts);
+					}
 				}
 			}
 		});

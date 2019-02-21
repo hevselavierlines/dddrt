@@ -260,7 +260,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		return gridElementsToReturn;
 	}
 
-	public <T extends GridElement> List<T> getHelperAndSub(Class<T> filtered) {
+	public <T extends Object> List<T> getHelperAndSub(Class<T> filtered) {
 		List<T> gridElementsToReturn = new ArrayList<T>();
 		for (GridElement e : getGridElements()) {
 			if (filtered.isAssignableFrom(e.getClass())) {
