@@ -10,6 +10,8 @@ import com.baselet.control.enums.ElementId;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
+import tk.baumi.main.CompositeType;
+
 public class AggregateComposite extends EntityComposite {
 	@Override
 	public ElementId getId() {
@@ -67,6 +69,11 @@ public class AggregateComposite extends EntityComposite {
 	@Override
 	protected Color getBackgroundColor() {
 		return new Color(0xd3b47e);
+	}
+
+	@Override
+	public CompositeType getType() {
+		return CompositeType.Aggregate;
 	}
 
 }

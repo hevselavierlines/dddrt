@@ -11,6 +11,7 @@ import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
 import at.mic.dddrt.db.model.TableColumn;
+import tk.baumi.main.CompositeType;
 
 public class ValueObjectComposite extends FieldComposite {
 
@@ -82,6 +83,11 @@ public class ValueObjectComposite extends FieldComposite {
 	@Override
 	protected Color getBackgroundColor() {
 		return new Color(0xced7dc);
+	}
+
+	@Override
+	public CompositeType getType() {
+		return CompositeType.ValueObject;
 	}
 
 }

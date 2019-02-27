@@ -62,7 +62,9 @@ public class ExportBoundedContextTask {
 			}
 		}
 		
-		myClass.addConstructor(Modifier.PUBLIC);
+		if(field.getType() != CompositeType.ValueObject) {
+			myClass.addConstructor(Modifier.PUBLIC);
+		}
 		ConstructorDeclaration ctor = myClass.addConstructor(Modifier.PUBLIC);
 		for(ExportProperty property : exportProperties) {
 			ctor.addParameter(property.getType(), "_" + property.getName());

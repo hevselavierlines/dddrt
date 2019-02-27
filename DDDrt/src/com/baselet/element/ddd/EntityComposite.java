@@ -10,6 +10,8 @@ import com.baselet.control.enums.ElementId;
 import com.baselet.element.interfaces.Component;
 import com.baselet.element.interfaces.DrawHandlerInterface;
 
+import tk.baumi.main.CompositeType;
+
 public class EntityComposite extends FieldComposite {
 
 	@Override
@@ -80,6 +82,11 @@ public class EntityComposite extends FieldComposite {
 	@Override
 	protected Color getBackgroundColor() {
 		return new Color(0xffefcd);
+	}
+
+	@Override
+	public CompositeType getType() {
+		return CompositeType.Entity;
 	}
 
 }
