@@ -223,6 +223,10 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 		}
 	}
 
+	public List<Parameter> getParameters() throws Exception {
+		return parseParameters();
+	}
+
 	public String validateParameters() {
 		try {
 			// SwingUtilities.invokeLater(new Runnable() {
@@ -302,6 +306,14 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 	protected static class Parameter {
 		private String type;
 		private String name;
+
+		protected String getType() {
+			return type;
+		}
+
+		protected String getName() {
+			return name;
+		}
 	}
 
 	protected void validateParamters() {

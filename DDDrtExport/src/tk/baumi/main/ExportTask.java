@@ -1,5 +1,6 @@
 package tk.baumi.main;
 
+import java.io.File;
 import java.util.List;
 
 import javax.swing.BoundedRangeModel;
@@ -9,7 +10,9 @@ public class ExportTask {
 	public static void exportBoundedContexts(List<IBoundedContext> boundedContexts) {
 		for(IBoundedContext boundedContext : boundedContexts) {
 			System.out.println("--" + boundedContext.getContextName() + "--");
-			exportFieldComposites(boundedContext.getContainingComposites());
+			ExportBoundedContextTask boundedContextTask = new ExportBoundedContextTask(boundedContext).createFolders( new File("C:\\Users\\baumi\\Documents\\testexport"));
+			boundedContextTask.doExport();
+			//exportFieldComposites(boundedContext.getContainingComposites());
 		}
 	}
 	

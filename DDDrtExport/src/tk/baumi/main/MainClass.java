@@ -25,12 +25,14 @@ public class MainClass {
 		myClass.addField(String.class, "name", Modifier.PRIVATE);
 		
 		MethodDeclaration method = myClass.addMethod("addSomething", Modifier.PUBLIC);
+		method.setType("String");
 		method.addParameter(String.class, "connectionString");
 		method.addParameter(String.class, "username");
 		method.addParameter(String.class, "password");
 		BlockStmt blockStmt = new BlockStmt();
 		blockStmt.addStatement("Class.forName(\"oracle.jdbc.driver.OracleDriver\");");
 		blockStmt.addStatement("connection = DriverManager.getConnection(connectionString, username, password);");
+		//blockStmt.addStatement("return null;");
 		method.setBody(blockStmt);
 		blockStmt.addStatement("name = username;");
 		String code = myClass.toString();

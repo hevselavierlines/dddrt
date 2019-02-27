@@ -40,6 +40,7 @@ import com.baselet.element.ICollapseListener;
 import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.TableCellTypeChange;
+import com.baselet.element.ddd.FieldMethod.Parameter;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -551,6 +552,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		updateModelFromText();
 	}
 
+	@Override
 	public String getName() {
 		return fieldName.getText();
 	}
@@ -775,8 +777,19 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		List<ExportMethod> methods = new LinkedList<ExportMethod>();
 		for (java.awt.Component component : methodsPane.getComponents()) {
 			if (component instanceof FieldMethod) {
-				FieldMethod fieldMethod = new FieldMethod();
-				ExportMethod method = new ExportMethod(fieldMethod.getMethodVisibility(), fieldMethod.getMethodName(), fieldMethod.getMethodType());
+				FieldMethod fieldMethod = (FieldMethod) component;
+				ExportMethod method = new ExportMethod(
+						fieldMethod.getMethodVisibility(),
+						fieldMethod.getMethodName(),
+						fieldMethod.getMethodType());
+				try {
+					List<Parameter> parameters = fieldMethod.getParameters();
+					for (Parameter parameter : parameters) {
+						method.addParameter(parameter.getType(), parameter.getName());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				methods.add(method);
 			}
 		}

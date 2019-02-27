@@ -15,12 +15,16 @@ public class ExportMethod extends ExportProperty {
 	}
 
 	public class Parameter {
-		private String type;
-		private String name;
+		public final String type;
+		public final String name;
 		
 		public Parameter(String type, String name) {
 			this.type = type;
 			this.name = name;
 		}
+	}
+
+	protected List<Parameter> getParameters() {
+		return parameters;
 	}
 }
