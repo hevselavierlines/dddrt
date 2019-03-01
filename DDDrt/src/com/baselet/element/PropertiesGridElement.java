@@ -87,11 +87,19 @@ public class PropertiesGridElement extends NewGridElement {
 		int keyRow = getRowByKey(key);
 		if (keyRow < 0) {
 			tableModel.addRow(new String[] { key, value });
+			tableModel.fireTableDataChanged();
 		}
 		else {
 			if (override) {
 				tableModel.setValueAt(value, keyRow, 1);
 			}
+		}
+	}
+
+	public void removeProperty(String key) {
+		int keyRow = getRowByKey(key);
+		if (keyRow >= 0) {
+			tableModel.removeRow(keyRow);
 		}
 	}
 

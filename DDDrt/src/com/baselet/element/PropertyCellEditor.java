@@ -98,12 +98,6 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 		this.row = row;
 		this.column = column;
 		table.getModel().addTableModelListener(this);
-		// if ("DATABASE NAME".equalsIgnoreCase(key)) {
-		// editor = new DefaultCellEditor(new JComboBox<String>());
-		// }
-		// else {
-		// editor = new DefaultCellEditor(new JTextField());
-		// }
 
 		return editor.getTableCellEditorComponent(table, value, isSelected, row, column);
 	}
@@ -111,20 +105,22 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		updating = true;
-		String value = table.getModel().getValueAt(row, column).toString();
-		Object editorValueObj = editor.getCellEditorValue();
-		if (editorValueObj instanceof String) {
-			String editorValue = (String) editorValueObj;
-			if (!value.equals(editorValue)) {
-				if (textField != null) {
-					textField.setText(value);
+		if (row < table.getModel().getRowCount()) {
+			String value = table.getModel().getValueAt(row, column).toString();
+			Object editorValueObj = editor.getCellEditorValue();
+			if (editorValueObj instanceof String) {
+				String editorValue = (String) editorValueObj;
+				if (!value.equals(editorValue)) {
+					if (textField != null) {
+						textField.setText(value);
+					}
 				}
 			}
-		}
-		else if (editorValueObj instanceof Boolean) {
-			boolean editorValue = (Boolean) editorValueObj;
-			if (checkBox != null) {
-				checkBox.setSelected(editorValue);
+			else if (editorValueObj instanceof Boolean) {
+				boolean editorValue = (Boolean) editorValueObj;
+				if (checkBox != null) {
+					checkBox.setSelected(editorValue);
+				}
 			}
 		}
 		updating = false;

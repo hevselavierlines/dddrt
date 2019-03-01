@@ -58,7 +58,6 @@ Notes\=\Aggregate
       <h>400</h>
     </coordinates>
     <panel_attributes>Context Name\=\Bounded Context
-Package Name\=\com.example.boundedContext
     </panel_attributes>
     <additional_attributes></additional_attributes>
   </element>

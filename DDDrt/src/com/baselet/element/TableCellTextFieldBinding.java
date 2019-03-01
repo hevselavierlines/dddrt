@@ -1,8 +1,6 @@
 package com.baselet.element;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -15,33 +13,10 @@ public class TableCellTextFieldBinding implements DocumentListener, TableModelLi
 	private final DefaultTableModel tableModel;
 	private final JTextComponent textField;
 	private int rowNum;
-	private static List<TableCellTextFieldBinding> bindings;
+	private boolean changeOccurred;
 
-	public static void createBinding(DefaultTableModel tableModel, JTextComponent textField, String rowKey) {
-		if (bindings == null) {
-			bindings = new LinkedList<TableCellTextFieldBinding>();
-		}
-		bindings.add(new TableCellTextFieldBinding(tableModel, textField, rowKey));
-	}
-
-	public static void removeBinding(DefaultTableModel tableModel) {
-		for (TableCellTextFieldBinding binding : bindings) {
-			if (binding.tableModel == tableModel) {
-				bindings.remove(binding);
-			}
-		}
-	}
-
-	public static void removeBinding(JTextComponent textField) {
-		for (TableCellTextFieldBinding binding : bindings) {
-			if (binding.textField == textField) {
-				bindings.remove(binding);
-			}
-		}
-	}
-
-	public static void clearBindings() {
-		bindings.clear();
+	public static TableCellTextFieldBinding createBinding(DefaultTableModel tableModel, JTextComponent textField, String rowKey) {
+		return new TableCellTextFieldBinding(tableModel, textField, rowKey);
 	}
 
 	private TableCellTextFieldBinding(DefaultTableModel tableModel, JTextComponent textField, String rowKey) {
@@ -79,30 +54,46 @@ public class TableCellTextFieldBinding implements DocumentListener, TableModelLi
 	}
 
 	public void textFieldChanges() {
-		if (rowNum >= 0) {
-			String tableValue = tableModel.getValueAt(rowNum, 1).toString();
-			String textValue = textField.getText();
-			if (!tableValue.equals(textValue)) {
-				tableModel.setValueAt(textValue, rowNum, 1);
+		if (!changeOccurred) {
+			changeOccurred = true;
+			if (rowNum >= 0 && rowNum <= tableModel.getRowCount()) {
+				String tableValue = tableModel.getValueAt(rowNum, 1).toString();
+				String textValue = textField.getText();
+				if (!tableValue.equals(textValue)) {
+					tableModel.setValueAt(textValue, rowNum, 1);
+				}
 			}
+			changeOccurred = false;
 		}
 	}
 
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
-		if (rowNum >= 0) {
-			final String tableValue = tableModel.getValueAt(rowNum, 1).toString();
-			String textValue = textField.getText();
-			if (!textValue.equals(tableValue)) {
-				SwingUtilities.invokeLater(new Runnable() {
+		if (!changeOccurred) {
+			changeOccurred = true;
+			if (rowNum >= 0 && rowNum < tableModel.getRowCount()) {
+				final String tableValue = tableModel.getValueAt(rowNum, 1).toString();
+				String textValue = textField.getText();
+				if (!textValue.equals(tableValue)) {
+					SwingUtilities.invokeLater(new Runnable() {
 
-					@Override
-					public void run() {
-						textField.setText(tableValue);
-					}
-				});
+						@Override
+						public void run() {
+							textField.setText(tableValue);
+						}
+					});
+				}
 			}
+			changeOccurred = false;
 		}
 	}
 
+	public boolean isTextField(JTextField textField) {
+		return this.textField == textField;
+	}
+
+	public void dispose() {
+		tableModel.removeTableModelListener(this);
+		textField.getDocument().removeDocumentListener(this);
+	}
 }
