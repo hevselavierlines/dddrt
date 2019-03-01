@@ -145,6 +145,19 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		leftConnectionButton.setBorderPainted(false);
 		leftConnectionButton.setFocusPainted(false);
 		leftConnectionButton.setContentAreaFilled(false);
+		/* implementation for dragging a line from the property to another class. */
+		// leftConnectionButton.addMouseMotionListener(new MouseMotionListener() {
+		//
+		// @Override
+		// public void mouseMoved(MouseEvent arg0) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void mouseDragged(MouseEvent arg0) {
+		// }
+		// });
 		add(leftConnectionButton);
 		rightConnectionButton = new JButton("");
 		rightConnectionButton.setIcon(new CircleIcon(10, 10));

@@ -5,12 +5,12 @@ import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.baselet.control.basics.XValues;
@@ -28,7 +28,9 @@ import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ComponentSwing;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.PropertiesGridElement;
+import com.baselet.element.TableCellChangeBinding;
 import com.baselet.element.TableCellTextFieldBinding;
+import com.baselet.element.TablePropertyChangeListener;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -43,16 +45,15 @@ import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 import tk.baumi.main.IBoundedContext;
 import tk.baumi.main.IFieldComposite;
 
-public class BoundedContext extends PropertiesGridElement implements IBoundedContext {
+public class BoundedContext extends PropertiesGridElement implements IBoundedContext, TablePropertyChangeListener {
 
-	private static final String JSON_BOUNDEDCONTEXT_PACKAGE = "package";
+	private static final String JSON_BOUNDEDCONTEXT_PACKAGES = "packages";
 	private static final String JSON_BOUNDEDCONTEXT_NAME = "name";
+	private static final String JSON_BOUNDEDCONTEXT_MODULES = "modules";
 	private final JTextField contextName;
-	private final JTextField packageName;
+	private final List<JTextField> packageNames;
 	private ComponentSwing component;
 	private JSONObject jsonAttributes;
-	private static final int CORNER = 12;
-	private final List<TableCellTextFieldBinding> bindings;
 
 	public enum BORDER_STYLE {
 		THICK, NORMAL, NOTHING
@@ -63,6 +64,7 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 	private final Font originalPackageNameFont;
 	private final int CONTEXT_FONT_SIZE = 15;
 	private final int PACKAGE_FONT_SIZE = 10;
+	private int modulesAmount;
 
 	public BoundedContext() {
 		super();
@@ -73,14 +75,22 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		contextName.setFont(originalContextNameFont);
 		contextName.setBorder(null);
 
-		packageName = new JTextField("com.example.model.context1");
-		packageName.setHorizontalAlignment(SwingConstants.CENTER);
+		modulesAmount = 1;
+		packageNames = new ArrayList<JTextField>();
 		originalPackageNameFont = new Font(originalFontName, Font.PLAIN, PACKAGE_FONT_SIZE);
+		for (int i = 0; i < modulesAmount; i++) {
+			packageNames.add(createPackage(originalPackageNameFont, i));
+		}
+
+		borderStyle = BORDER_STYLE.NOTHING;
+	}
+
+	private static JTextField createPackage(Font originalPackageNameFont, int i) {
+		JTextField packageName = new JTextField("com.example.model.context" + i);
+		packageName.setHorizontalAlignment(SwingConstants.CENTER);
 		packageName.setFont(originalPackageNameFont);
 		packageName.setBorder(null);
-		borderStyle = BORDER_STYLE.NOTHING;
-
-		bindings = new LinkedList<TableCellTextFieldBinding>();
+		return packageName;
 	}
 
 	@Override
@@ -89,18 +99,32 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 
 		this.component = (ComponentSwing) component;
 		this.component.add(contextName);
-		this.component.add(packageName);
+		for (int i = 0; i < packageNames.size(); i++) {
+			this.component.add(packageNames.get(i));
+		}
 
 		try {
 			jsonAttributes = new JSONObject(additionalAttributes);
 			contextName.setText(jsonAttributes.getString(JSON_BOUNDEDCONTEXT_NAME));
-			packageName.setText(jsonAttributes.getString(JSON_BOUNDEDCONTEXT_PACKAGE));
+			int modules = jsonAttributes.getInt(JSON_BOUNDEDCONTEXT_MODULES);
+			setModulesAmount(modules);
+			JSONArray modulesArray = jsonAttributes.getJSONArray(JSON_BOUNDEDCONTEXT_PACKAGES);
+			for (int i = 0; i < modulesArray.length(); i++) {
+				String text = modulesArray.getString(i);
+				packageNames.get(i).setText(text);
+			}
+
 		} catch (Exception ex) {
 			createDefaultJSON();
 		}
 
+		addProperty("Context Name", contextName.getText(), false);
+		// addProperty("Package Name", packageName.getText(), false);
+		addProperty("Modules", "1", false);
+
 		TableCellTextFieldBinding.createBinding(getTableModel(), contextName, "Context Name");
-		TableCellTextFieldBinding.createBinding(getTableModel(), packageName, "Package Name");
+		// TableCellTextFieldBinding.createBinding(getTableModel(), packageName, "Package Name");
+		TableCellChangeBinding.createBinding(getTableModel(), "Modules", this);
 	}
 
 	private final StickingPolygonGenerator stickingPolygonGenerator = new StickingPolygonGenerator() {
@@ -159,8 +183,24 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		Font newPackageFont = originalPackageNameFont.deriveFont(Font.PLAIN, (int) (PACKAGE_FONT_SIZE * getZoom()));
 		contextName.setFont(newContextFont);
 		contextName.setBounds(0, (int) (10 * getZoom()), boundsRect.width, (int) (20 * getZoom()));
+
+		int moduleWidth = w / modulesAmount;
+		int moduleStartY = 28;
+		int i = 0;
+		JTextField packageName = packageNames.get(i);
+		int moduleX = 0;
+		packageName.setBounds((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (15 * getZoom()));
 		packageName.setFont(newPackageFont);
-		packageName.setBounds(0, (int) (28 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
+		for (i = 1; i < modulesAmount; i++) {
+			moduleX = moduleWidth * i;
+			drawer.drawLine(moduleX, moduleStartY, moduleX, h);
+			packageName = packageNames.get(i);
+			packageName.setFont(newPackageFont);
+			packageName.setBounds((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (15 * getZoom()));
+		}
+		drawer.drawLine(0, moduleStartY - 1, w, moduleStartY - 1);
+
+		// packageName.setBounds(0, (int) (28 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
 
 		double lineWidth = drawer.getLineWidth();
 		ColorOwn lineColor = drawer.getForegroundColor();
@@ -208,13 +248,23 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 	protected void createDefaultJSON() {
 		jsonAttributes = new JSONObject();
 		jsonAttributes.put(JSON_BOUNDEDCONTEXT_NAME, "boundedContext");
-		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGE, "com.example.model.context1");
+		JSONArray modulesArray = new JSONArray();
+		for (JTextField module : packageNames) {
+			modulesArray.put(module.getText());
+		}
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGES, modulesArray);
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_MODULES, 1);
 	}
 
 	@Override
 	public String getAdditionalAttributes() {
 		jsonAttributes.put(JSON_BOUNDEDCONTEXT_NAME, contextName.getText());
-		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGE, packageName.getText());
+		JSONArray modulesArray = new JSONArray();
+		for (JTextField module : packageNames) {
+			modulesArray.put(module.getText());
+		}
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_PACKAGES, modulesArray);
+		jsonAttributes.put(JSON_BOUNDEDCONTEXT_MODULES, modulesAmount);
 		return jsonAttributes.toString(1);
 	}
 
@@ -264,7 +314,7 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 
 	@Override
 	public String getPackageName() {
-		return packageName.getText();
+		return packageNames.get(0).getText();
 	}
 
 	public void setBorderThick() {
@@ -294,4 +344,32 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		return fieldComposites;
 	}
 
+	public void setModulesAmount(int modulesAmount) {
+		if (modulesAmount > this.modulesAmount) {
+			for (int i = this.modulesAmount; i < modulesAmount; i++) {
+				JTextField newTextField = createPackage(originalPackageNameFont, i);
+				component.add(newTextField);
+				packageNames.add(newTextField);
+			}
+		}
+		else if (modulesAmount < this.modulesAmount) {
+			for (int i = this.modulesAmount - 1; i >= modulesAmount; i--) {
+				JTextField removeTextField = packageNames.get(i);
+				packageNames.remove(removeTextField);
+				component.remove(removeTextField);
+			}
+		}
+		this.modulesAmount = modulesAmount;
+	}
+
+	@Override
+	public void propertyChange(String propertyName, String newText) {
+		try {
+			int modules = Integer.parseInt(newText);
+			if (modules >= 1 && modules <= 10) {
+				setModulesAmount(modules);
+				updateModelFromText();
+			}
+		} catch (NumberFormatException ex) {}
+	}
 }
