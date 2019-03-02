@@ -201,15 +201,12 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 						intersections.add(moduleBound);
 					}
 				}
-				if (intersections.size() == 2) {
+				if (intersections.size() > 1) {
 					java.awt.Rectangle sectionLeft = intersections.get(0);
-					java.awt.Rectangle sectionRight = intersections.get(1);
 					int elementDistanceSectionLeft = elementRectangle.x - sectionLeft.x;
 					int elementInSectionLeft = sectionLeft.width - elementDistanceSectionLeft;
 					int elementRightCorner = elementDistanceSectionLeft + elementRectangle.width;
 					int elementInSectionRight = elementRightCorner - sectionLeft.width;
-
-					System.out.println("sectionleft: " + elementInSectionLeft + ", section right: " + elementInSectionRight);
 					int gridSize = getGridSize();
 					if (elementInSectionLeft > elementInSectionRight) {
 						if (elementInSectionRight % gridSize != 0) {
@@ -226,11 +223,11 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 					component.getDrawPanel().updateRelations();
 				}
 				else {
-					System.out.println("NOTHING");
+					// System.out.println("NOTHING");
 				}
 			}
 			else {
-				System.out.println("contains");
+				// System.out.println("contains");
 			}
 		}
 	}
