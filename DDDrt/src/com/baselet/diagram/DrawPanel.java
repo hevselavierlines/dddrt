@@ -625,6 +625,12 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 	}
 
+	public void updateRelations() {
+		for (DDDRelation relation : getHelper(DDDRelation.class)) {
+			relation.createRelationLine();
+		}
+	}
+
 	public GridElement getElementToComponent(Component component) {
 		for (GridElement e : gridElements) {
 			if (e.getComponent().equals(component)) {

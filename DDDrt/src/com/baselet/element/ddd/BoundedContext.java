@@ -55,6 +55,7 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 	private ComponentSwing component;
 	private JSONObject jsonAttributes;
 	private final List<TableCellTextFieldBinding> bindings;
+	private java.awt.Rectangle[] modulesBounds;
 
 	public enum BORDER_STYLE {
 		THICK, NORMAL, NOTHING
@@ -174,6 +175,66 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		return new PointDouble(x, y);
 	}
 
+	public void organiseElements() {
+		for (NewGridElement element : getHandler().getDrawPanel().getBoundedContextChildren(this)) {
+			if (element instanceof FieldComposite) {
+				organiseElement((FieldComposite) element);
+			}
+		}
+	}
+
+	public void organiseElement(FieldComposite element) {
+		if (modulesBounds != null && modulesAmount > 1) {
+			boolean contains = false;
+			java.awt.Rectangle elementRectangle = element.getAwtRectangle();
+			elementRectangle.x -= getRectangle().x;
+			elementRectangle.y -= getRectangle().y;
+			for (java.awt.Rectangle moduleBound : modulesBounds) {
+				if (moduleBound.contains(elementRectangle)) {
+					contains = true;
+				}
+			}
+			if (!contains) {
+				List<java.awt.Rectangle> intersections = new ArrayList<java.awt.Rectangle>(3);
+				for (java.awt.Rectangle moduleBound : modulesBounds) {
+					if (moduleBound.intersects(elementRectangle)) {
+						intersections.add(moduleBound);
+					}
+				}
+				if (intersections.size() == 2) {
+					java.awt.Rectangle sectionLeft = intersections.get(0);
+					java.awt.Rectangle sectionRight = intersections.get(1);
+					int elementDistanceSectionLeft = elementRectangle.x - sectionLeft.x;
+					int elementInSectionLeft = sectionLeft.width - elementDistanceSectionLeft;
+					int elementRightCorner = elementDistanceSectionLeft + elementRectangle.width;
+					int elementInSectionRight = elementRightCorner - sectionLeft.width;
+
+					System.out.println("sectionleft: " + elementInSectionLeft + ", section right: " + elementInSectionRight);
+					int gridSize = getGridSize();
+					if (elementInSectionLeft > elementInSectionRight) {
+						if (elementInSectionRight % gridSize != 0) {
+							elementInSectionRight += gridSize;
+						}
+						element.moveElement(-elementInSectionRight, 0);
+					}
+					else {
+						if (elementInSectionLeft % gridSize != 0) {
+							elementInSectionLeft += gridSize;
+						}
+						element.moveElement(elementInSectionLeft, 0);
+					}
+					component.getDrawPanel().updateRelations();
+				}
+				else {
+					System.out.println("NOTHING");
+				}
+			}
+			else {
+				System.out.println("contains");
+			}
+		}
+	}
+
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
 		DrawHandler drawer = state.getDrawer();
@@ -198,17 +259,22 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		int i = 0;
 		JTextField packageName = packageNames.get(i);
 		int moduleX = 0;
-		packageName.setBounds((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (15 * getZoom()));
-		packageName.setFont(newPackageFont);
-		for (i = 1; i < packageNames.size(); i++) {
+		modulesBounds = new java.awt.Rectangle[packageNames.size()];
+		// modulesBounds[0] = new java.awt.Rectangle((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (h - (28 + 15) * getZoom()));
+		// packageName.setBounds((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (15 * getZoom()));
+		// packageName.setFont(newPackageFont);
+		for (i = 0; i < packageNames.size(); i++) {
 			moduleX = moduleWidth * i;
-			drawer.drawLine(moduleX, moduleStartY, moduleX, h);
+			if (i > 0) {
+				drawer.drawLine(moduleX, moduleStartY, moduleX, h);
+			}
 			packageName = packageNames.get(i);
 			packageName.setFont(newPackageFont);
+			modulesBounds[i] = new java.awt.Rectangle((int) (moduleX * getZoom()), 0, (int) (moduleWidth * getZoom()), (int) (h * getZoom()));
+
 			packageName.setBounds((int) (moduleX * getZoom()), (int) (28 * getZoom()), (int) (moduleWidth * getZoom()), (int) (15 * getZoom()));
 		}
 		drawer.drawLine(0, moduleStartY - 1, w, moduleStartY - 1);
-
 		// packageName.setBounds(0, (int) (28 * getZoom()), boundsRect.width, (int) (15 * getZoom()));
 
 		double lineWidth = drawer.getLineWidth();
@@ -282,6 +348,7 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		checkFieldCompositesInsideBoundedContext();
 
 		validateNames();
+		organiseElements();
 		borderStyle = BORDER_STYLE.NOTHING;
 		updateModelFromText();
 	}

@@ -449,6 +449,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				// update old bounded context
 				if (boundedContext != null) {
 					boundedContext.validateNames();
+					boundedContext.organiseElement(this);
 				}
 
 				boundedContext = rightContext;

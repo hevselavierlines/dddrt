@@ -298,6 +298,13 @@ public abstract class NewGridElement implements GridElement {
 		component.setBoundsRect(rect);
 	}
 
+	public void moveElement(int x, int y) {
+		Rectangle boundsRect = component.getBoundsRect();
+		boundsRect.x += x;
+		boundsRect.y += y;
+		component.setBoundsRect(boundsRect);
+	}
+
 	@Override
 	public void setSize(int width, int height) {
 		if (width != getRectangle().width || height != getRectangle().height) { // only change size if it is really different
@@ -307,6 +314,17 @@ public abstract class NewGridElement implements GridElement {
 			if (!autoresizePossiblyInProgress) {
 				updateModelFromText();
 			}
+		}
+	}
+
+	public java.awt.Rectangle getAwtRectangle() {
+		if (component instanceof ComponentSwing) {
+			ComponentSwing cs = (ComponentSwing) component;
+			return cs.getBounds();
+		}
+		else {
+			Rectangle boundsRect = component.getBoundsRect();
+			return new java.awt.Rectangle(boundsRect.x, boundsRect.y, boundsRect.width, boundsRect.height);
 		}
 	}
 
