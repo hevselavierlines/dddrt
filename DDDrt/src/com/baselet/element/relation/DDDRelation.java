@@ -56,7 +56,14 @@ public class DDDRelation extends Relation {
 		int maxX = Math.max(startPoint.x, endPoint.x);
 		int maxY = Math.max(startPoint.y, endPoint.y);
 		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(ElementId.DDDRelation, rect, "lt=<-", null, CurrentDiagram.getInstance().getDiagramHandler(), null);
+		String relationText = "lt=<-\nm1=*\nm2=1";
+		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(
+				ElementId.DDDRelation,
+				rect,
+				relationText,
+				null,
+				CurrentDiagram.getInstance().getDiagramHandler(),
+				null);
 		dddRelation.startProperty = startProperty;
 		dddRelation.endComposite = endComposite;
 		dddRelation.createRelationLine();
@@ -192,13 +199,13 @@ public class DDDRelation extends Relation {
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
 		super.drawCommonContent(state);
-
-		if (isValidRelation()) {
-			state.getDrawer().setForegroundColor(ColorOwn.BLACK);
-		}
-		else {
-			state.getDrawer().setForegroundColor(ColorOwn.RED);
-		}
+		state.getDrawer().setForegroundColor(ColorOwn.BLACK);
+		// if (isValidRelation()) {
+		// state.getDrawer().setForegroundColor(ColorOwn.BLACK);
+		// }
+		// else {
+		// state.getDrawer().setForegroundColor(ColorOwn.RED);
+		// }
 	}
 
 }
