@@ -56,7 +56,7 @@ public class DDDRelation extends Relation {
 		int maxX = Math.max(startPoint.x, endPoint.x);
 		int maxY = Math.max(startPoint.y, endPoint.y);
 		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-		String relationText = "lt=<-\nm1=*\nm2=1";
+		String relationText = "lt=<-\nm1=1\nm2=*";
 		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(
 				ElementId.DDDRelation,
 				rect,
