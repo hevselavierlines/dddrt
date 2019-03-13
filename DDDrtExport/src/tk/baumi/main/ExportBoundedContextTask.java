@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -16,18 +17,17 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class ExportBoundedContextTask {
 	private String contextName;
-	private String packageName;
-	private File contextFolder;
 	private IBoundedContext boundedContext;
+	private HashSet<String> packages;
 	
 	public ExportBoundedContextTask(IBoundedContext boundedContext) {
 		this.boundedContext = boundedContext;
 		this.contextName = boundedContext.getContextName();
-		this.packageName = boundedContext.getPackageName();
+		this.packages = new HashSet<String>();
 	}
 	
-	public ExportBoundedContextTask createFolders(File projectFolder) {
-		String[] packagePath = this.packageName.split("\\.");
+	private File createFolders(String packageName, File projectFolder) {
+		String[] packagePath = packageName.split("\\.");
 		if(!projectFolder.exists()) {
 			projectFolder.mkdirs();
 		}
@@ -36,21 +36,26 @@ public class ExportBoundedContextTask {
 			currentPath = new File(currentPath, partFolder);
 			currentPath.mkdir();
 		}
-		this.contextFolder = currentPath;
-		return this;
+		return currentPath;
 	}
 	
 	public void doExport() {
-		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		for(IFieldComposite composite : boundedContext.getContainingComposites()) {
-			exportFieldComposite(compilationUnit, composite);
+			exportFieldComposite(composite);
 		}
 	}
 	
-	private void exportFieldComposite(CompilationUnit compilationUnit, IFieldComposite field) {
+	private void exportFieldComposite(IFieldComposite field) {
+		String packageName = boundedContext.getPackageName(field);
+		File packageFolder = createFolders(packageName, new File("C:\\Users\\baumi\\Documents\\testexport"));
+		
+		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		ClassOrInterfaceDeclaration myClass = compilationUnit
 		        .addClass(field.getName())
 		        .setPublic(false);
+		if(field.getType() == CompositeType.Aggregate) {
+			myClass.setPublic(true);
+		}
 		List<ExportProperty> exportProperties = new ArrayList<ExportProperty>();
 		for(ExportProperty property : field.getProperties()) {
 			exportProperties.add(property);
@@ -114,12 +119,12 @@ public class ExportBoundedContextTask {
 		
 		StringBuffer prependCode = new StringBuffer();
 		prependCode.append("package ");
-		prependCode.append(this.packageName);
+		prependCode.append(packageName);
 		prependCode.append(";\n\r\n\r");
 		String code = prependCode.toString() + myClass.toString();
 		FileOutputStream fos = null; 
 		try {
-			fos = new FileOutputStream(new File(contextFolder, field.getName()+ ".java"));
+			fos = new FileOutputStream(new File(packageFolder, field.getName()+ ".java"));
 			fos.write(code.getBytes("UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -7,4 +7,6 @@ public interface IBoundedContext {
 	
 	String getContextName();
 	String getPackageName();
+	
+	String getPackageName(IFieldComposite fieldComposite);
 }

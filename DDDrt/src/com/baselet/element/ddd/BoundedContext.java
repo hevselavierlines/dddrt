@@ -183,6 +183,24 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		}
 	}
 
+	private String getPackageName(FieldComposite element) {
+		java.awt.Rectangle elementRectangle = element.getAwtRectangle();
+		elementRectangle.x -= getRectangle().x;
+		elementRectangle.y -= getRectangle().y;
+		int moduleIndex = -1;
+		for (int i = 0; i < modulesBounds.length && moduleIndex < 0; i++) {
+			java.awt.Rectangle moduleBound = modulesBounds[i];
+			if (moduleBound.contains(elementRectangle)) {
+				moduleIndex = i;
+			}
+		}
+		// TODO check modules if overlapping over 3 elements.
+		if (moduleIndex < 0) {
+			moduleIndex = 0;
+		}
+		return packageNames.get(moduleIndex).getText();
+	}
+
 	public void organiseElement(FieldComposite element) {
 		if (modulesBounds != null && modulesAmount > 1) {
 			boolean contains = false;
@@ -209,15 +227,15 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 					int elementInSectionRight = elementRightCorner - sectionLeft.width;
 					int gridSize = getGridSize();
 					if (elementInSectionLeft > elementInSectionRight) {
-						if (elementInSectionRight % gridSize != 0) {
-							elementInSectionRight += gridSize;
-						}
+						// if (elementInSectionRight % gridSize != 0) {
+						// elementInSectionRight += gridSize;
+						// }
 						element.moveElement(-elementInSectionRight, 0);
 					}
 					else {
-						if (elementInSectionLeft % gridSize != 0) {
-							elementInSectionLeft += gridSize;
-						}
+						// if (elementInSectionLeft % gridSize != 0) {
+						// elementInSectionLeft += gridSize;
+						// }
 						element.moveElement(elementInSectionLeft, 0);
 					}
 					component.getDrawPanel().updateRelations();
@@ -388,6 +406,11 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 	@Override
 	public String getPackageName() {
 		return packageNames.get(0).getText();
+	}
+
+	@Override
+	public String getPackageName(IFieldComposite fieldComposite) {
+		return getPackageName((FieldComposite) fieldComposite);
 	}
 
 	public void setBorderThick() {
