@@ -6,6 +6,9 @@ public class ExportProperty {
 	private String visibility;
 	private String name;
 	private String type;
+	private String dbName;
+	private String dbType;
+	private boolean primary;
 	public ExportProperty(String visibility, String name, String type) {
 		super();
 		this.visibility = visibility;
@@ -28,5 +31,19 @@ public class ExportProperty {
 	}
 	public String getType() {
 		return type;
+	}
+	public void setDatabaseInfo(String dbName, String dbType, boolean primary) {
+		this.dbName = dbName;
+		this.dbType = dbType;
+		this.primary = primary;
+	}
+	public String getDatabaseName() {
+		return dbName;
+	}
+	public String getDatabaseType() {
+		return dbType;
+	}
+	public boolean isPrimaryProperty() {
+		return this.primary;
 	}
 }

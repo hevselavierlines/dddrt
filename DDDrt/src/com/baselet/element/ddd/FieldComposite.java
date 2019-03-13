@@ -558,6 +558,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		return fieldName.getText();
 	}
 
+	@Override
+	public String getDatabaseName() {
+		return fieldName.getText().toUpperCase();
+	}
+
 	public void initFromDatabase(Table table) {
 		fieldName.setText(table.getTableNameAsCamelCase());
 		propertiesPane.removeAll();
@@ -767,6 +772,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			if (component instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) component;
 				ExportProperty export = new ExportProperty(fieldProperty.getPropertyVisibility(), fieldProperty.getPropertyName(), fieldProperty.getPropertyType());
+				export.setDatabaseInfo(fieldProperty.getDatabaseName(), fieldProperty.getDatabaseType(), fieldProperty.isPrimaryProperty());
 				properties.add(export);
 			}
 		}

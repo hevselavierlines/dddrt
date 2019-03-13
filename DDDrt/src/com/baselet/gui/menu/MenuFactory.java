@@ -240,7 +240,13 @@ public class MenuFactory {
 				else if (menuItem.equals(MenuConstants.EXPORT_JAVA)) {
 					if (diagramHandler != null) {
 						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
-						ExportTask.exportBoundedContexts(boundedContexts);
+						ExportTask.exportBoundedContextsToJava(boundedContexts);
+					}
+				}
+				else if (menuItem.equals(MenuConstants.EXPORT_DB)) {
+					if (diagramHandler != null) {
+						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
+						ExportTask.exportBoundedContextToDB(boundedContexts);
 					}
 				}
 			}

@@ -529,4 +529,16 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		super.setZoomLevel(zoomLevel);
 	}
 
+	public String getDatabaseName() {
+		return getPropertyName().toUpperCase();
+	}
+
+	public String getDatabaseType() {
+		// TODO generate real database type.
+		return "VARCHAR2(1024)";
+	}
+
+	public boolean isPrimaryProperty() {
+		return idProperty;
+	}
 }

@@ -7,18 +7,23 @@ import javax.swing.BoundedRangeModel;
 
 public class ExportTask {
 	
-	public static void exportBoundedContexts(List<IBoundedContext> boundedContexts) {
+	public static void exportBoundedContextsToJava(List<IBoundedContext> boundedContexts) {
 		for(IBoundedContext boundedContext : boundedContexts) {
-			System.out.println("--" + boundedContext.getContextName() + "--");
+//			System.out.println("--" + boundedContext.getContextName() + "--");
 			ExportBoundedContextTask boundedContextTask = new ExportBoundedContextTask(boundedContext);
-			boundedContextTask.doExport();
+			boundedContextTask.doJavaExport();
 			//exportFieldComposites(boundedContext.getContainingComposites());
 		}
 	}
 	
-	public static void exportFieldComposites(List<IFieldComposite> fieldComposites) {
-		for(IFieldComposite fieldComposite : fieldComposites) {
-			System.out.println(fieldComposite.getName());
+	public static void exportBoundedContextToDB(List<IBoundedContext> boundedContexts) {
+		StringBuffer sqlString = new StringBuffer();
+		//TODO comments for the start
+		
+		for(IBoundedContext boundedContext : boundedContexts) {
+			ExportBoundedContextTask boundedContextTask = new ExportBoundedContextTask(boundedContext);
+			boundedContextTask.doDatabaseExport(sqlString);
 		}
+		System.out.println(sqlString.toString());
 	}
 }

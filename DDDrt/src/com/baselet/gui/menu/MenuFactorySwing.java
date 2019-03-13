@@ -121,6 +121,10 @@ public class MenuFactorySwing extends MenuFactory {
 		return createJMenuItem(true, MenuConstants.EXPORT_JAVA, null);
 	}
 
+	public JMenuItem createExportDB() {
+		return createJMenuItem(true, MenuConstants.EXPORT_DB, null);
+	}
+
 	public JMenuItem createGenerateOptions() {
 		return createJMenuItem(false, GENERATE_CLASS_OPTIONS, null);
 	}
