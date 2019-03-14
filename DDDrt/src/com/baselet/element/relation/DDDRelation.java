@@ -21,6 +21,7 @@ public class DDDRelation extends Relation implements IDDDRelation {
 	private FieldProperty startProperty;
 	private FieldComposite endComposite;
 	private String relationString;
+	private boolean collection;
 
 	@Override
 	public ElementId getId() {
@@ -43,7 +44,7 @@ public class DDDRelation extends Relation implements IDDDRelation {
 		updateModelFromText();
 	}
 
-	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite) {
+	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite, boolean collection) {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
 		java.awt.Point endPoint = endComposite.getAbsolutePosition(false);
 		if (startPoint.x < endPoint.x) {
@@ -60,6 +61,9 @@ public class DDDRelation extends Relation implements IDDDRelation {
 		int maxY = Math.max(startPoint.y, endPoint.y);
 		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
 		String relationText = "lt=<-\nm1=1\nm2=*";
+		if (collection) {
+			relationText = "lt=<-\nm1=*\nm2=*";
+		}
 		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(
 				ElementId.DDDRelation,
 				rect,
@@ -69,6 +73,7 @@ public class DDDRelation extends Relation implements IDDDRelation {
 				null);
 		dddRelation.startProperty = startProperty;
 		dddRelation.endComposite = endComposite;
+		dddRelation.collection = collection;
 		dddRelation.createRelationLine();
 		return dddRelation;
 	}
@@ -102,6 +107,8 @@ public class DDDRelation extends Relation implements IDDDRelation {
 			sb.append(startProperty.getParentFieldComposite().getUUID());
 			sb.append(';');
 			sb.append(startProperty.getPropertyName());
+			sb.append(';');
+			sb.append(collection);
 		}
 		return sb.toString();
 	}
@@ -141,10 +148,14 @@ public class DDDRelation extends Relation implements IDDDRelation {
 
 	public void initRelation(DrawPanel drawPanel) {
 		String[] relationParams = relationString.split(";");
-		if (relationParams.length == 3) {
+		if (relationParams.length >= 3) {
 			String endCompUUID = relationParams[0];
 			String startCompUUID = relationParams[1];
 			String startCompProp = relationParams[2];
+			if (relationParams.length >= 4) {
+				String collectionString = relationParams[3];
+				collection = Boolean.parseBoolean(collectionString);
+			}
 
 			endComposite = (FieldComposite) drawPanel.getElementById(endCompUUID);
 			FieldComposite startComposite = (FieldComposite) drawPanel.getElementById(startCompUUID);

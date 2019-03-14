@@ -22,6 +22,7 @@ import javax.swing.text.JTextComponent;
 import org.json.JSONObject;
 
 import com.baselet.control.basics.geom.Rectangle;
+import com.baselet.design.metal.DataTypeItem;
 import com.baselet.design.metal.DeleteButton;
 import com.baselet.design.metal.PrimaryKeyButton;
 import com.baselet.diagram.CurrentDiagram;
@@ -445,8 +446,10 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	public void focusLost(FocusEvent e) {
 		Object source = e.getSource();
 		if (e.getSource() == propertyTypeEditor) {
-			FieldComposite fc = elementType.getSelection();
+			DataTypeItem selectionItem = (DataTypeItem) elementType.getSelectedItem();
+			FieldComposite fc = selectionItem.getDescription();
 			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
+			boolean collection = false;
 			if (fc == null) {
 				for (FieldComposite fieldComposite : dp.getHelperAndSub(FieldComposite.class)) {
 					String comparingString = null;
@@ -461,10 +464,13 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 					}
 				}
 			}
+			else {
+				collection = selectionItem.isCollection();
+			}
 			getParentFieldComposite()
 					.getComponent()
 					.getController()
-					.executeCommand(new PropertyDataTypeChange(this, fc, dp, relationLineRef, elementType, originalString));
+					.executeCommand(new PropertyDataTypeChange(this, fc, dp, relationLineRef, elementType, originalString, collection));
 			// if (fc != null) {
 			// if (relationLineRef != null) {
 			// dp.removeRelation(relationLineRef);

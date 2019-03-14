@@ -48,7 +48,7 @@ public class DatabaseImport extends Command {
 			if (startTable != null && endTable != null) {
 				FieldProperty startProperty = startTable.getPropertyByName(relation.getOriginalColumn());
 				if (startProperty != null) {
-					DDDRelation dddRelation = DDDRelation.createRelation(startProperty, endTable);
+					DDDRelation dddRelation = DDDRelation.createRelation(startProperty, endTable, false);
 					startProperty.setRelation(dddRelation);
 					addRelationToDiagram(dddRelation, handler);
 					startProperty.setPropertyType(endTable.getName());

@@ -29,12 +29,20 @@ public class DataTypeComboBox extends MetalComboBox<DataTypeItem> {
 		}
 	}
 
-	public void addItem(String item) {
-		super.addItem(new DataTypeItem(item, null));
+	public void addItem(String item, FieldComposite ec, boolean collection) {
+		super.addItem(new DataTypeItem(item, ec, collection));
 	}
 
 	public void addItem(String item, FieldComposite ec) {
-		super.addItem(new DataTypeItem(item, ec));
+		addItem(item, ec, false);
+	}
+
+	public void addItem(String item) {
+		addItem(item, null, false);
+	}
+
+	public void addItem(String item, boolean collection) {
+		addItem(item, null, collection);
 	}
 
 	public FieldComposite getSelection() {
@@ -56,38 +64,15 @@ class DataTypeItemRenderer extends BasicComboBoxRenderer {
 				cellHasFocus);
 		if (value != null) {
 			DataTypeItem item = (DataTypeItem) value;
-			setText(item.getId());
+
+			setText(item.toString());
 		}
 		if (index == -1) {
 			DataTypeItem item = (DataTypeItem) value;
 			if (item != null) {
-				setText(item.getId());
+				setText(item.toString());
 			}
 		}
 		return this;
-	}
-}
-
-class DataTypeItem {
-
-	private final String typeName;
-	private final FieldComposite typeField;
-
-	public DataTypeItem(String id, FieldComposite typeField) {
-		typeName = id;
-		this.typeField = typeField;
-	}
-
-	public String getId() {
-		return typeName;
-	}
-
-	public FieldComposite getDescription() {
-		return typeField;
-	}
-
-	@Override
-	public String toString() {
-		return typeName;
 	}
 }

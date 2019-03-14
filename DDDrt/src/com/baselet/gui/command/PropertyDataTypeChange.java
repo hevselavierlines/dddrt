@@ -17,14 +17,16 @@ public class PropertyDataTypeChange extends Command {
 	private final JComboBox<?> selector;
 	private final Object oldValue;
 	private Object newValue;
+	private final boolean collection;
 
-	public PropertyDataTypeChange(FieldProperty property, FieldComposite fieldComposite, DrawPanel drawPanel, DDDRelation relation, JComboBox<?> selector, Object oldValue) {
+	public PropertyDataTypeChange(FieldProperty property, FieldComposite fieldComposite, DrawPanel drawPanel, DDDRelation relation, JComboBox<?> selector, Object oldValue, boolean collection) {
 		this.property = property;
 		this.drawPanel = drawPanel;
 		this.relation = relation;
 		this.fieldComposite = fieldComposite;
 		this.selector = selector;
 		this.oldValue = oldValue;
+		this.collection = collection;
 	}
 
 	@Override
@@ -33,7 +35,7 @@ public class PropertyDataTypeChange extends Command {
 			if (relation != null) {
 				drawPanel.removeRelation(relation);
 			}
-			newRelation = DDDRelation.createRelation(property, fieldComposite);
+			newRelation = DDDRelation.createRelation(property, fieldComposite, collection);
 			property.setRelation(newRelation);
 			drawPanel.addRelation(newRelation);
 		}

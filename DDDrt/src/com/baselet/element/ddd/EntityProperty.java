@@ -93,6 +93,7 @@ public class EntityProperty extends FieldProperty {
 
 		Collections.sort(sameBoundedContextElements);
 		Collections.sort(diffrentBoundedContextElements);
+		// SINGLE TYPES
 		for (FieldComposite fc : sameBoundedContextElements) {
 			elementType.addItem(fc.getName(), fc);
 		}
@@ -101,6 +102,16 @@ public class EntityProperty extends FieldProperty {
 		}
 		for (FieldComposite fc : diffrentBoundedContextElements) {
 			elementType.addItem(fc.getFullName(), fc);
+		}
+		// COLLECTION TYPES
+		for (FieldComposite fc : sameBoundedContextElements) {
+			elementType.addItem(fc.getName(), fc, true);
+		}
+		for (String DEFAULT_TYPE : DEFAULT_TYPES) {
+			elementType.addItem(DEFAULT_TYPE, true);
+		}
+		for (FieldComposite fc : diffrentBoundedContextElements) {
+			elementType.addItem(fc.getFullName(), fc, true);
 		}
 		if (selection != null) {
 			elementType.setSelectedItem(selection);
