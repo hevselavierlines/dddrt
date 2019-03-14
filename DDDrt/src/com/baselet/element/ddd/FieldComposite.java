@@ -65,6 +65,8 @@ import tk.baumi.main.IFieldComposite;
 
 public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange, IFieldComposite {
 
+	public static final String DATABASE_NAME = "Database Name";
+	public static final String DATABASE_TYPE = "Database Type";
 	private static final int ADD_BUTTON_HEIGHT = 25;
 	public static final String FONT_NAME = "Tahoma";
 	private final JButton propertyAddButton;
@@ -231,7 +233,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		addProperty("Type", "Entity", false);
 		addProperty("Class Name", getName(), false);
-		addProperty("Database Name", getName(), false);
+		addProperty(DATABASE_NAME, getName(), false);
 		addProperty("Notes", getName(), false);
 
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
@@ -560,7 +562,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	@Override
 	public String getDatabaseName() {
-		return fieldName.getText().toUpperCase();
+		return getTableProperty(DATABASE_NAME);
 	}
 
 	public void initFromDatabase(Table table) {
@@ -569,7 +571,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		methodsPane.removeAll();
 		addProperty("Type", "Entity");
 		addProperty("Class Name", table.getTableNameAsCamelCase());
-		addProperty("Database Name", table.getTableName());
+		addProperty(DATABASE_NAME, table.getTableName());
 		addProperty("Notes", table.generateNotes());
 		for (at.mic.dddrt.db.model.TableColumn column : table.getColumns()) {
 			FieldProperty property = addPropertyFromDatabaseColumn(column);
@@ -607,6 +609,20 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			point.y += currentComponent.getBounds().y;
 			getAbsolutePositionRecursively(currentComponent.getParent(), point);
 		}
+	}
+
+	public FieldProperty getIDProperty() {
+		FieldProperty element = null;
+		for (int i = 0; i < propertiesPane.getComponents().length && element == null; i++) {
+			java.awt.Component property = propertiesPane.getComponents()[i];
+			if (property instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) property;
+				if (fieldProperty.idProperty) {
+					element = fieldProperty;
+				}
+			}
+		}
+		return element;
 	}
 
 	public FieldProperty getPropertyByName(String name) {

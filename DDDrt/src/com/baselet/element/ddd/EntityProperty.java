@@ -21,8 +21,9 @@ public class EntityProperty extends FieldProperty {
 			String visibility = property.getString(JSON_VISIBILITY);
 			String type = property.getString(JSON_TYPE);
 			String name = property.getString(JSON_NAME);
+			String dbName = property.getString(JSON_DATABASE_NAME);
 			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
-			return new EntityProperty(visibility, type, name, idProperty);
+			return new EntityProperty(visibility, type, name, idProperty, dbName);
 		} catch (Exception ex) {
 			return new EntityProperty();
 		}
@@ -34,7 +35,7 @@ public class EntityProperty extends FieldProperty {
 			String type = column.getColumnType();
 			String name = column.getColumnName();
 			boolean idProperty = column.isIDColumn();
-			return new EntityProperty(visibility, type, name, idProperty);
+			return new EntityProperty(visibility, type, name, idProperty, name);
 		} catch (Exception ex) {
 			return new EntityProperty();
 		}
@@ -64,8 +65,8 @@ public class EntityProperty extends FieldProperty {
 	protected EntityProperty(String propertyVisibility,
 			String propertyType,
 			String propertyName,
-			boolean idProperty) {
-		super(propertyVisibility, propertyType, propertyName, idProperty);
+			boolean idProperty, String dbName) {
+		super(propertyVisibility, propertyType, propertyName, idProperty, dbName);
 		createPrimaryKey();
 	}
 

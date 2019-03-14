@@ -41,6 +41,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	protected static final String JSON_NAME = "name";
 	protected static final String JSON_TYPE = "type";
 	protected static final String JSON_VISIBILITY = "visibility";
+	protected static final String JSON_DATABASE_NAME = "dbname";
 	protected static String IDENTIFIER = "prop";
 	private static final long serialVersionUID = -6900199799847961883L;
 
@@ -61,6 +62,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	private final JTextComponent propertyTypeEditor;
 	private boolean selection;
 	protected final PropertiesGridElement properties;
+	private String databaseName;
 
 	public int getFieldHeight() {
 		return HEIGHT + 3;
@@ -72,7 +74,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		stringBuilder.append(IDENTIFIER).append(';')
 				.append(getPropertyVisibility()).append(';')
 				.append(getPropertyType()).append(';')
-				.append(getPropertyName());
+				.append(getPropertyName()).append(getDatabaseName()).append(';');
 		return stringBuilder.toString();
 	}
 
@@ -81,6 +83,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		ret.put(JSON_VISIBILITY, getPropertyVisibility());
 		ret.put(JSON_TYPE, getPropertyType());
 		ret.put(JSON_NAME, getPropertyName());
+		ret.put(JSON_DATABASE_NAME, getDatabaseName());
 		ret.put(JSON_IDPROPERTY, idProperty);
 		return ret;
 	}
@@ -172,6 +175,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		properties.addProperty("Name", elementName.getText(), false);
 		properties.addProperty("Visibility", getPropertyVisibility(), false);
 		properties.addProperty("Data Type", getPropertyType(), false);
+		properties.addProperty(FieldComposite.DATABASE_NAME, elementName.getText(), false);
 
 		setPropertyName("newProperty");
 
@@ -185,12 +189,13 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	public FieldProperty(String propertyVisibility,
 			String propertyType,
 			String propertyName,
-			boolean idProperty) {
+			boolean idProperty, String dbName) {
 		this();
 		this.idProperty = idProperty;
 		setPropertyVisibility(propertyVisibility);
 		setPropertyType(propertyType);
 		setPropertyName(propertyName);
+		properties.addProperty(FieldComposite.DATABASE_NAME, dbName, true);
 	}
 
 	public String getPropertyName() {
@@ -221,6 +226,12 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	}
 
 	public void setIdProperty(boolean idProperty) {
+		if (idProperty == true) {
+			FieldProperty oldIdProperty = getParentFieldComposite().getIDProperty();
+			if (oldIdProperty != null) {
+				oldIdProperty.setIdProperty(false);
+			}
+		}
 		if (this.idProperty == false && idProperty == true) {
 			DEFAULT_TYPES.add(0, UNIQUE_ID);
 		}
@@ -235,12 +246,17 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		}
 		else {
 			keyButton.setIcon(null);
+			properties.addProperty("Primary Key", "false", true);
 		}
 
 	}
 
 	public String getPropertyVisibility() {
 		return elementVisibility.getSelectedItem().toString();
+	}
+
+	public String getPropertyDatabaseName() {
+		return properties.getTableProperty(FieldComposite.DATABASE_NAME);
 	}
 
 	public void setPropertyVisibility(String propertyVisibility) {
@@ -530,12 +546,25 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	}
 
 	public String getDatabaseName() {
-		return getPropertyName().toUpperCase();
+		return properties.getTableProperty(FieldComposite.DATABASE_NAME);
 	}
 
 	public String getDatabaseType() {
 		// TODO generate real database type.
-		return "VARCHAR2(1024)";
+		if (idProperty) {
+			return "VARCHAR2(1024)";
+		}
+		else if (relationLineRef != null) {
+			if (relationLineRef.relationToValueObject()) {
+				return "CLOB";
+			}
+			else {
+				return "VARCHAR2(1024)";
+			}
+		}
+		else {
+			return "CLOB";
+		}
 	}
 
 	public boolean isPrimaryProperty() {

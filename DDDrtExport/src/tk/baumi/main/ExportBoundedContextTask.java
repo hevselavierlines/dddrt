@@ -45,27 +45,6 @@ public class ExportBoundedContextTask {
 		}
 	}
 	
-	public void doDatabaseExport(StringBuffer sqlBuffer) {
-		for(IFieldComposite composite : boundedContext.getContainingComposites()) {
-			exportFieldCompositeToDB(sqlBuffer, composite);
-		}
-	}
-	
-	private void exportFieldCompositeToDB(StringBuffer sql, IFieldComposite field) {
-		sql.append("CREATE TABLE ").append(field.getDatabaseName()).append('(').append("\n");
-		for(ExportProperty property : field.getProperties()) {
-			sql.append('\t')
-			.append(property.getDatabaseName()).append(' ').append(property.getDatabaseType());
-			if(property.isPrimaryProperty()) {
-				sql.append(" PRIMARY KEY");
-			}
-			sql.append(',').append('\n');
-		}
-		sql.deleteCharAt(sql.length() - 1);
-		sql.deleteCharAt(sql.length() - 1);
-		sql.append(");\n\n");
-	}
-	
 	private void exportFieldCompositeToJava(IFieldComposite field) {
 		String packageName = boundedContext.getPackageName(field);
 		File packageFolder = createFolders(packageName, new File("C:\\Users\\baumi\\Documents\\testexport"));

@@ -74,9 +74,12 @@ import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.command.Paste;
 import com.baselet.gui.command.RemoveElement;
 
+import at.mic.dddrt.db.DatabaseExportDialog;
 import at.mic.dddrt.db.DatabaseImportDialog;
 import tk.baumi.main.ExportTask;
 import tk.baumi.main.IBoundedContext;
+import tk.baumi.main.IDDDRelation;
+import tk.baumi.main.IFieldComposite;
 
 public class MenuFactory {
 
@@ -245,8 +248,12 @@ public class MenuFactory {
 				}
 				else if (menuItem.equals(MenuConstants.EXPORT_DB)) {
 					if (diagramHandler != null) {
-						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
-						ExportTask.exportBoundedContextToDB(boundedContexts);
+						List<IFieldComposite> fieldComposites = diagramHandler.getDrawPanel().getHelperAndSub(IFieldComposite.class);
+						List<IDDDRelation> relations = diagramHandler.getDrawPanel().getHelperAndSub(IDDDRelation.class);
+						DatabaseExportDialog exportDialog = new DatabaseExportDialog(CurrentGui.getInstance().getGui().getMainFrame());
+						exportDialog.setVisible(true);
+						String sqlText = ExportTask.exportBoundedContextToDB(fieldComposites, relations);
+						exportDialog.setSQLText(sqlText);
 					}
 				}
 			}

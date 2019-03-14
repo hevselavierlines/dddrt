@@ -13,7 +13,10 @@ import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.relation.helper.RelationPointHandler;
 import com.baselet.element.relation.helper.RelationPointList;
 
-public class DDDRelation extends Relation {
+import tk.baumi.main.CompositeType;
+import tk.baumi.main.IDDDRelation;
+
+public class DDDRelation extends Relation implements IDDDRelation {
 
 	private FieldProperty startProperty;
 	private FieldComposite endComposite;
@@ -206,6 +209,31 @@ public class DDDRelation extends Relation {
 		// else {
 		// state.getDrawer().setForegroundColor(ColorOwn.RED);
 		// }
+	}
+
+	@Override
+	public String getStartTableName() {
+		return getStartComposite().getDatabaseName();
+	}
+
+	@Override
+	public String getStartPropertyName() {
+		return startProperty.getDatabaseName();
+	}
+
+	@Override
+	public String getEndTableName() {
+		return getEndComposite().getDatabaseName();
+	}
+
+	@Override
+	public String getEndPropertyName() {
+		return getEndComposite().getIDProperty().getDatabaseName();
+	}
+
+	@Override
+	public boolean relationToValueObject() {
+		return getEndComposite().getType() == CompositeType.ValueObject;
 	}
 
 }

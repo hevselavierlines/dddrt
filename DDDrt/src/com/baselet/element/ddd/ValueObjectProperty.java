@@ -19,7 +19,8 @@ public class ValueObjectProperty extends FieldProperty {
 			String type = property.getString(JSON_TYPE);
 			String name = property.getString(JSON_NAME);
 			boolean idProperty = property.getBoolean(JSON_IDPROPERTY);
-			return new ValueObjectProperty(visibility, type, name, idProperty);
+			String dbName = property.getString(JSON_DATABASE_NAME);
+			return new ValueObjectProperty(visibility, type, name, idProperty, dbName);
 		} catch (Exception ex) {
 			return new ValueObjectProperty();
 		}
@@ -31,7 +32,7 @@ public class ValueObjectProperty extends FieldProperty {
 			String type = column.getColumnType();
 			String name = column.getColumnName();
 			boolean idProperty = column.isIDColumn();
-			return new ValueObjectProperty(visibility, type, name, idProperty);
+			return new ValueObjectProperty(visibility, type, name, idProperty, name);
 		} catch (Exception ex) {
 			return new ValueObjectProperty();
 		}
@@ -45,8 +46,8 @@ public class ValueObjectProperty extends FieldProperty {
 	protected ValueObjectProperty(String propertyVisibility,
 			String propertyType,
 			String propertyName,
-			boolean idProperty) {
-		super(propertyVisibility, propertyType, propertyName, idProperty);
+			boolean idProperty, String dbName) {
+		super(propertyVisibility, propertyType, propertyName, idProperty, dbName);
 		init();
 	}
 
