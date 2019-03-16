@@ -5,13 +5,14 @@ package at.mic.dddrt.db;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import tk.baumi.main.ITextReporter;
 
 /**
  * Tool to run database scripts
@@ -25,8 +26,8 @@ public class ScriptRunner {
 	private final boolean stopOnError;
 	private final boolean autoCommit;
 
-	private PrintWriter logWriter = new PrintWriter(System.out);
-	private PrintWriter errorLogWriter = new PrintWriter(System.err);
+	private ITextReporter logReporter;
+	private ITextReporter errorReporter;
 
 	private String delimiter = DEFAULT_DELIMITER;
 	private boolean fullLineDelimiter = false;
@@ -52,8 +53,8 @@ public class ScriptRunner {
 	 * @param logWriter
 	 *            - the new value of the logWriter property
 	 */
-	public void setLogWriter(PrintWriter logWriter) {
-		this.logWriter = logWriter;
+	public void setLogWriter(ITextReporter logWriter) {
+		logReporter = logWriter;
 	}
 
 	/**
@@ -62,8 +63,8 @@ public class ScriptRunner {
 	 * @param errorLogWriter
 	 *            - the new value of the errorLogWriter property
 	 */
-	public void setErrorLogWriter(PrintWriter errorLogWriter) {
-		this.errorLogWriter = errorLogWriter;
+	public void setErrorLogWriter(ITextReporter errorLogWriter) {
+		errorReporter = errorLogWriter;
 	}
 
 	/**
@@ -197,7 +198,6 @@ public class ScriptRunner {
 			throw e;
 		} finally {
 			conn.rollback();
-			flush();
 		}
 	}
 
@@ -206,29 +206,20 @@ public class ScriptRunner {
 	}
 
 	private void print(Object o) {
-		if (logWriter != null) {
-			System.out.print(o);
+		if (logReporter != null) {
+			logReporter.reportText(o.toString());
 		}
 	}
 
 	private void println(Object o) {
-		if (logWriter != null) {
-			logWriter.println(o);
+		if (logReporter != null) {
+			logReporter.reportTextln(o.toString());
 		}
 	}
 
 	private void printlnError(Object o) {
-		if (errorLogWriter != null) {
-			errorLogWriter.println(o);
-		}
-	}
-
-	private void flush() {
-		if (logWriter != null) {
-			logWriter.flush();
-		}
-		if (errorLogWriter != null) {
-			errorLogWriter.flush();
+		if (errorReporter != null) {
+			errorReporter.reportTextln(o.toString());
 		}
 	}
 }

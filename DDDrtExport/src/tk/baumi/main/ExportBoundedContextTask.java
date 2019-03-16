@@ -19,11 +19,18 @@ public class ExportBoundedContextTask {
 	private String contextName;
 	private IBoundedContext boundedContext;
 	private HashSet<String> packages;
+	private File projectFolder;
+	private ITextReporter textReporter;
 	
-	public ExportBoundedContextTask(IBoundedContext boundedContext) {
+	public ExportBoundedContextTask(IBoundedContext boundedContext, File projectFolder) {
 		this.boundedContext = boundedContext;
 		this.contextName = boundedContext.getContextName();
 		this.packages = new HashSet<String>();
+		this.projectFolder = projectFolder;
+	}
+	
+	public void setTextReporter(ITextReporter textReporter) {
+		this.textReporter = textReporter;
 	}
 	
 	private File createFolders(String packageName, File projectFolder) {
@@ -47,7 +54,7 @@ public class ExportBoundedContextTask {
 	
 	private void exportFieldCompositeToJava(IFieldComposite field) {
 		String packageName = boundedContext.getPackageName(field);
-		File packageFolder = createFolders(packageName, new File("C:\\Users\\baumi\\Documents\\testexport"));
+		File packageFolder = createFolders(packageName, projectFolder);
 		
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		ClassOrInterfaceDeclaration myClass = compilationUnit
@@ -126,8 +133,9 @@ public class ExportBoundedContextTask {
 		try {
 			fos = new FileOutputStream(new File(packageFolder, field.getName()+ ".java"));
 			fos.write(code.getBytes("UTF-8"));
+			reportText("Wrote class: " + field.getName() + ".java");
 		} catch (Exception e) {
-			e.printStackTrace();
+			reportText(e.getMessage());
 		} finally {
 			if(fos != null) {
 				try {
@@ -136,6 +144,12 @@ public class ExportBoundedContextTask {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	public void reportText(String text) {
+		if(textReporter != null) {
+			textReporter.reportTextln(text);
 		}
 	}
 }

@@ -240,18 +240,15 @@ public class MenuFactory {
 					importDialog.setAlwaysOnTop(true);
 					importDialog.setVisible(true);
 				}
-				else if (menuItem.equals(MenuConstants.EXPORT_JAVA)) {
+				else if (menuItem.equals(MenuConstants.EXPORT_DDD)) {
 					if (diagramHandler != null) {
 						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
-						ExportTask.exportBoundedContextsToJava(boundedContexts);
-					}
-				}
-				else if (menuItem.equals(MenuConstants.EXPORT_DB)) {
-					if (diagramHandler != null) {
+						// ExportTask.exportBoundedContextsToJava(boundedContexts);
 						List<IFieldComposite> fieldComposites = diagramHandler.getDrawPanel().getHelperAndSub(IFieldComposite.class);
 						List<IDDDRelation> relations = diagramHandler.getDrawPanel().getHelperAndSub(IDDDRelation.class);
 						DatabaseExportDialog exportDialog = new DatabaseExportDialog(CurrentGui.getInstance().getGui().getMainFrame());
 						exportDialog.setVisible(true);
+						exportDialog.setBoundedContexts(boundedContexts);
 						String sqlText = ExportTask.exportBoundedContextToDB(fieldComposites, relations);
 						exportDialog.setSQLText(sqlText);
 					}

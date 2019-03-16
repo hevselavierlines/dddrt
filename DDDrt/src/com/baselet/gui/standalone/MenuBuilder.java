@@ -111,7 +111,6 @@ public class MenuBuilder {
 
 		JMenu dddMenu = new JMenu(MenuConstants.DOMAIN_DRIVEN_DESIGN);
 		dddMenu.add(menuFactory.createImportDB());
-		dddMenu.add(menuFactory.createExportJava());
 		dddMenu.add(menuFactory.createExportDB());
 		menu.add(dddMenu);
 

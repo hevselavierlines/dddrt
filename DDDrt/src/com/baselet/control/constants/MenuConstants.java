@@ -52,8 +52,7 @@ public class MenuConstants {
 
 	// Domain-Driven Design
 	public static final String IMPORT_DB = "Import from Database";
-	public static final String EXPORT_JAVA = "Export to Java classes";
-	public static final String EXPORT_DB = "Export to Database";
+	public static final String EXPORT_DDD = "Export to Java/DB";
 
 	// CONTEXT ON ELEMENT
 	public static final String SET_FOREGROUND_COLOR = "Set foreground color";
