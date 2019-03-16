@@ -21,100 +21,97 @@ public class ExportBoundedContextTask {
 	private HashSet<String> packages;
 	private File projectFolder;
 	private ITextReporter textReporter;
-	
+
 	public ExportBoundedContextTask(IBoundedContext boundedContext, File projectFolder) {
 		this.boundedContext = boundedContext;
 		this.contextName = boundedContext.getContextName();
 		this.packages = new HashSet<String>();
 		this.projectFolder = projectFolder;
 	}
-	
+
 	public void setTextReporter(ITextReporter textReporter) {
 		this.textReporter = textReporter;
 	}
-	
+
 	private File createFolders(String packageName, File projectFolder) {
 		String[] packagePath = packageName.split("\\.");
-		if(!projectFolder.exists()) {
+		if (!projectFolder.exists()) {
 			projectFolder.mkdirs();
 		}
 		File currentPath = new File(projectFolder.getAbsolutePath());
-		for(String partFolder : packagePath) {
+		for (String partFolder : packagePath) {
 			currentPath = new File(currentPath, partFolder);
 			currentPath.mkdir();
 		}
 		return currentPath;
 	}
-	
+
 	public void doJavaExport() {
-		for(IFieldComposite composite : boundedContext.getContainingComposites()) {
+		for (IFieldComposite composite : boundedContext.getContainingComposites()) {
 			exportFieldCompositeToJava(composite);
 		}
 	}
-	
+
 	private void exportFieldCompositeToJava(IFieldComposite field) {
 		String packageName = boundedContext.getPackageName(field);
 		File packageFolder = createFolders(packageName, projectFolder);
-		
+
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
-		ClassOrInterfaceDeclaration myClass = compilationUnit
-		        .addClass(field.getName())
-		        .setPublic(false);
-		if(field.getType() == CompositeType.Aggregate) {
+		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(false);
+		if (field.getType() == CompositeType.Aggregate) {
 			myClass.setPublic(true);
 		}
 		List<ExportProperty> exportProperties = new ArrayList<ExportProperty>();
-		for(ExportProperty property : field.getProperties()) {
+		for (ExportProperty property : field.getProperties()) {
 			exportProperties.add(property);
 			Modifier visibility = property.getVisibility();
-			if(visibility != null) {
+			if (visibility != null) {
 				myClass.addField(property.getType(), property.getName(), property.getVisibility());
 			} else {
 				myClass.addField(property.getType(), property.getName());
 			}
 		}
-		
-		if(field.getType() != CompositeType.ValueObject) {
+
+		if (field.getType() != CompositeType.ValueObject) {
 			myClass.addConstructor(Modifier.PUBLIC);
 		}
 		ConstructorDeclaration ctor = myClass.addConstructor(Modifier.PUBLIC);
-		for(ExportProperty property : exportProperties) {
+		for (ExportProperty property : exportProperties) {
 			ctor.addParameter(property.getType(), "_" + property.getName());
 		}
-		
+
 		BlockStmt ctorBody = new BlockStmt();
-		for(ExportProperty property : exportProperties) {
+		for (ExportProperty property : exportProperties) {
 			ctorBody.addStatement(property.getName() + " = _" + property.getName() + ";");
 		}
 		ctor.setBody(ctorBody);
-		
-		for(ExportMethod method : field.getMethods()) {
+
+		for (ExportMethod method : field.getMethods()) {
 			Modifier visibility = method.getVisibility();
 			MethodDeclaration declaration;
 			String methodType = method.getType();
-			if(visibility != null) {
+			if (visibility != null) {
 				declaration = myClass.addMethod(method.getName(), visibility);
 			} else {
 				declaration = myClass.addMethod(method.getName());
 			}
-			for(ExportMethod.Parameter parameter : method.getParameters()) {
+			for (ExportMethod.Parameter parameter : method.getParameters()) {
 				String parameterName = parameter.name;
-				if(!parameterName.startsWith("_")) {
+				if (!parameterName.startsWith("_")) {
 					parameterName = "_" + parameterName;
 				}
 				declaration.addParameter(parameter.type, parameterName);
 			}
-			if(!"void".equals(methodType)) {
+			if (!"void".equals(methodType)) {
 				declaration.setType(methodType);
 				BlockStmt methodBody = new BlockStmt();
-				
-				if("byte".equals(methodType) || "short".equals(methodType) || 
-						"int".equals(methodType) || "float".equals(methodType) ||
-						"double".equals(methodType) ||"long".equals(methodType)) {
+
+				if ("byte".equals(methodType) || "short".equals(methodType) || "int".equals(methodType)
+						|| "float".equals(methodType) || "double".equals(methodType) || "long".equals(methodType)) {
 					methodBody.addStatement("return 0;");
-				} else if("char".equals(methodType)) {
+				} else if ("char".equals(methodType)) {
 					methodBody.addStatement("return \'0\';");
-				} else if("boolean".equals(methodType)) {
+				} else if ("boolean".equals(methodType)) {
 					methodBody.addStatement("return false;");
 				} else {
 					methodBody.addStatement("return null;");
@@ -122,22 +119,21 @@ public class ExportBoundedContextTask {
 				declaration.setBody(methodBody);
 			}
 		}
-		
-		
+
 		StringBuffer prependCode = new StringBuffer();
 		prependCode.append("package ");
 		prependCode.append(packageName);
 		prependCode.append(";\n\r\n\r");
 		String code = prependCode.toString() + myClass.toString();
-		FileOutputStream fos = null; 
+		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream(new File(packageFolder, field.getName()+ ".java"));
+			fos = new FileOutputStream(new File(packageFolder, field.getName() + ".java"));
 			fos.write(code.getBytes("UTF-8"));
 			reportText("Wrote class: " + field.getName() + ".java");
 		} catch (Exception e) {
 			reportText(e.getMessage());
 		} finally {
-			if(fos != null) {
+			if (fos != null) {
 				try {
 					fos.close();
 				} catch (IOException e) {
@@ -146,9 +142,9 @@ public class ExportBoundedContextTask {
 			}
 		}
 	}
-	
+
 	public void reportText(String text) {
-		if(textReporter != null) {
+		if (textReporter != null) {
 			textReporter.reportTextln(text);
 		}
 	}

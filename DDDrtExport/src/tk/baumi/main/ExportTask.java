@@ -7,7 +7,8 @@ import javax.swing.BoundedRangeModel;
 
 public class ExportTask {
 
-	public static void exportBoundedContextsToJava(List<IBoundedContext> boundedContexts, File projectFolder, ITextReporter reporter) {
+	public static void exportBoundedContextsToJava(List<IBoundedContext> boundedContexts, File projectFolder,
+			ITextReporter reporter) {
 		for (IBoundedContext boundedContext : boundedContexts) {
 //			System.out.println("--" + boundedContext.getContextName() + "--");
 			ExportBoundedContextTask boundedContextTask = new ExportBoundedContextTask(boundedContext, projectFolder);

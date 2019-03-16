@@ -5,8 +5,12 @@ import java.util.Map;
 
 public interface IFieldComposite {
 	String getName();
+
 	String getDatabaseName();
+
 	List<ExportProperty> getProperties();
+
 	List<ExportMethod> getMethods();
+
 	CompositeType getType();
 }

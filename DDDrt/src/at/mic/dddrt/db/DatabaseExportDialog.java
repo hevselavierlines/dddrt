@@ -180,7 +180,6 @@ public class DatabaseExportDialog extends JDialog implements ActionListener, ITe
 				}
 			}
 		}).start();
-
 	}
 
 	public void setBoundedContexts(List<IBoundedContext> boundedContexts) {

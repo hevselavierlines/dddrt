@@ -18,12 +18,10 @@ public class MainClass {
 
 	public static void main(String[] args) {
 		CompilationUnit compilationUnit = new CompilationUnit();
-		ClassOrInterfaceDeclaration myClass = compilationUnit
-		        .addClass("MyClass")
-		        .setPublic(true);
+		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass("MyClass").setPublic(true);
 		myClass.addField(int.class, "A_CONSTANT", Modifier.PUBLIC, Modifier.STATIC);
 		myClass.addField(String.class, "name", Modifier.PRIVATE);
-		
+
 		MethodDeclaration method = myClass.addMethod("addSomething", Modifier.PUBLIC);
 		method.setType("String");
 		method.addParameter(String.class, "connectionString");
@@ -32,19 +30,19 @@ public class MainClass {
 		BlockStmt blockStmt = new BlockStmt();
 		blockStmt.addStatement("Class.forName(\"oracle.jdbc.driver.OracleDriver\");");
 		blockStmt.addStatement("connection = DriverManager.getConnection(connectionString, username, password);");
-		//blockStmt.addStatement("return null;");
+		// blockStmt.addStatement("return null;");
 		method.setBody(blockStmt);
 		blockStmt.addStatement("name = username;");
 		String code = myClass.toString();
 		System.out.println(code);
 	}
-	
+
 	public void exportClass(IFieldComposite fieldComposite) {
 		List<ExportProperty> exportProperies = fieldComposite.getProperties();
 	}
-	
+
 	public void exportModelToJavaCode() {
-		
+
 	}
 
 }
