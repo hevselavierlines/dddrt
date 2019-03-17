@@ -233,6 +233,11 @@ public class DDDRelation extends Relation implements IDDDRelation {
 	}
 
 	@Override
+	public String getStartTableIDProperty() {
+		return getStartComposite().getIDProperty().getDatabaseName();
+	}
+
+	@Override
 	public String getEndTableName() {
 		return getEndComposite().getDatabaseName();
 	}
@@ -245,6 +250,37 @@ public class DDDRelation extends Relation implements IDDDRelation {
 	@Override
 	public boolean relationToValueObject() {
 		return getEndComposite().getType() == CompositeType.ValueObject;
+	}
+
+	@Override
+	public boolean multipleRelation() {
+		return collection;
+	}
+
+	@Override
+	public String associateTableName() {
+		StringBuffer tableName = new StringBuffer();
+		// ASSOC_AGGREGATE_1_ENTITY_2_ENTITY2
+		tableName
+				.append(getStartPropertyName())
+				.append('_')
+				.append(getStartTableName())
+				.append('_')
+				.append(getEndTableName());
+		if (tableName.length() > 30) {
+			tableName.setLength(30);
+		}
+		return tableName.toString();
+	}
+
+	@Override
+	public String getStartPropertyType() {
+		return getStartComposite().getIDProperty().getDatabaseType();
+	}
+
+	@Override
+	public String getEndPropertyType() {
+		return endComposite.getIDProperty().getDatabaseType();
 	}
 
 }

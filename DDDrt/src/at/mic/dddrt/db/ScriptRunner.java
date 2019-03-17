@@ -109,6 +109,7 @@ public class ScriptRunner {
 	private void runScript(Connection conn, Reader reader) throws IOException,
 			SQLException {
 		StringBuffer command = null;
+		ResultSet resultSet = null;
 		try {
 			LineNumberReader lineReader = new LineNumberReader(reader);
 			String line = null;
@@ -152,22 +153,29 @@ public class ScriptRunner {
 						conn.commit();
 					}
 
-					ResultSet rs = statement.getResultSet();
-					if (hasResults && rs != null) {
-						ResultSetMetaData md = rs.getMetaData();
+					resultSet = statement.getResultSet();
+					if (hasResults && resultSet != null) {
+						ResultSetMetaData md = resultSet.getMetaData();
 						int cols = md.getColumnCount();
 						for (int i = 0; i < cols; i++) {
 							String name = md.getColumnLabel(i);
 							print(name + "\t");
 						}
 						println("");
-						while (rs.next()) {
+						while (resultSet.next()) {
 							for (int i = 0; i < cols; i++) {
-								String value = rs.getString(i);
+								String value = resultSet.getString(i);
 								print(value + "\t");
 							}
 							println("");
 						}
+					}
+					try {
+						if (resultSet != null) {
+							resultSet.close();
+						}
+					} catch (Exception ex) {
+						printlnError(ex.getMessage());
 					}
 
 					command = null;
@@ -198,6 +206,9 @@ public class ScriptRunner {
 			throw e;
 		} finally {
 			conn.rollback();
+			if (resultSet != null) {
+				resultSet.close();
+			}
 		}
 	}
 

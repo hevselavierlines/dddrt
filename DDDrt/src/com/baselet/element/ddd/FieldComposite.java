@@ -62,6 +62,7 @@ import at.mic.dddrt.db.model.Table;
 import tk.baumi.main.ExportMethod;
 import tk.baumi.main.ExportProperty;
 import tk.baumi.main.IFieldComposite;
+import tk.baumi.main.ValidationException;
 
 public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange, IFieldComposite {
 
@@ -817,6 +818,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			}
 		}
 		return methods;
+	}
+
+	@Override
+	public void updateValidationStatus(List<ValidationException> validationExceptions) {
+
 	}
 
 }
