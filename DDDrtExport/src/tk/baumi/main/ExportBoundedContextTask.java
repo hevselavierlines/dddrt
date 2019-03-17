@@ -10,10 +10,24 @@ import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.visitor.GenericVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitor;
+
+import javassist.bytecode.annotation.MemberValue;
 
 public class ExportBoundedContextTask {
 	private String contextName;
@@ -58,20 +72,41 @@ public class ExportBoundedContextTask {
 
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(false);
-		if (field.getType() == CompositeType.Aggregate) {
-			myClass.setPublic(true);
-		}
+		myClass.setPublic(true);
+		NodeList<MemberValuePair> tableInfo = new NodeList<MemberValuePair>();
+		tableInfo.add(
+				new MemberValuePair("tableName",
+						new StringLiteralExpr(field.getDatabaseName())));
+		myClass.addAnnotation(
+				new NormalAnnotationExpr(
+						new Name("DDDEntity"), tableInfo));
 		List<ExportProperty> exportProperties = new ArrayList<ExportProperty>();
 		for (ExportProperty property : field.getProperties()) {
 			exportProperties.add(property);
 			Modifier visibility = property.getVisibility();
+			FieldDeclaration fieldDeclaration = null;
 			if (visibility != null) {
-				myClass.addField(property.getType(), property.getName(), property.getVisibility());
+				fieldDeclaration = myClass.addField(property.getType(), property.getName(), property.getVisibility());
 			} else {
-				myClass.addField(property.getType(), property.getName());
+				fieldDeclaration = myClass.addField(property.getType(), property.getName());
 			}
+			NodeList<MemberValuePair> propertyInfo = new NodeList<MemberValuePair>();
+			if(property.isPrimaryProperty()) {
+			propertyInfo.add(
+					new MemberValuePair("primaryKey",
+							new BooleanLiteralExpr(true)));
+			}
+			propertyInfo.add(
+					new MemberValuePair("columnName", 
+							new StringLiteralExpr(property.getDatabaseName())));
+			propertyInfo.add(
+					new MemberValuePair("columnType",
+							new StringLiteralExpr(property.getDatabaseType())));
+			
+			fieldDeclaration.addAnnotation(
+					new NormalAnnotationExpr(
+							new Name("DDDProperty"), propertyInfo));
 		}
-
 		if (field.getType() != CompositeType.ValueObject) {
 			myClass.addConstructor(Modifier.PUBLIC);
 		}

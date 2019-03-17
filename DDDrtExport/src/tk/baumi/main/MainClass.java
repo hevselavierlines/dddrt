@@ -1,22 +1,42 @@
 package tk.baumi.main;
 
-import java.sql.DriverManager;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.util.List;
-
-import org.w3c.dom.svg.SVGDocument;
+import java.util.UUID;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.TryStmt;
-import com.google.common.base.Optional;
+
+import tk.baumi.test.DDDEntity;
+import tk.baumi.test.DDDProperty;
+import tk.baumi.test.Entity1;
+import tk.baumi.test.RepositoryTest;
 
 public class MainClass {
 
 	public static void main(String[] args) {
+
+		
+//		createClass();
+		
+		RepositoryTest repoTest = 
+				new RepositoryTest("jdbc:oracle:thin:@localhost:1521:xe", 
+						"afaci", "afaci");
+		List<Entity1> entities = repoTest.select(Entity1.class);
+		for(Entity1 entity : entities) {
+			System.out.println(entity.toString());
+		}
+		Entity1 ent = new Entity1(UUID.randomUUID().toString(), "SARS");
+		repoTest.insert(ent);
+		repoTest.disconnect();
+	}
+
+	private static void createClass() {
 		CompilationUnit compilationUnit = new CompilationUnit();
 		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass("MyClass").setPublic(true);
 		myClass.addField(int.class, "A_CONSTANT", Modifier.PUBLIC, Modifier.STATIC);

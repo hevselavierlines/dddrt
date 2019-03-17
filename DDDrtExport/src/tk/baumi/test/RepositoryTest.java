@@ -1,0 +1,140 @@
+package tk.baumi.test;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
+
+public class RepositoryTest {
+	private Connection connection;
+
+	public RepositoryTest(String connectionString, String username, String password) {
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			connection = DriverManager.getConnection(connectionString, username, password);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public <T extends Entity> void insert(T databaseInsert) {
+		Class<?> databaseClass = databaseInsert.getClass();
+		StringBuffer query = new StringBuffer("INSERT INTO ");
+		String tableName = retrieveTableName(databaseClass);
+		query.append(tableName);
+		query.append(" (");
+		List<Column> columns = retrieveColumns(databaseClass);
+		for(Column column : columns) {
+			query.append(column.name).append(',');
+		}
+		query.deleteCharAt(query.length() - 1);
+		query.append(')');
+		
+		query.append(" VALUES (");
+		Object[] values = databaseInsert.properties();
+		for(Object value : values) {
+			query.append("\'");
+			query.append(value);
+			query.append("\',");
+		}
+		query.deleteCharAt(query.length() - 1);
+		query.append(");");
+		System.out.println(query.toString());
+	}
+	
+	public <T extends Entity> List<T> select(Class<T> databaseClass) {
+		StringBuffer query = new StringBuffer("SELECT ");
+		String tableName = retrieveTableName(databaseClass);
+		
+		List<Column> columns = retrieveColumns(databaseClass);
+		for(Column column : columns) {
+			query.append(column.name).append(",");
+		}
+		query.deleteCharAt(query.length() - 1);
+		query.append(" FROM ");
+		query.append(tableName);
+		System.out.println(query.toString());
+		Statement statement = null;
+		List<T> ret = new LinkedList<T>();
+		try {
+			statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(query.toString());
+			while(result.next()) {
+				Object[] elements = new Object[columns.size()];
+				for(int i = 0; i < elements.length; i++) {
+					elements[i] = result.getString(i + 1);
+				}
+				try {
+					Entity entity = (Entity) databaseClass.newInstance();
+					entity.insert(elements);
+					ret.add((T) entity);
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		} finally {
+			if(statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	private <T> String retrieveTableName(Class<T> databaseClass) {
+		String tableName = null;
+		if(databaseClass.isAnnotationPresent(DDDEntity.class)) {
+			DDDEntity entity = databaseClass.getAnnotation(DDDEntity.class);
+			tableName = entity.tableName();
+		}
+		return tableName;
+	}
+
+	private <T> List<Column> retrieveColumns(Class<T> databaseClass) {
+		List<Column> columns = new LinkedList<Column>();
+		
+		for(Field field : databaseClass.getDeclaredFields()) {
+			if(field.isAnnotationPresent(DDDProperty.class)) {
+				DDDProperty property = field.getAnnotation(DDDProperty.class);
+				String columnName = property.columnName();
+				String columnType = property.columnType();
+				columns.add(new Column(columnName, columnType, property.primaryKey()));
+			}
+		}
+		return columns;
+	}
+	
+	public void disconnect() {
+		if(connection != null) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	class Column {
+		String name;
+		String type;
+		boolean primary;
+		public Column(String name, String type, boolean primary) {
+			super();
+			this.name = name;
+			this.type = type;
+			this.primary = primary;
+		}
+	}
+}
