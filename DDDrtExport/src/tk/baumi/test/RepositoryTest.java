@@ -1,15 +1,23 @@
 package tk.baumi.test;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+
+import oracle.sql.CLOB;
 
 public class RepositoryTest {
 	private Connection connection;
@@ -38,13 +46,38 @@ public class RepositoryTest {
 		
 		query.append(" VALUES (");
 		Object[] values = databaseInsert.properties();
-		for(Object value : values) {
-			query.append("\'");
-			query.append(value);
-			query.append("\',");
+		for(int i = 0; i < values.length; i++) {
+			query.append("?,");
 		}
 		query.deleteCharAt(query.length() - 1);
-		query.append(");");
+		query.append(")");
+		
+		PreparedStatement statement = null;
+		try {
+			statement  = connection.prepareStatement(query.toString());
+			for(int i = 0; i < columns.size(); i++) {
+				Column column = columns.get(i);
+				if("CLOB".equals(column.type)) {
+					Clob clob = connection.createClob();
+					clob.setString(1, values[i].toString());
+					statement.setClob(i + 1, clob);
+				} else {
+					statement.setString(i + 1, values[i].toString());
+				}
+			}
+			statement.executeUpdate();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		} finally {
+			if(statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		System.out.println(query.toString());
 	}
 	
