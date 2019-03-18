@@ -27,10 +27,13 @@ public class MainClass {
 		RepositoryTest repoTest = 
 				new RepositoryTest("jdbc:oracle:thin:@localhost:1521:xe", 
 						"afaci", "afaci");
-		List<Entity1> entities = repoTest.select(Entity1.class);
+		Entity1 entU = new Entity1("MARS", "TEST2");
+		repoTest.update(entU);
+		List<Entity1> entities = repoTest.selectAll(Entity1.class);
 		for(Entity1 entity : entities) {
 			System.out.println(entity.toString());
 		}
+		
 //		Entity1 ent = new Entity1(UUID.randomUUID().toString(), "\\chapter{Related Work}\r\n" + 
 //				"\\section{Visual Studio Entity Framework}\r\n" + 
 //				"\\begin{figure} \r\n" + 

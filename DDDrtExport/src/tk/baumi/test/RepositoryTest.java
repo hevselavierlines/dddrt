@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,22 +78,19 @@ public class RepositoryTest {
 				}
 			}
 		}
-		
-		System.out.println(query.toString());
 	}
 	
-	public <T extends Entity> List<T> select(Class<T> databaseClass) {
+	public <T extends Entity> List<T> selectAll(Class<T> databaseClass) {
 		StringBuffer query = new StringBuffer("SELECT ");
 		String tableName = retrieveTableName(databaseClass);
 		
 		List<Column> columns = retrieveColumns(databaseClass);
 		for(Column column : columns) {
-			query.append(column.name).append(",");
+			query.append(column.name.replaceAll("\'", "").replaceAll("\"", "")).append(",");
 		}
 		query.deleteCharAt(query.length() - 1);
 		query.append(" FROM ");
 		query.append(tableName);
-		System.out.println(query.toString());
 		Statement statement = null;
 		List<T> ret = new LinkedList<T>();
 		try {
@@ -124,6 +122,51 @@ public class RepositoryTest {
 		}
 		
 		return ret;
+	}
+	
+	public <T extends Entity> int update(T databaseUpdate) {
+		Class<? extends Entity> databaseClass = databaseUpdate.getClass();
+		List<Column> columns = this.retrieveColumns(databaseClass);
+		Column primaryColumn = null;
+		StringBuffer stringBuffer = new StringBuffer();
+		/*"UPDATE item SET Name = ?, Size = ?, Price = ?, WHERE ItemCode = ?"*/
+		String tableName = retrieveTableName(databaseClass).replaceAll("\'", "").replaceAll("\"", "");
+		stringBuffer.append("UPDATE ").append(tableName).append(" SET ");
+		
+		for(Column column : columns) {
+			if(column.primary) {
+				primaryColumn = column;
+			} else {
+				stringBuffer.append(column.name).append("=?,");
+			}
+		}
+		stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+		stringBuffer.append(" WHERE " ).append(primaryColumn.name).append("=?");
+		
+		PreparedStatement st;
+		try {
+			st = connection.prepareStatement(stringBuffer.toString());
+			int index = 1;
+			int objectIndex = 0;
+			Object[] objects = databaseUpdate.properties();
+			String primaryValue = null;
+			for(Column column : columns) {
+				if(!column.primary) {
+					st.setObject(index, objects[objectIndex]);
+					index++;
+				} else {
+					primaryValue = objects[objectIndex].toString();
+				}
+				objectIndex++;
+				
+			}
+			st.setString(index, primaryValue);
+			return st.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	    
 	}
 
 	private <T> String retrieveTableName(Class<T> databaseClass) {
