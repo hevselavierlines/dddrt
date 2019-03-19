@@ -187,6 +187,10 @@ public class RepositoryTest {
 				String columnName = property.columnName();
 				String columnType = property.columnType();
 				columns.add(new Column(columnName, columnType, property.primaryKey()));
+				if(field.getType().isAssignableFrom(Entity.class)) {
+					Reference reference = new Reference();
+					reference.referencingEntity = (Class<Entity>) field.getType();
+				}
 			}
 		}
 		return columns;
@@ -206,11 +210,17 @@ public class RepositoryTest {
 		String name;
 		String type;
 		boolean primary;
+		Reference reference;
 		public Column(String name, String type, boolean primary) {
 			super();
 			this.name = name;
 			this.type = type;
 			this.primary = primary;
 		}
+	}
+	
+	class Reference {
+		Class<Entity> referencingEntity;
+		boolean multi;
 	}
 }

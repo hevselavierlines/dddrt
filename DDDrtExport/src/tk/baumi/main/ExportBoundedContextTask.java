@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -154,7 +155,10 @@ public class ExportBoundedContextTask {
 				declaration.setBody(methodBody);
 			}
 		}
-
+		
+		createRetrievePropertiesMethod(myClass, exportProperties);
+		createInsertPropertiesMethod(myClass, exportProperties);
+		
 		StringBuffer prependCode = new StringBuffer();
 		prependCode.append("package ");
 		prependCode.append(packageName);
@@ -176,6 +180,43 @@ public class ExportBoundedContextTask {
 				}
 			}
 		}
+	}
+
+	private void createRetrievePropertiesMethod(ClassOrInterfaceDeclaration myClass,
+			List<ExportProperty> exportProperties) {
+		MethodDeclaration declaration = myClass.addMethod("properties", Modifier.PUBLIC);
+		declaration.setType(Object[].class);
+		BlockStmt methodBody = new BlockStmt();
+		StringBuffer str = new StringBuffer();
+		str.append("Object[] ret = new Object[").append(exportProperties.size()).append("];\n");
+		methodBody.addStatement(str.toString());
+		str.setLength(0);
+		for(int i = 0; i < exportProperties.size(); i++) {
+			ExportProperty exportProperty = exportProperties.get(i);
+			str.append("ret[").append(i).append("] = ").append(exportProperty.getName()).append(";\n");
+			methodBody.addStatement(str.toString());
+			str.setLength(0);
+		}
+		str.append("return ret;");
+		methodBody.addStatement(str.toString());
+		declaration.setBody(methodBody);
+	}
+	
+	private void createInsertPropertiesMethod(ClassOrInterfaceDeclaration myClass, List<ExportProperty> exportProperties) {
+		MethodDeclaration declaration = myClass.addMethod("insert", Modifier.PUBLIC);
+		declaration.addParameter(Object[].class, "properties");
+		BlockStmt methodBody = new BlockStmt();
+		StringBuffer str = new StringBuffer();
+		str.append("if(properties.length == ").append(exportProperties.size()).append(") {\n");
+		
+		for(int i = 0; i < exportProperties.size(); i++) {
+			ExportProperty exportProperty = exportProperties.get(i);
+			str.append(exportProperty.getName()).append(" = (").append(exportProperty.getType()).append(")").append("properties[").append(i).append("];\n");
+			
+		}
+		str.append("}");
+		methodBody.addStatement(str.toString());
+		declaration.setBody(methodBody);
 	}
 
 	public void reportText(String text) {
