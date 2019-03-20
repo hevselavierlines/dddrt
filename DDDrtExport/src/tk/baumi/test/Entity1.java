@@ -1,45 +1,43 @@
 package tk.baumi.test;
 
-@DDDEntity(tableName = "NEW_ENTITY")
-public class Entity1 extends Entity {
+import java.util.UUID;
 
-    @DDDProperty(primaryKey = true, columnName = "ID_FOR_ENTITY", columnType = "VARCHAR2(1024)")
-    private String idForEntity;
+@DDDEntity(tableName = "ENTITY1")
+public class Entity1 extends tk.baumi.ddd.Entity {
 
-    @DDDProperty(columnName = "ENTITY_PROPERTY2", columnType = "CLOB")
-    private String entityProperty2;
+    @DDDProperty(primaryKey = true, columnName = "ID_PROPERTY2", columnType = "VARCHAR2(1024)")
+    private UUID idProperty2;
+
+    @DDDProperty(columnName = "PROPERTY2", columnType = "CLOB")
+    private String property2;
 
     public Entity1() {
     }
 
-    public Entity1(String _idForEntity, String _entityProperty2) {
-        idForEntity = _idForEntity;
-        entityProperty2 = _entityProperty2;
+    public Entity1(UUID _idProperty2, String _property2) {
+        idProperty2 = _idProperty2;
+        property2 = _property2;
     }
 
     public int testMethod(Object _inputParam) {
         return 0;
     }
 
-	@Override
-	public Object[] properties() {
-		Object[] ret = new Object[2];
-		ret[0] = idForEntity;
-		ret[1] = entityProperty2;
-		return ret;
-	}
+    public Object[] properties() {
+        Object[] ret = new Object[2];
+        ret[0] = idProperty2;
+        ret[1] = property2;
+        return ret;
+    }
 
-	@Override
-	public void insert(Object[] properties) {
-		if(properties.length == 2 ) {
-			idForEntity = (String)properties[0];
-			entityProperty2 = (String)properties[1];
-		}
-	}
-	
-	public String toString() {
-		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append(idForEntity).append(',').append(entityProperty2);
-		return stringBuffer.toString();
-	}
+    public void insert(Object[] properties) {
+        if (properties.length == 2) {
+            idProperty2 = (UUID) properties[0];
+            property2 = (String) properties[1];
+        }
+    }
+    
+    public String toString() {
+    	return "{" + idProperty2 + ", " + property2 + "}";
+    }
 }

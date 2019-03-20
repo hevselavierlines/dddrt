@@ -12,6 +12,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
+import tk.baumi.test.Aggregate1;
 import tk.baumi.test.DDDEntity;
 import tk.baumi.test.DDDProperty;
 import tk.baumi.test.Entity1;
@@ -27,12 +28,30 @@ public class MainClass {
 		RepositoryTest repoTest = 
 				new RepositoryTest("jdbc:oracle:thin:@localhost:1521:xe", 
 						"afaci", "afaci");
-		Entity1 entU = new Entity1("MARS", "TEST2");
-		repoTest.update(entU);
-		List<Entity1> entities = repoTest.selectAll(Entity1.class);
-		for(Entity1 entity : entities) {
-			System.out.println(entity.toString());
-		}
+		
+//		Entity1 ent1 = new Entity1(UUID.randomUUID(), "safjdkhfld");
+//		repoTest.insert(ent1);
+//		List<Entity1> ent1List = repoTest.selectAll(Entity1.class);
+//		for(Entity1 ent : ent1List) {
+//			System.out.println(ent);
+//		}
+		
+		Entity1 ent1 = new Entity1(UUID.fromString("595a83e7-85cf-4104-ba33-f49a1afca1f5"), "sjdfhaiudhruierhvoiurhtgvbisue");
+		
+		Aggregate1 agg = new Aggregate1(UUID.fromString("a1745c60-76bf-4c1b-bdfe-e2168e69763b"), ent1);
+		repoTest.update(agg);
+		
+//		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);
+//		for(Aggregate1 agg : aggList) {
+//			System.out.println(agg);
+//		}
+		
+//		Entity1 entU = new Entity1("MARS", "TEST2");
+//		repoTest.update(entU);
+//		List<Entity1> entities = repoTest.selectAll(Entity1.class);
+//		for(Entity1 entity : entities) {
+//			System.out.println(entity.toString());
+//		}
 		
 //		Entity1 ent = new Entity1(UUID.randomUUID().toString(), "\\chapter{Related Work}\r\n" + 
 //				"\\section{Visual Studio Entity Framework}\r\n" + 

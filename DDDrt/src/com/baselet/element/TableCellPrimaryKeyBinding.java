@@ -34,8 +34,17 @@ public class TableCellPrimaryKeyBinding implements TableModelListener {
 
 	@Override
 	public void tableChanged(TableModelEvent arg0) {
-		String textValue = (String) tableModel.getValueAt(rowNum, 1);
-		if (originalValue != null && !originalValue.equals(textValue)) {
+		Object tableValue = tableModel.getValueAt(rowNum, 1);
+		String textValue = null;
+		if (tableValue instanceof String) {
+			textValue = (String) tableValue;
+		}
+		else if (tableValue instanceof Boolean) {
+			Boolean booleanValue = (Boolean) tableValue;
+			textValue = booleanValue.toString();
+		}
+
+		if (textValue != null && originalValue != null && !originalValue.equals(textValue)) {
 			originalValue = textValue;
 			boolean primaryKey = textValue.equals("true");
 			fieldProperty.setIdProperty(primaryKey);

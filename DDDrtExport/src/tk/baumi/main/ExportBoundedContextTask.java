@@ -48,7 +48,7 @@ public class ExportBoundedContextTask {
 		this.textReporter = textReporter;
 	}
 
-	private File createFolders(String packageName, File projectFolder) {
+	protected static File createFolders(String packageName, File projectFolder) {
 		String[] packagePath = packageName.split("\\.");
 		if (!projectFolder.exists()) {
 			projectFolder.mkdirs();
@@ -66,14 +66,19 @@ public class ExportBoundedContextTask {
 			exportFieldCompositeToJava(composite);
 		}
 	}
+	
+	
 
 	private void exportFieldCompositeToJava(IFieldComposite field) {
 		String packageName = boundedContext.getPackageName(field);
 		File packageFolder = createFolders(packageName, projectFolder);
 
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
-		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(false);
-		myClass.setPublic(true);
+		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(true);
+		
+		if(field.getType() == CompositeType.Entity || field.getType() == CompositeType.Aggregate) {
+			myClass.addExtendedType("tk.baumi.ddd.Entity");
+		}
 		NodeList<MemberValuePair> tableInfo = new NodeList<MemberValuePair>();
 		tableInfo.add(
 				new MemberValuePair("tableName",
