@@ -36,4 +36,16 @@ public class Aggregate1 extends tk.baumi.ddd.Entity {
             fkEntity1 = (Entity1) properties[1];
         }
     }
+    
+    public String toString() {
+    	StringBuffer ret = new StringBuffer();
+    	ret.append("{").append(idProperty.toString()).append(",");
+    	if(fkEntity1 != null) {
+    		ret.append(' ').append(fkEntity1.toString());
+    	} else {
+    		ret.deleteCharAt(ret.length() - 1);
+    	}
+    	ret.append("}");
+    	return ret.toString();
+    }
 }

@@ -60,18 +60,24 @@ public class RepositoryTest {
 			statement = connection.prepareStatement(query.toString());
 			for (int i = 0; i < columns.size(); i++) {
 				Column column = columns.get(i);
-				if ("CLOB".equals(column.type)) {
-					Clob clob = connection.createClob();
-					clob.setString(1, values[i].toString());
-					statement.setClob(i + 1, clob);
-				} else {
-					if (Entity.class.isAssignableFrom(column.javaType)) {
-						Entity entity2 = (Entity) values[i];
-						Object id = loadRelationEntityID(column, entity2);
-						statement.setString(i + 1, id.toString());
+				if(values[i] != null) {
+					if ("CLOB".equals(column.type)) {
+						Clob clob = connection.createClob();
+						clob.setString(1, values[i].toString());
+						statement.setClob(i + 1, clob);
 					} else {
-						statement.setString(i + 1, values[i].toString());
+						if(values[i] != null) {
+							if (Entity.class.isAssignableFrom(column.javaType)) {
+								Entity entity2 = (Entity) values[i];
+								Object id = loadRelationEntityID(column, entity2);
+								statement.setString(i + 1, id.toString());
+							} else {
+								statement.setString(i + 1, values[i].toString());
+							}
+						}
 					}
+				} else {
+					statement.setString(i + 1, null);
 				}
 			}
 			statement.executeUpdate();
@@ -210,12 +216,16 @@ public class RepositoryTest {
 
 	private Object convertToJavaType(Class<?> type, String stringValue) {
 		Object convertedType;
-		if ((UUID.class).equals(type)) {
-			convertedType = UUID.fromString(stringValue);
-		} else if (Entity.class.isAssignableFrom(type)) {
-			convertedType = selectByID((Class<Entity>) type, stringValue);
+		if(stringValue != null) {
+			if ((UUID.class).equals(type)) {
+				convertedType = UUID.fromString(stringValue);
+			} else if (Entity.class.isAssignableFrom(type)) {
+				convertedType = selectByID((Class<Entity>) type, stringValue);
+			} else {
+				convertedType = stringValue;
+			}
 		} else {
-			convertedType = stringValue;
+			convertedType = null;
 		}
 		return convertedType;
 	}
@@ -250,16 +260,20 @@ public class RepositoryTest {
 				if (!column.primary) {
 					Object currObj = objects[objectIndex];
 					Object setting = null;
-					if(Entity.class.isAssignableFrom(currObj.getClass())) {
-						Entity entity2 = (Entity) currObj;
-						setting = loadRelationEntityID(column, entity2);
+					if(currObj == null) {
+						st.setObject(index, null);
 					} else {
-						setting = currObj;
+						if(Entity.class.isAssignableFrom(currObj.getClass())) {
+							Entity entity2 = (Entity) currObj;
+							setting = loadRelationEntityID(column, entity2);
+						} else {
+							setting = currObj;
+						}
+						if(setting instanceof java.util.UUID) {
+							setting = setting.toString();
+						}
+						st.setObject(index, setting);
 					}
-					if(setting instanceof java.util.UUID) {
-						setting = setting.toString();
-					}
-					st.setObject(index, setting);
 					index++;
 				} else {
 					primaryValue = objects[objectIndex].toString();

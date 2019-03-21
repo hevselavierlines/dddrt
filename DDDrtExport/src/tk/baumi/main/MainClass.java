@@ -36,15 +36,15 @@ public class MainClass {
 //			System.out.println(ent);
 //		}
 		
-		Entity1 ent1 = new Entity1(UUID.fromString("595a83e7-85cf-4104-ba33-f49a1afca1f5"), "sjdfhaiudhruierhvoiurhtgvbisue");
+		Entity1 ent1 = new Entity1(UUID.fromString("12345678-85cf-4104-ba33-f49a1afca1f5"), "Rhabarbarbarbarabarbarbarenbartbarbierbierbarbaerbel");
 		
-		Aggregate1 agg = new Aggregate1(UUID.fromString("a1745c60-76bf-4c1b-bdfe-e2168e69763b"), ent1);
+		Aggregate1 agg = new Aggregate1(UUID.fromString("12345678-76bf-4c1b-bdfe-e2168e69763b"), ent1);
 		repoTest.update(agg);
 		
-//		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);
-//		for(Aggregate1 agg : aggList) {
-//			System.out.println(agg);
-//		}
+		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);
+		for(Aggregate1 agg1 : aggList) {
+			System.out.println(agg1);
+		}
 		
 //		Entity1 entU = new Entity1("MARS", "TEST2");
 //		repoTest.update(entU);
