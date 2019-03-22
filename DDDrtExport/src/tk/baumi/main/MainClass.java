@@ -17,6 +17,7 @@ import tk.baumi.test.DDDEntity;
 import tk.baumi.test.DDDProperty;
 import tk.baumi.test.Entity1;
 import tk.baumi.test.RepositoryTest;
+import tk.baumi.test.VO1;
 
 public class MainClass {
 
@@ -36,9 +37,10 @@ public class MainClass {
 //			System.out.println(ent);
 //		}
 		
-		Entity1 ent1 = new Entity1(UUID.fromString("12345678-85cf-4104-ba33-f49a1afca1f5"), "Rhabarbarbarbarabarbarbarenbartbarbierbierbarbaerbel");
-		
-		Aggregate1 agg = new Aggregate1(UUID.fromString("12345678-76bf-4c1b-bdfe-e2168e69763b"), ent1);
+		Entity1 ent1 = new Entity1(UUID.fromString("12345678-85cf-4104-ba33-f49a1afca1f5"), "Rhabarbarbarbarabarbarbarenbartbarbierbierbarbaerbelsdafjdklhv rh rvuihg rs ghdfjhg dfuigshifud ghdfuh giufdhsguihgdfjksgh fjkhgsuifdsh guifhdgasiuofdhgui fsdhg uifhsdgui fhguidfhsg uisdfhguidfhguidfh ugifdh giuofdhsguisdfhg");
+		VO1 vo = new VO1("druiyturheui rghueri gerohguirshguihduir r gshguihdfuighduir sh duirghui drgh urisdgh rudigh sdh ruihe gruihgfui hd iurhguisdrhg uidrhugishdruighruig hrduiosgh duighdruig hruigh uidfsshguir hguirshd giurfhsguirdhguisdhg iusdhguisrdhgiusdhguirshugrshd guishguihsdrgiuhsdruighsdf"
+				+ "sd ushrguirh guifhduisg hfiugohgui sdhrguiohsduirg hsruigh uisrdhg uisdrhg uirfhusg irhsgui rhsduig rhsdug hui r SOTAGA", "test");
+		Aggregate1 agg = new Aggregate1(UUID.fromString("12345678-76bf-4c1b-bdfe-e2168e69763b"), ent1, vo);
 		repoTest.update(agg);
 		
 		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);

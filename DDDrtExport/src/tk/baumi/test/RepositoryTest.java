@@ -19,8 +19,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.json.JSONArray;
+
 import oracle.sql.CLOB;
 import tk.baumi.ddd.Entity;
+import tk.baumi.ddd.ValueObject;
 
 public class RepositoryTest {
 	private Connection connection;
@@ -63,7 +66,12 @@ public class RepositoryTest {
 				if(values[i] != null) {
 					if ("CLOB".equals(column.type)) {
 						Clob clob = connection.createClob();
-						clob.setString(1, values[i].toString());
+						if(ValueObject.class.isAssignableFrom(values[i].getClass())) {
+							ValueObject vo2 = (ValueObject) values[i];
+							clob.setString(i + 1, vo2.serialize().toString());
+						} else {
+							clob.setString(1, values[i].toString());
+						}
 						statement.setClob(i + 1, clob);
 					} else {
 						if(values[i] != null) {
@@ -71,6 +79,9 @@ public class RepositoryTest {
 								Entity entity2 = (Entity) values[i];
 								Object id = loadRelationEntityID(column, entity2);
 								statement.setString(i + 1, id.toString());
+							} else if(ValueObject.class.isAssignableFrom(column.javaType)) {
+								ValueObject vo2 = (ValueObject) values[i];
+								statement.setString(i + 1, vo2.serialize().toString());
 							} else {
 								statement.setString(i + 1, values[i].toString());
 							}
@@ -215,12 +226,20 @@ public class RepositoryTest {
 	}
 
 	private Object convertToJavaType(Class<?> type, String stringValue) {
-		Object convertedType;
+		Object convertedType = null;
 		if(stringValue != null) {
 			if ((UUID.class).equals(type)) {
 				convertedType = UUID.fromString(stringValue);
 			} else if (Entity.class.isAssignableFrom(type)) {
 				convertedType = selectByID((Class<Entity>) type, stringValue);
+			} else if(ValueObject.class.isAssignableFrom(type)) {
+				try {
+					ValueObject vo = (ValueObject) type.newInstance();
+					vo.deserialize(new JSONArray(stringValue));
+					convertedType = vo;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else {
 				convertedType = stringValue;
 			}
@@ -249,7 +268,7 @@ public class RepositoryTest {
 		stringBuffer.deleteCharAt(stringBuffer.length() - 1);
 		stringBuffer.append(" WHERE ").append(primaryColumn.name).append("=?");
 
-		PreparedStatement st;
+		PreparedStatement st = null;
 		try {
 			st = connection.prepareStatement(stringBuffer.toString());
 			int index = 1;
@@ -266,6 +285,10 @@ public class RepositoryTest {
 						if(Entity.class.isAssignableFrom(currObj.getClass())) {
 							Entity entity2 = (Entity) currObj;
 							setting = loadRelationEntityID(column, entity2);
+						} else if(ValueObject.class.isAssignableFrom(currObj.getClass())) {
+							ValueObject vo2 = (ValueObject) currObj;
+							JSONArray json = vo2.serialize();
+							setting = json.toString();
 						} else {
 							setting = currObj;
 						}
@@ -286,8 +309,23 @@ public class RepositoryTest {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
+		} finally {
+			if(st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-
+	}
+	
+	public <T> void delete(T databaseDelete) {
+		Class<?> databaseClass = databaseDelete.getClass();
+		StringBuffer query = new StringBuffer();
+		query.append("DELETE FROM ");
+		query.append(retrieveTableName(databaseClass));
+		query.append(" WHERE ");
 	}
 
 	private <T> String retrieveTableName(Class<T> databaseClass) {
