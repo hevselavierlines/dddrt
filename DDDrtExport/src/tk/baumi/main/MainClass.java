@@ -3,6 +3,7 @@ package tk.baumi.main;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +38,25 @@ public class MainClass {
 //			System.out.println(ent);
 //		}
 		
-		Entity1 ent1 = new Entity1(UUID.fromString("12345678-85cf-4104-ba33-f49a1afca1f5"), "Rhabarbarbarbarabarbarbarenbartbarbierbierbarbaerbelsdafjdklhv rh rvuihg rs ghdfjhg dfuigshifud ghdfuh giufdhsguihgdfjksgh fjkhgsuifdsh guifhdgasiuofdhgui fsdhg uifhsdgui fhguidfhsg uisdfhguidfhguidfh ugifdh giuofdhsguisdfhg");
-		VO1 vo = new VO1("druiyturheui rghueri gerohguirshguihduir r gshguihdfuighduir sh duirghui drgh urisdgh rudigh sdh ruihe gruihgfui hd iurhguisdrhg uidrhugishdruighruig hrduiosgh duighdruig hruigh uidfsshguir hguirshd giurfhsguirdhguisdhg iusdhguisrdhgiusdhguirshugrshd guishguihsdrgiuhsdruighsdf"
-				+ "sd ushrguirh guifhduisg hfiugohgui sdhrguiohsduirg hsruigh uisrdhg uisdrhg uirfhusg irhsgui rhsduig rhsdug hui r SOTAGA", "test");
+		Entity1 ent1 = new Entity1(UUID.fromString("12345678-85cf-4104-ba33-f49a1afca1f5"),
+				9868, 99.8, new Date(System.currentTimeMillis()));
+		VO1 vo = new VO1("druiyturheui rghueri gerohguirshguihduir r "
+				+ "gshguihdfuighduir sh duirghui drgh urisdgh rudigh sdh "
+				+ "ruihe gruihgfui hd iurhguisdrhg uidrhugishdruighruig"
+				+ " hrduiosgh duighdruig hruigh uidfsshguir hguirshd "
+				+ "giurfhsguirdhguisdhg iusdhguisrdhgiusdhguirshugrshd "
+				+ "guishguihsdrgiuhsdruighsdf"
+				+ "sd ushrguirh guifhduisg hfiugohgui sdhrguiohsduirg hsruigh "
+				+ "uisrdhg uisdrhg uirfhusg irhsgui rhsduig rhsdug hui r SOTAGA", 
+				new Date(System.currentTimeMillis()), 100);
+		
 		Aggregate1 agg = new Aggregate1(UUID.fromString("12345678-76bf-4c1b-bdfe-e2168e69763b"), ent1, vo);
-		repoTest.update(agg);
+		Aggregate1 idProp = repoTest.selectByID(Aggregate1.class, agg.properties()[0]);
+		if(idProp == null) {
+			repoTest.insert(agg);
+		} else {
+			repoTest.update(agg);
+		}
 		
 		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);
 		for(Aggregate1 agg1 : aggList) {

@@ -240,6 +240,20 @@ public class RepositoryTest {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			} else if(type == char.class) {
+				if(stringValue.length() >= 1) {
+					convertedType = stringValue.charAt(0);
+				}
+			} else if(type == byte.class) {
+				convertedType = Byte.parseByte(stringValue);
+			} else if(type == short.class) {
+				convertedType = Short.parseShort(stringValue);
+			} else if(type == int.class) {
+				convertedType = Integer.parseInt(stringValue);
+			} else if(type == float.class) {
+				convertedType = Float.parseFloat(stringValue);
+			} else if(type == double.class) {
+				convertedType = Double.parseDouble(stringValue);
 			} else {
 				convertedType = stringValue;
 			}

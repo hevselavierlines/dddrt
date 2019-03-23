@@ -446,8 +446,12 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	public void focusLost(FocusEvent e) {
 		Object source = e.getSource();
 		if (e.getSource() == propertyTypeEditor) {
-			DataTypeItem selectionItem = (DataTypeItem) elementType.getSelectedItem();
-			FieldComposite fc = selectionItem.getDescription();
+			FieldComposite fc = null;
+			DataTypeItem selectionItem = null;
+			if (elementType.getSelectedItem() instanceof DataTypeItem) {
+				selectionItem = (DataTypeItem) elementType.getSelectedItem();
+				fc = selectionItem.getDescription();
+			}
 			DrawPanel dp = getParentFieldComposite().getComponent().getDrawPanel();
 			boolean collection = false;
 			if (fc == null) {
@@ -465,7 +469,9 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 				}
 			}
 			else {
-				collection = selectionItem.isCollection();
+				if (selectionItem != null) {
+					collection = selectionItem.isCollection();
+				}
 			}
 			getParentFieldComposite()
 					.getComponent()

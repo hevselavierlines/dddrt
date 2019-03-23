@@ -78,14 +78,18 @@ public class ExportBoundedContextTask {
 		
 		if(field.getType() == CompositeType.Entity || field.getType() == CompositeType.Aggregate) {
 			myClass.addExtendedType("tk.baumi.ddd.Entity");
+			
+			NodeList<MemberValuePair> tableInfo = new NodeList<MemberValuePair>();
+			tableInfo.add(
+					new MemberValuePair("tableName",
+							new StringLiteralExpr(field.getDatabaseName())));
+			myClass.addAnnotation(
+					new NormalAnnotationExpr(
+							new Name("DDDEntity"), tableInfo));
+		} else if(field.getType() == CompositeType.ValueObject) {
+			myClass.addExtendedType("tk.baumi.ddd.ValueObject");
 		}
-		NodeList<MemberValuePair> tableInfo = new NodeList<MemberValuePair>();
-		tableInfo.add(
-				new MemberValuePair("tableName",
-						new StringLiteralExpr(field.getDatabaseName())));
-		myClass.addAnnotation(
-				new NormalAnnotationExpr(
-						new Name("DDDEntity"), tableInfo));
+		
 		List<ExportProperty> exportProperties = new ArrayList<ExportProperty>();
 		for (ExportProperty property : field.getProperties()) {
 			exportProperties.add(property);
@@ -96,26 +100,27 @@ public class ExportBoundedContextTask {
 			} else {
 				fieldDeclaration = myClass.addField(property.getType(), property.getName());
 			}
+			if(field.getType() != CompositeType.ValueObject) {
 			NodeList<MemberValuePair> propertyInfo = new NodeList<MemberValuePair>();
 			if(property.isPrimaryProperty()) {
-			propertyInfo.add(
-					new MemberValuePair("primaryKey",
-							new BooleanLiteralExpr(true)));
+				propertyInfo.add(
+						new MemberValuePair("primaryKey",
+								new BooleanLiteralExpr(true)));
+				}
+				propertyInfo.add(
+						new MemberValuePair("columnName", 
+								new StringLiteralExpr(property.getDatabaseName())));
+				propertyInfo.add(
+						new MemberValuePair("columnType",
+								new StringLiteralExpr(property.getDatabaseType())));
+				
+				fieldDeclaration.addAnnotation(
+						new NormalAnnotationExpr(
+								new Name("DDDProperty"), propertyInfo));
 			}
-			propertyInfo.add(
-					new MemberValuePair("columnName", 
-							new StringLiteralExpr(property.getDatabaseName())));
-			propertyInfo.add(
-					new MemberValuePair("columnType",
-							new StringLiteralExpr(property.getDatabaseType())));
-			
-			fieldDeclaration.addAnnotation(
-					new NormalAnnotationExpr(
-							new Name("DDDProperty"), propertyInfo));
 		}
-		if (field.getType() != CompositeType.ValueObject) {
-			myClass.addConstructor(Modifier.PUBLIC);
-		}
+		
+		myClass.addConstructor(Modifier.PUBLIC);
 		ConstructorDeclaration ctor = myClass.addConstructor(Modifier.PUBLIC);
 		for (ExportProperty property : exportProperties) {
 			ctor.addParameter(property.getType(), "_" + property.getName());
@@ -167,7 +172,7 @@ public class ExportBoundedContextTask {
 		StringBuffer prependCode = new StringBuffer();
 		prependCode.append("package ");
 		prependCode.append(packageName);
-		prependCode.append(";\n\r\n\r");
+		prependCode.append(";\n\n");
 		String code = prependCode.toString() + myClass.toString();
 		FileOutputStream fos = null;
 		try {

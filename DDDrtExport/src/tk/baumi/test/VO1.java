@@ -1,39 +1,37 @@
 package tk.baumi.test;
 
-import org.json.JSONArray;
+import java.util.Date;
 
-import tk.baumi.ddd.ValueObject;
+public class VO1 extends tk.baumi.ddd.ValueObject {
 
-@DDDEntity(tableName = "NEW_VALUE_OBJECT")
-public class VO1 extends ValueObject {
-
-    @DDDProperty(columnName = "VALUE_1", columnType = "CLOB")
     private String value1;
 
-    @DDDProperty(columnName = "VALUE_2", columnType = "CLOB")
-    private String value2;
-    
+    private Date value2;
+
+    private int value3;
+
     public VO1() {
     }
 
-    public VO1(String _Value1, String _Value2) {
-        value1 = _Value1;
-        value2 = _Value2;
+    public VO1(String _value1, Date _value2, int _value3) {
+        value1 = _value1;
+        value2 = _value2;
+        value3 = _value3;
     }
 
-    public void testMethod(Object _inputParam) {
+    public Object[] properties() {
+        Object[] ret = new Object[3];
+        ret[0] = value1;
+        ret[1] = value2;
+        ret[2] = value3;
+        return ret;
     }
 
-	@Override
-	public Object[] properties() {
-		return new Object[] {value1, value2};
-	}
-
-	@Override
-	public void insert(Object[] elements) {
-		if(elements.length == 2) {
-			value1 = (String) elements[0];
-			value2 = (String) elements[0];
-		}
-	}
+    public void insert(Object[] properties) {
+        if (properties.length == 3) {
+            value1 = (String) properties[0];
+            value2 = (Date) properties[1];
+            value3 = (int) properties[2];
+        }
+    }
 }
