@@ -25,4 +25,20 @@ public abstract class ValueObject {
         }
         insert(elems);
     }
+    
+    public String toString() {
+    	StringBuffer stringBuffer = new StringBuffer(this.getClass().getName());
+    	stringBuffer.append("{\n");
+    	for(Object property : properties()) {
+    		if(property != null) {
+    			stringBuffer.append(property.toString());
+    		} else {
+    			stringBuffer.append("\tnull");
+    		}
+    		stringBuffer.append(",\n");
+    	}
+    	stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+    	stringBuffer.append("\n}");
+    	return stringBuffer.toString();
+    }
 }

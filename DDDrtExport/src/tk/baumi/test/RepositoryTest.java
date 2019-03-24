@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -52,6 +53,7 @@ public class RepositoryTest {
 
 		query.append(" VALUES (");
 		Object[] values = databaseInsert.properties();
+		convertToDatabaseClob(values, columns);
 		for (int i = 0; i < values.length; i++) {
 			query.append("?,");
 		}
@@ -66,26 +68,10 @@ public class RepositoryTest {
 				if(values[i] != null) {
 					if ("CLOB".equals(column.type)) {
 						Clob clob = connection.createClob();
-						if(ValueObject.class.isAssignableFrom(values[i].getClass())) {
-							ValueObject vo2 = (ValueObject) values[i];
-							clob.setString(i + 1, vo2.serialize().toString());
-						} else {
-							clob.setString(1, values[i].toString());
-						}
+						clob.setString(1, values[i].toString());
 						statement.setClob(i + 1, clob);
 					} else {
-						if(values[i] != null) {
-							if (Entity.class.isAssignableFrom(column.javaType)) {
-								Entity entity2 = (Entity) values[i];
-								Object id = loadRelationEntityID(column, entity2);
-								statement.setString(i + 1, id.toString());
-							} else if(ValueObject.class.isAssignableFrom(column.javaType)) {
-								ValueObject vo2 = (ValueObject) values[i];
-								statement.setString(i + 1, vo2.serialize().toString());
-							} else {
-								statement.setString(i + 1, values[i].toString());
-							}
-						}
+						statement.setString(i + 1, values[i].toString());
 					}
 				} else {
 					statement.setString(i + 1, null);
@@ -235,25 +221,40 @@ public class RepositoryTest {
 			} else if(ValueObject.class.isAssignableFrom(type)) {
 				try {
 					ValueObject vo = (ValueObject) type.newInstance();
-					vo.deserialize(new JSONArray(stringValue));
+					JSONArray json = new JSONArray(stringValue);
+					Object[] ret = new Object[json.length()];
+					Field[] fields = type.getDeclaredFields();
+					for(int i = 0; i < json.length(); i++) {
+						Object obj = json.get(i);
+						Field field = fields[i];
+						if(obj != null) {
+							ret[i] = convertToJavaType(field.getType(), obj.toString());
+						}
+					}
+					vo.insert(ret);
 					convertedType = vo;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if(type == char.class) {
+			} else if(type == char.class || type == Character.class) {
 				if(stringValue.length() >= 1) {
 					convertedType = stringValue.charAt(0);
 				}
-			} else if(type == byte.class) {
+			} else if(type == byte.class || type == Byte.class) {
 				convertedType = Byte.parseByte(stringValue);
-			} else if(type == short.class) {
+			} else if(type == short.class || type == Short.class) {
 				convertedType = Short.parseShort(stringValue);
-			} else if(type == int.class) {
+			} else if(type == int.class || type == Integer.class) {
 				convertedType = Integer.parseInt(stringValue);
-			} else if(type == float.class) {
+			} else if(type == long.class || type == Long.class) {
+				convertedType = Long.parseLong(stringValue);
+			} else if(type == float.class || type == Float.class) {
 				convertedType = Float.parseFloat(stringValue);
-			} else if(type == double.class) {
-				convertedType = Double.parseDouble(stringValue);
+			} else if(type == double.class || type == Double.class) {
+				convertedType = Double.parseDouble(stringValue.replace(',', '.'));
+			} else if(type == Date.class) {
+				long dateLong = Long.parseLong(stringValue);
+				convertedType = new Date(dateLong);
 			} else {
 				convertedType = stringValue;
 			}
@@ -288,6 +289,7 @@ public class RepositoryTest {
 			int index = 1;
 			int objectIndex = 0;
 			Object[] objects = databaseUpdate.properties();
+			convertToDatabaseClob(objects, columns);
 			String primaryValue = null;
 			for (Column column : columns) {
 				if (!column.primary) {
@@ -330,6 +332,38 @@ public class RepositoryTest {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			}
+		}
+	}
+	
+	public void convertToDatabaseClob(Object[] objects, List<Column> columns) {
+		for(int i = 0; i < objects.length; i++) {
+			Object object = objects[i];
+			Column column = null;
+			if(columns != null) {
+				column = columns.get(i);
+			}
+			if(object != null) {
+				if(object instanceof java.util.UUID) {
+					object = object.toString();
+				} else if(object instanceof java.util.Date) {
+					Date date = (Date)object;
+					object = date.getTime();
+				} else if (column != null && Entity.class.isAssignableFrom(column.javaType)) {
+					Entity entity2 = (Entity) object;
+					Object id = loadRelationEntityID(column, entity2);
+					object = id.toString();
+				} else if(ValueObject.class.isAssignableFrom(object.getClass())) {
+					ValueObject vo2 = (ValueObject) object;
+					org.json.JSONArray ret = new org.json.JSONArray();
+			        Object[] properties = vo2.properties();
+			        convertToDatabaseClob(properties, null);
+			        for(Object property : properties) {
+			        	ret.put(property);
+			        }
+					object = ret.toString();
+				}
+				objects[i] = object;
 			}
 		}
 	}
