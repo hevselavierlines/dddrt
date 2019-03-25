@@ -567,7 +567,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 			return "VARCHAR2(1024)";
 		}
 		else if (relationLineRef != null) {
-			if (relationLineRef.relationToValueObject()) {
+			if (relationLineRef.relationToValueObject() || relationLineRef.multipleRelation()) {
 				return "CLOB";
 			}
 			else {

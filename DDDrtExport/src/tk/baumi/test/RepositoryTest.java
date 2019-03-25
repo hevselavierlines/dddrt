@@ -7,6 +7,8 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -15,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,8 +40,34 @@ public class RepositoryTest {
 			e.printStackTrace();
 		}
 	}
+	
+	public <T extends Entity> boolean checkIDExists(T idEntity) {
+		List<Column> columns =retrieveColumns(idEntity.getClass());
+		Object id = null;
+		Object[] objects = idEntity.properties();
+		for(int i = 0; i < columns.size() && id == null; i++) {
+			Column column = columns.get(i);
+			if(column.primary) {
+				id = objects[i];
+			}
+		}
+		if(id != null) {
+			Entity entity = selectByID(idEntity.getClass(), id);
+			return entity != null;
+		} else {
+			return true;
+		}
+	}
+	
+	public <T extends Entity> void update(T databaseUpdate) {
+		if(checkIDExists(databaseUpdate)) {
+			internalUpdate(databaseUpdate);
+		} else {
+			internalInsert(databaseUpdate);
+		}
+	}
 
-	public <T extends Entity> void insert(T databaseInsert) {
+	public <T extends Entity> void internalInsert(T databaseInsert) {
 		Class<?> databaseClass = databaseInsert.getClass();
 		StringBuffer query = new StringBuffer("INSERT INTO ");
 		String tableName = retrieveTableName(databaseClass);
@@ -103,9 +132,9 @@ public class RepositoryTest {
 		Entity selection2 = selectByID((Class<Entity>) column.javaType, id);
 		if (selection2 != null) {
 			// OK because the relation exists. Probably an update
-			update(entity2);
+			internalUpdate(entity2);
 		} else {
-			insert(entity2);
+			internalInsert(entity2);
 		}
 		return id;
 	}
@@ -140,9 +169,9 @@ public class RepositoryTest {
 			if (result.next()) {
 				Object[] elements = new Object[columns.size()];
 				for (int i = 0; i < elements.length; i++) {
-					Class<?> type = columns.get(i).javaType;
+					Column column = columns.get(i);
 					String stringValue = result.getString(i + 1);
-					Object convertedType = convertToJavaType(type, stringValue);
+					Object convertedType = convertToJavaType(column, stringValue);
 					elements[i] = convertedType;
 				}
 				try {
@@ -183,9 +212,9 @@ public class RepositoryTest {
 			while (result.next()) {
 				Object[] elements = new Object[columns.size()];
 				for (int i = 0; i < elements.length; i++) {
-					Class<?> type = columns.get(i).javaType;
+					Column column = columns.get(i);
 					String stringValue = result.getString(i + 1);
-					Object convertedType = convertToJavaType(type, stringValue);
+					Object convertedType = convertToJavaType(column, stringValue);
 					elements[i] = convertedType;
 				}
 				try {
@@ -211,8 +240,9 @@ public class RepositoryTest {
 		return ret;
 	}
 
-	private Object convertToJavaType(Class<?> type, String stringValue) {
+	private Object convertToJavaType(Column column, String stringValue) {
 		Object convertedType = null;
+		Class<?> type = column.javaType;
 		if(stringValue != null) {
 			if ((UUID.class).equals(type)) {
 				convertedType = UUID.fromString(stringValue);
@@ -228,7 +258,7 @@ public class RepositoryTest {
 						Object obj = json.get(i);
 						Field field = fields[i];
 						if(obj != null) {
-							ret[i] = convertToJavaType(field.getType(), obj.toString());
+							ret[i] = convertToJavaType(retrieveColumn(field), obj.toString());
 						}
 					}
 					vo.insert(ret);
@@ -255,6 +285,28 @@ public class RepositoryTest {
 			} else if(type == Date.class) {
 				long dateLong = Long.parseLong(stringValue);
 				convertedType = new Date(dateLong);
+			} else if(type == List.class && column.field != null) {
+				Type genericFieldType = column.field.getGenericType();
+				Class<?> listType = null;
+				if(genericFieldType instanceof ParameterizedType){
+				    ParameterizedType aType = (ParameterizedType) genericFieldType;
+				    Type[] fieldArgTypes = aType.getActualTypeArguments();
+				    for(Type fieldArgType : fieldArgTypes){
+				        listType = (Class<?>) fieldArgType;
+				    }
+				}
+				
+				if(listType != null) {
+					List list = new LinkedList();
+					JSONArray jsonArray = new JSONArray(stringValue);
+					for(int i = 0; i < jsonArray.length(); i++) {
+						Object obj = jsonArray.get(i);
+						Column col = new Column(listType);
+						Object converted = convertToJavaType(col, obj.toString());
+						list.add(converted);
+					}
+					convertedType = list;
+				}
 			} else {
 				convertedType = stringValue;
 			}
@@ -264,7 +316,7 @@ public class RepositoryTest {
 		return convertedType;
 	}
 
-	public <T extends Entity> int update(T databaseUpdate) {
+	public <T extends Entity> int internalUpdate(T databaseUpdate) {
 		Class<? extends Entity> databaseClass = databaseUpdate.getClass();
 		List<Column> columns = this.retrieveColumns(databaseClass);
 		Column primaryColumn = null;
@@ -298,20 +350,20 @@ public class RepositoryTest {
 					if(currObj == null) {
 						st.setObject(index, null);
 					} else {
-						if(Entity.class.isAssignableFrom(currObj.getClass())) {
-							Entity entity2 = (Entity) currObj;
-							setting = loadRelationEntityID(column, entity2);
-						} else if(ValueObject.class.isAssignableFrom(currObj.getClass())) {
-							ValueObject vo2 = (ValueObject) currObj;
-							JSONArray json = vo2.serialize();
-							setting = json.toString();
-						} else {
-							setting = currObj;
-						}
-						if(setting instanceof java.util.UUID) {
-							setting = setting.toString();
-						}
-						st.setObject(index, setting);
+//						if(Entity.class.isAssignableFrom(currObj.getClass())) {
+//							Entity entity2 = (Entity) currObj;
+//							setting = loadRelationEntityID(column, entity2);
+//						} else if(ValueObject.class.isAssignableFrom(currObj.getClass())) {
+//							ValueObject vo2 = (ValueObject) currObj;
+//							JSONArray json = vo2.serialize();
+//							setting = json.toString();
+//						} else {
+//							setting = currObj;
+//						}
+//						if(setting instanceof java.util.UUID) {
+//							setting = setting.toString();
+//						}
+						st.setObject(index, objects[objectIndex].toString());
 					}
 					index++;
 				} else {
@@ -336,6 +388,55 @@ public class RepositoryTest {
 		}
 	}
 	
+	public Object convertJavaToDatabase(Object object, Column column) {
+		Object newObject = null;
+		if(object instanceof java.util.UUID) {
+			newObject = object.toString();
+		} else if(object instanceof java.util.Date) {
+			Date date = (Date)object;
+			newObject = date.getTime();
+		} else if (column != null && Entity.class.isAssignableFrom(column.javaType)) {
+			Entity entity2 = (Entity) object;
+			Object id = loadRelationEntityID(column, entity2);
+			newObject = id.toString();
+		} else if(ValueObject.class.isAssignableFrom(object.getClass())) {
+			ValueObject vo2 = (ValueObject) object;
+			org.json.JSONArray ret = new org.json.JSONArray();
+	        Object[] properties = vo2.properties();
+	        convertToDatabaseClob(properties, retrieveColumns(vo2.getClass()));
+	        for(Object property : properties) {
+	        	ret.put(property);
+	        }
+			newObject = ret.toString();
+		} else if(List.class.isAssignableFrom(object.getClass())) {
+//			Type genericFieldType = column.field.getGenericType();
+//
+//			if(genericFieldType instanceof ParameterizedType){
+//			    ParameterizedType aType = (ParameterizedType) genericFieldType;
+//			    Type[] fieldArgTypes = aType.getActualTypeArguments();
+//			    for(Type fieldArgType : fieldArgTypes){
+//			        Class fieldArgClass = (Class) fieldArgType;
+//			        System.out.println("fieldArgClass = " + fieldArgClass);
+//			    }
+//			}
+//			List list = (List) object;
+//			Object[] properties = new Object[list.size()];
+//			for(int j = 0; j < properties.length; i++) {
+//				Object property = list.get(j);
+//				properties[j] = property;
+//			}
+			JSONArray jsonArray = new JSONArray();
+			List<?> list = (List<?>) object;
+			for(Object elem : list) {
+				jsonArray.put(convertListToDatabaseClob(elem));
+			}
+			newObject = jsonArray.toString();
+		} else {
+			newObject = object;
+		}
+		return newObject;
+	}
+	
 	public void convertToDatabaseClob(Object[] objects, List<Column> columns) {
 		for(int i = 0; i < objects.length; i++) {
 			Object object = objects[i];
@@ -344,30 +445,32 @@ public class RepositoryTest {
 				column = columns.get(i);
 			}
 			if(object != null) {
-				if(object instanceof java.util.UUID) {
-					object = object.toString();
-				} else if(object instanceof java.util.Date) {
-					Date date = (Date)object;
-					object = date.getTime();
-				} else if (column != null && Entity.class.isAssignableFrom(column.javaType)) {
-					Entity entity2 = (Entity) object;
-					Object id = loadRelationEntityID(column, entity2);
-					object = id.toString();
-				} else if(ValueObject.class.isAssignableFrom(object.getClass())) {
-					ValueObject vo2 = (ValueObject) object;
-					org.json.JSONArray ret = new org.json.JSONArray();
-			        Object[] properties = vo2.properties();
-			        convertToDatabaseClob(properties, null);
-			        for(Object property : properties) {
-			        	ret.put(property);
-			        }
-					object = ret.toString();
-				}
+				object = convertJavaToDatabase(object, column);
 				objects[i] = object;
 			}
 		}
 	}
 	
+	public Object convertListToDatabaseClob(Object object) {
+		Object ret = null;
+		if(Entity.class.isAssignableFrom(object.getClass())) {
+			Entity entity = (Entity) object;
+			ret = convertJavaToDatabase(entity, new Column(object.getClass()));
+		} else if(ValueObject.class.isAssignableFrom(object.getClass())) {
+			ValueObject entity = (ValueObject) object;
+			List<Column> columns = retrieveColumns(object.getClass());
+			Object[] properties = entity.properties();
+			convertToDatabaseClob(properties, columns);
+			JSONArray json = new JSONArray();
+			for(int i = 0; i < properties.length; i++) {
+				json.put(properties[i]);
+			}
+			ret = json;
+		} else {
+			ret = object;
+		}
+		return ret;
+	}
 	public <T> void delete(T databaseDelete) {
 		Class<?> databaseClass = databaseDelete.getClass();
 		StringBuffer query = new StringBuffer();
@@ -389,18 +492,24 @@ public class RepositoryTest {
 		List<Column> columns = new LinkedList<Column>();
 
 		for (Field field : databaseClass.getDeclaredFields()) {
-			if (field.isAnnotationPresent(DDDProperty.class)) {
-				DDDProperty property = field.getAnnotation(DDDProperty.class);
-				String columnName = property.columnName();
-				String columnType = property.columnType();
-				columns.add(new Column(columnName, columnType, field.getType(), property.primaryKey()));
-				if (field.getType().isAssignableFrom(Entity.class)) {
-					Reference reference = new Reference();
-					reference.referencingEntity = (Class<Entity>) field.getType();
-				}
-			}
+			columns.add(retrieveColumn(field));
 		}
 		return columns;
+	}
+	
+	private <T> Column retrieveColumn(Field field) {
+		if (field.isAnnotationPresent(DDDProperty.class)) {
+			DDDProperty property = field.getAnnotation(DDDProperty.class);
+			String columnName = property.columnName();
+			String columnType = property.columnType();
+			return new Column(columnName, columnType, field, property.primaryKey());
+//			if (field.getType().isAssignableFrom(Entity.class)) {
+//				Reference reference = new Reference();
+//				reference.referencingEntity = (Class<Entity>) field.getType();
+//			}
+		} else {
+			return new Column(field);
+		}
 	}
 
 	public void disconnect() {
@@ -419,13 +528,23 @@ public class RepositoryTest {
 		Class<?> javaType;
 		boolean primary;
 		Reference reference;
+		Field field;
+		
+		public Column(Field field) {
+			this(null, null, field, false);
+		}
+		
+		public Column(Class<?> javaType) {
+			this.javaType = javaType;
+		}
 
-		public Column(String name, String type, Class<?> javaType, boolean primary) {
+		public Column(String name, String type, Field field, boolean primary) {
 			super();
 			this.name = name;
 			this.type = type;
-			this.javaType = javaType;
+			this.javaType = field.getType();
 			this.primary = primary;
+			this.field = field;
 		}
 	}
 

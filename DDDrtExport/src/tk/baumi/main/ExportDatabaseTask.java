@@ -57,22 +57,22 @@ public class ExportDatabaseTask {
 		    ADD CONSTRAINT fk_assoc_entity_entity
 		        FOREIGN KEY(ENTITY_ENTITY)
 		        REFERENCES ENTITY2(ID_ENTITY2);*/
-			sql
-				.append("DROP TABLE ")
-				.append(relation.associateTableName())
-				.append(" CASCADE CONSTRAINTS;\n\n");
-			
-			
-			String PROPERTY_PREFIX = "PROPERTY_";
-			String TABLE_PREFIX = "ENTITY_";
-			sql.append("CREATE TABLE ").append(relation.associateTableName()).append(" (\n");
-			sql.append('\t').append(PROPERTY_PREFIX).append(relation.getStartTableName()).append(' ').append(relation.getStartPropertyType()).append(",\n");
-			sql.append('\t').append(TABLE_PREFIX).append(relation.getEndTableName()).append(' ').append(relation.getEndPropertyType()).append(",\n");
-			sql.append('\t').append("FOREIGN KEY (").append(PROPERTY_PREFIX).append(relation.getStartTableName()).append(")\n");
-			sql.append("\t\t").append("REFERENCES ").append(relation.getStartTableName()).append(" (").append(relation.getStartTableIDProperty()).append("),\n");
-			sql.append('\t').append("FOREIGN KEY (").append(TABLE_PREFIX).append(relation.getEndTableName()).append(")\n");
-			sql.append("\t\t").append("REFERENCES ").append(relation.getEndTableName()).append(" (").append(relation.getEndPropertyName()).append(")\n");
-			sql.append(");\n\n");
+//			sql
+//				.append("DROP TABLE ")
+//				.append(relation.associateTableName())
+//				.append(" CASCADE CONSTRAINTS;\n\n");
+//			
+//			
+//			String PROPERTY_PREFIX = "PROPERTY_";
+//			String TABLE_PREFIX = "ENTITY_";
+//			sql.append("CREATE TABLE ").append(relation.associateTableName()).append(" (\n");
+//			sql.append('\t').append(PROPERTY_PREFIX).append(relation.getStartTableName()).append(' ').append(relation.getStartPropertyType()).append(",\n");
+//			sql.append('\t').append(TABLE_PREFIX).append(relation.getEndTableName()).append(' ').append(relation.getEndPropertyType()).append(",\n");
+//			sql.append('\t').append("FOREIGN KEY (").append(PROPERTY_PREFIX).append(relation.getStartTableName()).append(")\n");
+//			sql.append("\t\t").append("REFERENCES ").append(relation.getStartTableName()).append(" (").append(relation.getStartTableIDProperty()).append("),\n");
+//			sql.append('\t').append("FOREIGN KEY (").append(TABLE_PREFIX).append(relation.getEndTableName()).append(")\n");
+//			sql.append("\t\t").append("REFERENCES ").append(relation.getEndTableName()).append(" (").append(relation.getEndPropertyName()).append(")\n");
+//			sql.append(");\n\n");
 			
 		} else {
 			//in case of a 1:n relationship.

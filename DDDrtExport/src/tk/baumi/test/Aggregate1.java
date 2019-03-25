@@ -1,5 +1,6 @@
 package tk.baumi.test;
 
+import java.util.List;
 import java.util.UUID;
 
 @DDDEntity(tableName = "AGGREGATE1")
@@ -12,12 +13,12 @@ public class Aggregate1 extends tk.baumi.ddd.Entity {
     private Entity1 fkEntity1;
 
     @DDDProperty(columnName = "FK_VO1", columnType = "CLOB")
-    private VO1 fkVO1;
+    private List<VO1> fkVO1;
 
     public Aggregate1() {
     }
 
-    public Aggregate1(UUID _idProperty, Entity1 _fkEntity1, VO1 _fkVO1) {
+    public Aggregate1(UUID _idProperty, Entity1 _fkEntity1, List<VO1> _fkVO1) {
         idProperty = _idProperty;
         fkEntity1 = _fkEntity1;
         fkVO1 = _fkVO1;
@@ -39,7 +40,7 @@ public class Aggregate1 extends tk.baumi.ddd.Entity {
         if (properties.length == 3) {
             idProperty = (UUID) properties[0];
             fkEntity1 = (Entity1) properties[1];
-            fkVO1 = (VO1) properties[2];
+            fkVO1 = (List<VO1>) properties[2];
         }
     }
 }
