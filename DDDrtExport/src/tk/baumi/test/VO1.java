@@ -1,37 +1,30 @@
 package tk.baumi.test;
 
-import java.util.Date;
-
 public class VO1 extends tk.baumi.ddd.ValueObject {
 
-    private String value1;
+    private long value1;
 
-    private Date value2;
-
-    private int value3;
+    private double value2;
 
     public VO1() {
     }
 
-    public VO1(String _value1, Date _value2, int _value3) {
+    public VO1(long _value1, double _value2) {
         value1 = _value1;
         value2 = _value2;
-        value3 = _value3;
     }
 
     public Object[] properties() {
-        Object[] ret = new Object[3];
+        Object[] ret = new Object[2];
         ret[0] = value1;
         ret[1] = value2;
-        ret[2] = value3;
         return ret;
     }
 
     public void insert(Object[] properties) {
-        if (properties.length == 3) {
-            value1 = (String) properties[0];
-            value2 = (Date) properties[1];
-            value3 = (int) properties[2];
+        if (properties.length == 2) {
+            value1 = (long) properties[0];
+            value2 = (double) properties[1];
         }
     }
 }

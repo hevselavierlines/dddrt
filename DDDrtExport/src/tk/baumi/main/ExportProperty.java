@@ -34,7 +34,15 @@ public class ExportProperty {
 	}
 
 	public String getType() {
-		return type;
+		return addFullPackageStructure(type);
+	}
+	
+	private String addFullPackageStructure(String type) {
+		if("Date".equals(type) || "UUID".equals(type) || type.startsWith("List<")) {
+			return "java.util." + type;
+		} else {
+			return type;
+		}
 	}
 
 	public void setDatabaseInfo(String dbName, String dbType, boolean primary) {

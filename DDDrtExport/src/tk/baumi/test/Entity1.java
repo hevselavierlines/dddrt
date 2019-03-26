@@ -1,59 +1,39 @@
 package tk.baumi.test;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 @DDDEntity(tableName = "ENTITY1")
 public class Entity1 extends tk.baumi.ddd.Entity {
 
-    @DDDProperty(primaryKey = true, columnName = "ID_PROPERTY2", columnType = "VARCHAR2(1024)")
-    private UUID idProperty2;
+    @DDDProperty(primaryKey = true, columnName = "ENT1_ID", columnType = "VARCHAR2(1024)")
+    private String entity1ID;
 
-    @DDDProperty(columnName = "PROPERTY2", columnType = "CLOB")
-    private int property2;
+    @DDDProperty(columnName = "ENTITY2S", columnType = "CLOB")
+    private java.util.List<Entity2> entity2s;
 
-    @DDDProperty(columnName = "PROPERTY3", columnType = "CLOB")
-    private double property3;
-
-    @DDDProperty(columnName = "PROPERTY4", columnType = "CLOB")
-    private Date property4;
-
-    @DDDProperty(columnName = "PROPERTY5", columnType = "CLOB")
-    private List<Entity2> property5;
+    @DDDProperty(columnName = "ENTITY2_DATE", columnType = "CLOB")
+    private java.util.Date entity2Date;
 
     public Entity1() {
     }
 
-    public Entity1(UUID _idProperty2, int _property2, double _property3, Date _property4, List<Entity2> _property5) {
-        idProperty2 = _idProperty2;
-        property2 = _property2;
-        property3 = _property3;
-        property4 = _property4;
-        property5 = _property5;
-    }
-
-    public int testMethod(Object _inputParam) {
-        return 0;
+    public Entity1(String _entity1ID, java.util.List<Entity2> _entity2s, java.util.Date _entity2Date) {
+        entity1ID = _entity1ID;
+        entity2s = _entity2s;
+        entity2Date = _entity2Date;
     }
 
     public Object[] properties() {
-        Object[] ret = new Object[5];
-        ret[0] = idProperty2;
-        ret[1] = property2;
-        ret[2] = property3;
-        ret[3] = property4;
-        ret[4] = property5;
+        Object[] ret = new Object[3];
+        ret[0] = entity1ID;
+        ret[1] = entity2s;
+        ret[2] = entity2Date;
         return ret;
     }
 
     public void insert(Object[] properties) {
-        if (properties.length == 5) {
-            idProperty2 = (UUID) properties[0];
-            property2 = (int) properties[1];
-            property3 = (double) properties[2];
-            property4 = (Date) properties[3];
-            property5 = (List<Entity2>) properties[4];
+        if (properties.length == 3) {
+            entity1ID = (String) properties[0];
+            entity2s = (java.util.List<Entity2>) properties[1];
+            entity2Date = (java.util.Date) properties[2];
         }
     }
 }

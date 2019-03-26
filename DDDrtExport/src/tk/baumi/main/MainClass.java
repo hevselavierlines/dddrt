@@ -33,31 +33,27 @@ public class MainClass {
 				new RepositoryTest("jdbc:oracle:thin:@localhost:1521:xe", 
 						"afaci", "afaci");
 		
-//		Entity1 ent1 = new Entity1(UUID.randomUUID(), "safjdkhfld");
-//		repoTest.insert(ent1);
-//		List<Entity1> ent1List = repoTest.selectAll(Entity1.class);
-//		for(Entity1 ent : ent1List) {
-//			System.out.println(ent);
-//		}
-//		List<Entity2> ents = new LinkedList<>();
-//		ents.add(new Entity2("^$£$£$%^^%$", "Jonas"));
-//		ents.add(new Entity2("2", "Josef"));
-//		
-//		Entity1 ent1 = new Entity1(UUID.fromString("10000001-85cf-4104-ba33-f49a1afca1f5"),
-//				9868, 99.8, new Date(System.currentTimeMillis()), ents);
-//		VO1 vo1 = new VO1("1", 
-//				new Date(System.currentTimeMillis()), 100);
-//		VO1 vo2 = new VO1("2", 
-//				new Date(System.currentTimeMillis()), 101);
-//		List<VO1> vos = new LinkedList<VO1>();
-//		vos.add(vo1);
-//		vos.add(vo2);
-//		Aggregate1 agg = new Aggregate1(UUID.fromString("10000000-76bf-4c1b-bdfe-e2168e69763b"), ent1, vos);
-//		repoTest.update(agg);
+		List<VO1> vos = new LinkedList<>();
+		vos.add(new VO1(46494984354564l, 95.69));
+		vos.add(new VO1(56449846421231l, 12869.339));
 		
-		List<Aggregate1> aggList = repoTest.selectAll(Aggregate1.class);
-		for(Aggregate1 agg1 : aggList) {
-			System.out.println(agg1);
+		List<VO1> vos2 = new LinkedList<>();
+		vos2.add(new VO1(4649456456231l, 5654.131));
+		vos2.add(new VO1(564445415648156l, 64564.114));
+		
+		List<Entity2> ent2s = new LinkedList<>();
+		ent2s.add(new Entity2("10000001", vos));
+		ent2s.add(new Entity2("10000002", vos2));
+		
+		List<Entity1> ent1s = new LinkedList<>();
+		ent1s.add(new Entity1("ID1", ent2s, new Date(System.currentTimeMillis())));
+		
+		Aggregate1 agg = new Aggregate1("8858515641564562313", ent1s);
+		repoTest.update(agg);
+		
+		List<Aggregate1> ent1r = repoTest.selectAll(Aggregate1.class);
+		for(Aggregate1 ent1re : ent1r) {
+			System.out.println(ent1re);
 		}
 		
 //		Entity1 entU = new Entity1("MARS", "TEST2");

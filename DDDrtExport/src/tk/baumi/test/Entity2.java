@@ -3,35 +3,31 @@ package tk.baumi.test;
 @DDDEntity(tableName = "ENTITY2")
 public class Entity2 extends tk.baumi.ddd.Entity {
 
-    @DDDProperty(primaryKey = true, columnName = "ID_PROPERTY", columnType = "VARCHAR2(1024)")
-    private String idProperty;
+    @DDDProperty(primaryKey = true, columnName = "ENT2_IDS", columnType = "VARCHAR2(1024)")
+    private String ent2ID;
 
-    @DDDProperty(columnName = "PROPERTY2", columnType = "CLOB")
-    private String property2;
+    @DDDProperty(columnName = "ENT2_VOS", columnType = "CLOB")
+    private java.util.List<VO1> ent2VOs;
 
     public Entity2() {
     }
 
-    public Entity2(String _idProperty, String _property2) {
-        idProperty = _idProperty;
-        property2 = _property2;
-    }
-
-    public int testMethod(Object _inputParam) {
-        return 0;
+    public Entity2(String _ent2ID, java.util.List<VO1> _ent2VOs) {
+        ent2ID = _ent2ID;
+        ent2VOs = _ent2VOs;
     }
 
     public Object[] properties() {
         Object[] ret = new Object[2];
-        ret[0] = idProperty;
-        ret[1] = property2;
+        ret[0] = ent2ID;
+        ret[1] = ent2VOs;
         return ret;
     }
 
     public void insert(Object[] properties) {
         if (properties.length == 2) {
-            idProperty = (String) properties[0];
-            property2 = (String) properties[1];
+            ent2ID = (String) properties[0];
+            ent2VOs = (java.util.List<VO1>) properties[1];
         }
     }
 }

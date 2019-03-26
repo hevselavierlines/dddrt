@@ -1,46 +1,33 @@
 package tk.baumi.test;
 
-import java.util.List;
-import java.util.UUID;
-
 @DDDEntity(tableName = "AGGREGATE1")
 public class Aggregate1 extends tk.baumi.ddd.Entity {
 
-    @DDDProperty(primaryKey = true, columnName = "ID_PROPERTY", columnType = "VARCHAR2(1024)")
-    private UUID idProperty;
+    @DDDProperty(primaryKey = true, columnName = "AGG_ID", columnType = "VARCHAR2(1024)")
+    private String aggregateID;
 
-    @DDDProperty(columnName = "FK_ENTITY1", columnType = "VARCHAR2(1024)")
-    private Entity1 fkEntity1;
-
-    @DDDProperty(columnName = "FK_VO1", columnType = "CLOB")
-    private List<VO1> fkVO1;
+    @DDDProperty(columnName = "AGG_ENT1S", columnType = "CLOB")
+    private java.util.List<Entity1> ent1s;
 
     public Aggregate1() {
     }
 
-    public Aggregate1(UUID _idProperty, Entity1 _fkEntity1, List<VO1> _fkVO1) {
-        idProperty = _idProperty;
-        fkEntity1 = _fkEntity1;
-        fkVO1 = _fkVO1;
-    }
-
-    public int testMethod(Object _inputParam) {
-        return 0;
+    public Aggregate1(String _aggregateID, java.util.List<Entity1> _ent1s) {
+        aggregateID = _aggregateID;
+        ent1s = _ent1s;
     }
 
     public Object[] properties() {
-        Object[] ret = new Object[3];
-        ret[0] = idProperty;
-        ret[1] = fkEntity1;
-        ret[2] = fkVO1;
+        Object[] ret = new Object[2];
+        ret[0] = aggregateID;
+        ret[1] = ent1s;
         return ret;
     }
 
     public void insert(Object[] properties) {
-        if (properties.length == 3) {
-            idProperty = (UUID) properties[0];
-            fkEntity1 = (Entity1) properties[1];
-            fkVO1 = (List<VO1>) properties[2];
+        if (properties.length == 2) {
+            aggregateID = (String) properties[0];
+            ent1s = (java.util.List<Entity1>) properties[1];
         }
     }
 }
