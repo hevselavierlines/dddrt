@@ -206,6 +206,30 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		properties.addProperty("Name", propertyName, true);
 	}
 
+	public String getFullPropertyType() {
+		String ret = null;
+		Object selItem = elementType.getSelectedItem();
+		if (selItem != null) {
+			ret = selItem.toString();
+			if (relationLineRef != null) {
+				FieldComposite relation = relationLineRef.getEndComposite();
+				BoundedContext bc = relation.boundedContext;
+				if (bc != null) {
+					String packageName = bc.getPackageName(relation) + ".";
+					if (ret.startsWith("List<")) {
+						int posOfList = ret.indexOf("List<");
+						String endType = ret.substring(posOfList + 5);
+						ret = "List<" + packageName + endType;
+					}
+					else {
+						ret = packageName + selItem.toString();
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
 	public String getPropertyType() {
 		Object selItem = elementType.getSelectedItem();
 		if (selItem != null) {

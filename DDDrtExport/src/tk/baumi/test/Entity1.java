@@ -1,13 +1,14 @@
 package tk.baumi.test;
 
-@DDDEntity(tableName = "ENTITY1")
-public class Entity1 extends tk.baumi.ddd.Entity {
+import tk.baumi.ddd.*;
+@DDDEntity(tableName = "TEST1_ENTITY1")
+public class Entity1 extends Entity {
 
     @DDDProperty(primaryKey = true, columnName = "ENT1_ID", columnType = "VARCHAR2(1024)")
     private String entity1ID;
 
     @DDDProperty(columnName = "ENTITY2S", columnType = "CLOB")
-    private java.util.List<Entity2> entity2s;
+    private java.util.List<tk.baumi.test.Entity2> entity2s;
 
     @DDDProperty(columnName = "ENTITY2_DATE", columnType = "CLOB")
     private java.util.Date entity2Date;
@@ -15,7 +16,7 @@ public class Entity1 extends tk.baumi.ddd.Entity {
     public Entity1() {
     }
 
-    public Entity1(String _entity1ID, java.util.List<Entity2> _entity2s, java.util.Date _entity2Date) {
+    public Entity1(String _entity1ID, java.util.List<tk.baumi.test.Entity2> _entity2s, java.util.Date _entity2Date) {
         entity1ID = _entity1ID;
         entity2s = _entity2s;
         entity2Date = _entity2Date;
@@ -32,7 +33,7 @@ public class Entity1 extends tk.baumi.ddd.Entity {
     public void insert(Object[] properties) {
         if (properties.length == 3) {
             entity1ID = (String) properties[0];
-            entity2s = (java.util.List<Entity2>) properties[1];
+            entity2s = (java.util.List<tk.baumi.test.Entity2>) properties[1];
             entity2Date = (java.util.Date) properties[2];
         }
     }

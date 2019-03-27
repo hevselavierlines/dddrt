@@ -1,4 +1,4 @@
-package tk.baumi.test;
+package tk.baumi.ddd;
 
 import static org.junit.Assert.*;
 
@@ -10,13 +10,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import tk.baumi.test.Aggregate1;
+import tk.baumi.test.Entity1;
+import tk.baumi.test.Entity2;
+import tk.baumi.test.VO1;
+
 public class TestRepository {
-	private RepositoryTest repoTest;
+	private Repository repoTest;
 
 	@Before
 	public void setUp() {
 		if (repoTest == null) {
-			repoTest = new RepositoryTest("jdbc:oracle:thin:@localhost:1521:xe", "afaci", "afaci");
+			repoTest = new Repository("jdbc:oracle:thin:@localhost:1521:xe", "afaci", "afaci");
 		}
 	}
 	
@@ -30,6 +35,12 @@ public class TestRepository {
 		repoTest.delete(aggregate);
 		Aggregate1 reinitDelete = repoTest.selectByID(Aggregate1.class, testID);
 		assertNull(reinitDelete);
+	}
+	
+	public void test1ToNInsert() {
+		tk.baumi.test2.Entity1 ent1 = new tk.baumi.test2.Entity1("ID1", "JOSEFJONAS");
+		tk.baumi.test2.Entity2 ent2 = new tk.baumi.test2.Entity2("ID1", "JOSEFJONAS2");
+		tk.baumi.test2.Aggregate1 agg1 = new tk.baumi.test2.Aggregate1();
 	}
 	
 	@Test

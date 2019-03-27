@@ -77,7 +77,7 @@ public class ExportBoundedContextTask {
 		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(true);
 		
 		if(field.getType() == CompositeType.Entity || field.getType() == CompositeType.Aggregate) {
-			myClass.addExtendedType("tk.baumi.ddd.Entity");
+			myClass.addExtendedType("Entity");
 			
 			NodeList<MemberValuePair> tableInfo = new NodeList<MemberValuePair>();
 			tableInfo.add(
@@ -87,7 +87,7 @@ public class ExportBoundedContextTask {
 					new NormalAnnotationExpr(
 							new Name("DDDEntity"), tableInfo));
 		} else if(field.getType() == CompositeType.ValueObject) {
-			myClass.addExtendedType("tk.baumi.ddd.ValueObject");
+			myClass.addExtendedType("ValueObject");
 		}
 		
 		List<ExportProperty> exportProperties = new ArrayList<ExportProperty>();
@@ -173,6 +173,7 @@ public class ExportBoundedContextTask {
 		prependCode.append("package ");
 		prependCode.append(packageName);
 		prependCode.append(";\n\n");
+		prependCode.append("import tk.baumi.ddd.*;\n");
 		String code = prependCode.toString() + myClass.toString();
 		FileOutputStream fos = null;
 		try {

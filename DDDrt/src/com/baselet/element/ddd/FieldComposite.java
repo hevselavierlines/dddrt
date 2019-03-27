@@ -788,7 +788,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		for (java.awt.Component component : propertiesPane.getComponents()) {
 			if (component instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) component;
-				ExportProperty export = new ExportProperty(fieldProperty.getPropertyVisibility(), fieldProperty.getPropertyName(), fieldProperty.getPropertyType());
+				ExportProperty export = new ExportProperty(fieldProperty.getPropertyVisibility(), fieldProperty.getPropertyName(), fieldProperty.getFullPropertyType());
 				export.setDatabaseInfo(fieldProperty.getDatabaseName(), fieldProperty.getDatabaseType(), fieldProperty.isPrimaryProperty());
 				properties.add(export);
 			}

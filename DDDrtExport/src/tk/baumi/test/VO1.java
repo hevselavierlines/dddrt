@@ -1,6 +1,7 @@
 package tk.baumi.test;
 
-public class VO1 extends tk.baumi.ddd.ValueObject {
+import tk.baumi.ddd.*;
+public class VO1 extends ValueObject {
 
     private long value1;
 

@@ -1,4 +1,4 @@
-package tk.baumi.test;
+package tk.baumi.ddd;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,13 +26,11 @@ import java.util.UUID;
 import org.json.JSONArray;
 
 import oracle.sql.CLOB;
-import tk.baumi.ddd.Entity;
-import tk.baumi.ddd.ValueObject;
 
-public class RepositoryTest {
+public class Repository {
 	private Connection connection;
 
-	public RepositoryTest(String connectionString, String username, String password) {
+	public Repository(String connectionString, String username, String password) {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			connection = DriverManager.getConnection(connectionString, username, password);

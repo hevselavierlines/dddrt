@@ -1,4 +1,4 @@
-package tk.baumi.test;
+package tk.baumi.ddd;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,9 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface DDDProperty {
-	boolean primaryKey() default false;
-	String columnName();
-	String columnType();
+@Target(ElementType.TYPE)
+public @interface DDDEntity {
+	String tableName();
 }
