@@ -82,7 +82,8 @@ public class EntityProperty extends FieldProperty {
 				.getDiagramHandler()
 				.getDrawPanel()
 				.getHelperAndSub(FieldComposite.class)) {
-			if (getParentFieldComposite().isInSameBoundedContext(ec)) {
+			FieldComposite parentFC = getParentFieldComposite();
+			if (parentFC != null && parentFC.isInSameBoundedContext(ec)) {
 				sameBoundedContextElements.add(ec);
 			}
 			else {

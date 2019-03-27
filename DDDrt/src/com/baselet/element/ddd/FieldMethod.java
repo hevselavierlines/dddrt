@@ -60,6 +60,7 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 
 		elementType.setFont(elementFont);
 		List<String> defaultTypes = FieldProperty.loadDefaultTypes();
+		defaultTypes.add(0, "void");
 		for (String defaultType : defaultTypes) {
 			elementType.addItem(defaultType);
 		}

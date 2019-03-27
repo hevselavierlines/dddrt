@@ -104,6 +104,7 @@ public class InputHandler extends DefaultHandler {
 					}
 					_p.addElement(e);
 				} catch (Exception e) {
+					e.printStackTrace();
 					log.error("Cannot instantiate element with id: " + id, e);
 				}
 				id = null;

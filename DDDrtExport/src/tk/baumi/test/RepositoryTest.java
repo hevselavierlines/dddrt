@@ -129,13 +129,7 @@ public class RepositoryTest {
 				id = entity2.properties()[j];
 			}
 		}
-		Entity selection2 = selectByID((Class<Entity>) column.javaType, id);
-		if (selection2 != null) {
-			// OK because the relation exists. Probably an update
-			internalUpdate(entity2);
-		} else {
-			internalInsert(entity2);
-		}
+		update(entity2);
 		return id;
 	}
 
@@ -471,12 +465,34 @@ public class RepositoryTest {
 		}
 		return ret;
 	}
-	public <T> void delete(T databaseDelete) {
+	public <T extends Entity> void delete(T databaseDelete) {
 		Class<?> databaseClass = databaseDelete.getClass();
 		StringBuffer query = new StringBuffer();
 		query.append("DELETE FROM ");
-		query.append(retrieveTableName(databaseClass));
+		query.append(retrieveTableName(databaseClass).replaceAll("\"", "").replaceAll("\'", ""));
 		query.append(" WHERE ");
+		int primaryKeyIndex = -1;
+		List<Column> columns = retrieveColumns(databaseClass);
+		for(int i = 0; i < columns.size() && primaryKeyIndex < 0; i++) {
+			Column column = columns.get(i);
+			if(column.primary) {
+				primaryKeyIndex = i;
+			}
+		}
+		Object[] properties = databaseDelete.properties();
+		convertToDatabaseClob(properties, columns);
+		String idText = (String) properties[primaryKeyIndex];
+		query.append(columns.get(primaryKeyIndex).name);
+		query.append("=?");
+		
+		try {
+			PreparedStatement statement = connection.prepareStatement(query.toString());
+			statement.setString(1, idText);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private <T> String retrieveTableName(Class<T> databaseClass) {
@@ -527,7 +543,6 @@ public class RepositoryTest {
 		String type;
 		Class<?> javaType;
 		boolean primary;
-		Reference reference;
 		Field field;
 		
 		public Column(Field field) {
@@ -546,10 +561,5 @@ public class RepositoryTest {
 			this.primary = primary;
 			this.field = field;
 		}
-	}
-
-	class Reference {
-		Class<Entity> referencingEntity;
-		boolean multi;
 	}
 }

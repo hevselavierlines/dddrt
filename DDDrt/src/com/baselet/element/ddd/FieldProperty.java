@@ -102,8 +102,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		types.add("short");
 		types.add("Date");
 		types.add("Object");
-		types.add("List");
-		types.add("Map");
 		return types;
 	}
 
