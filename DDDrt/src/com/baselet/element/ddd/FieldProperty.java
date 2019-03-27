@@ -92,6 +92,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	public static List<String> loadDefaultTypes() {
 		List<String> types = new LinkedList<String>();
 		types.add("String");
+		types.add("UUID");
 		types.add("int");
 		types.add("boolean");
 		types.add("long");
@@ -182,7 +183,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 				.createBinding(properties.getTableModel(), elementName, "Name");
 		TableCellTextFieldBinding
 				.createBinding(properties.getTableModel(), propertyTypeEditor, "Data Type");
-
 	}
 
 	public FieldProperty(String propertyVisibility,
@@ -217,9 +217,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	}
 
 	public void setPropertyType(String propertyType) {
-		if (idProperty) {
-			DEFAULT_TYPES.add(0, UNIQUE_ID);
-		}
 		elementType.setSelectedItem(propertyType);
 		properties.addProperty("Data Type", propertyType, true);
 	}
@@ -231,12 +228,12 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 				oldIdProperty.setIdProperty(false);
 			}
 		}
-		if (this.idProperty == false && idProperty == true) {
-			DEFAULT_TYPES.add(0, UNIQUE_ID);
-		}
-		else if (this.idProperty == true && idProperty == false) {
-			DEFAULT_TYPES.remove(UNIQUE_ID);
-		}
+		// if (this.idProperty == false && idProperty == true) {
+		// DEFAULT_TYPES.add(0, UNIQUE_ID);
+		// }
+		// else if (this.idProperty == true && idProperty == false) {
+		// DEFAULT_TYPES.remove(UNIQUE_ID);
+		// }
 		this.idProperty = idProperty;
 
 		if (idProperty) {
@@ -519,6 +516,25 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		}
 	}
 
+	private void updateTableName() {
+		String text = getPropertyName();
+		text = convertJavaVariableToDatabase(text);
+		properties.addProperty(FieldComposite.DATABASE_NAME, text, true);
+	}
+
+	public String convertJavaVariableToDatabase(String text) {
+		StringBuffer newText = new StringBuffer();
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (Character.isUpperCase(c)) {
+				newText.append('_');
+			}
+			c = Character.toUpperCase(c);
+			newText.append(c);
+		}
+		return newText.toString();
+	}
+
 	private void updateValidation() {
 		FieldComposite fc = getParentFieldComposite();
 		if (fc != null) {
@@ -529,16 +545,19 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	@Override
 	public void changedUpdate(DocumentEvent arg0) {
 		updateValidation();
+		updateTableName();
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {
 		updateValidation();
+		updateTableName();
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent arg0) {
 		updateValidation();
+		updateTableName();
 	}
 
 	public PropertiesGridElement getProperties() {
