@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.baselet.control.enums.ElementId;
 import com.baselet.element.ddd.AggregateComposite;
+import com.baselet.element.ddd.DDDService;
 import com.baselet.element.ddd.EntityComposite;
 import com.baselet.element.ddd.ValueObjectComposite;
 import com.baselet.element.facet.PropertiesParserState;
@@ -82,6 +83,9 @@ public class PropertiesGridElement extends NewGridElement {
 			}
 			else if (this instanceof EntityComposite) {
 				value = "Entity";
+			}
+			else if (this instanceof DDDService) {
+				value = "Service";
 			}
 		}
 		int keyRow = getRowByKey(key);

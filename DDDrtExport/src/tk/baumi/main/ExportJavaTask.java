@@ -30,14 +30,14 @@ import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import javassist.bytecode.annotation.MemberValue;
 
-public class ExportBoundedContextTask {
+public class ExportJavaTask {
 	private String contextName;
 	private IBoundedContext boundedContext;
 	private HashSet<String> packages;
 	private File projectFolder;
 	private ITextReporter textReporter;
 
-	public ExportBoundedContextTask(IBoundedContext boundedContext, File projectFolder) {
+	public ExportJavaTask(IBoundedContext boundedContext, File projectFolder) {
 		this.boundedContext = boundedContext;
 		this.contextName = boundedContext.getContextName();
 		this.packages = new HashSet<String>();
@@ -121,16 +121,18 @@ public class ExportBoundedContextTask {
 		}
 		
 		myClass.addConstructor(Modifier.PUBLIC);
-		ConstructorDeclaration ctor = myClass.addConstructor(Modifier.PUBLIC);
-		for (ExportProperty property : exportProperties) {
-			ctor.addParameter(property.getType(), "_" + property.getName());
+		if(field.showProperties()) {
+			ConstructorDeclaration ctor = myClass.addConstructor(Modifier.PUBLIC);
+			for (ExportProperty property : exportProperties) {
+				ctor.addParameter(property.getType(), "_" + property.getName());
+			}
+	
+			BlockStmt ctorBody = new BlockStmt();
+			for (ExportProperty property : exportProperties) {
+				ctorBody.addStatement(property.getName() + " = _" + property.getName() + ";");
+			}
+			ctor.setBody(ctorBody);
 		}
-
-		BlockStmt ctorBody = new BlockStmt();
-		for (ExportProperty property : exportProperties) {
-			ctorBody.addStatement(property.getName() + " = _" + property.getName() + ";");
-		}
-		ctor.setBody(ctorBody);
 
 		for (ExportMethod method : field.getMethods()) {
 			Modifier visibility = method.getVisibility();
@@ -166,8 +168,10 @@ public class ExportBoundedContextTask {
 			}
 		}
 		
-		createRetrievePropertiesMethod(myClass, exportProperties);
-		createInsertPropertiesMethod(myClass, exportProperties);
+		if(field.showProperties()) {
+			createRetrievePropertiesMethod(myClass, exportProperties);
+			createInsertPropertiesMethod(myClass, exportProperties);
+		}
 		
 		StringBuffer prependCode = new StringBuffer();
 		prependCode.append("package ");

@@ -131,6 +131,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		nameValid = true;
 	}
 
+	public abstract boolean showProperties();
+
+	@Override
+	public abstract boolean requireDatabaseInformation();
+
 	public void selectProperty(FieldProperty fieldProperty) {
 		OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
 		deselectAll();
@@ -215,8 +220,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		for (int i = 0; i < jProperties.length(); i++) {
 			JSONObject property = jProperties.getJSONObject(i);
 			FieldProperty newProperty = addProperty(property);
-			newProperty.setRemovedListener(this);
-			propertiesPane.add(newProperty);
+			if (newProperty != null) {
+				newProperty.setRemovedListener(this);
+				propertiesPane.add(newProperty);
+			}
 		}
 
 		for (int i = 0; i < jMethods.length(); i++) {
@@ -234,7 +241,12 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		addProperty("Type", "Entity", false);
 		addProperty("Class Name", getName(), false);
-		addProperty(DATABASE_NAME, getName(), false);
+		if (requireDatabaseInformation()) {
+			addProperty(DATABASE_NAME, getName(), false);
+		}
+		else {
+			removeProperty(DATABASE_NAME);
+		}
 		addProperty("Notes", getName(), false);
 
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
@@ -330,30 +342,36 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		propertiesPane.setVisible(true);
 
-		// properties
-		propertiesPane.setZoomLevel(zoomLevel);
-		addHeight = propertiesPane.getFullHeight();
-		// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
-		for (java.awt.Component component : propertiesPane.getComponents()) {
-			if (component instanceof FieldProperty) {
-				FieldProperty fieldProperty = (FieldProperty) component;
-				fieldProperty.setZoomLevel(zoomLevel);
-				addHeight += fieldProperty.getFieldHeight();
-			}
-		}
-		// if (propertiesPane.isCollapsed()) {
-		// addHeight += propertiesPane.getTitleHeight();
-		// }
-		propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
-
-		double originalLineWidth = drawer.getLineWidth();
-		propertyAddButton.setVisible(true);
 		int addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
-		propertyAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
-		propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
+		double originalLineWidth = drawer.getLineWidth();
+		if (showProperties()) {
+			// properties
+			propertiesPane.setZoomLevel(zoomLevel);
+			addHeight = propertiesPane.getFullHeight();
+			// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
+			for (java.awt.Component component : propertiesPane.getComponents()) {
+				if (component instanceof FieldProperty) {
+					FieldProperty fieldProperty = (FieldProperty) component;
+					fieldProperty.setZoomLevel(zoomLevel);
+					addHeight += fieldProperty.getFieldHeight();
+				}
+			}
+			// if (propertiesPane.isCollapsed()) {
+			// addHeight += propertiesPane.getTitleHeight();
+			// }
+			propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
+
+			propertyAddButton.setVisible(true);
+			addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
+			propertyAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
+			propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
+			startHeight += addHeight + addButtonHeight;
+		}
+		else {
+			startHeight = offsetY;
+		}
 
 		// methods
-		startHeight += addHeight + addButtonHeight;
 		addHeight = methodsPane.getFullHeight();
 		methodsPane.setVisible(true);
 		methodsPane.setZoomLevel(zoomLevel);
@@ -774,6 +792,9 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		}
 		else if ("Aggregate".equalsIgnoreCase(newType)) {
 			newId = ElementId.DDDAggregate;
+		}
+		else if ("Service".equalsIgnoreCase(newType)) {
+			newId = ElementId.DDDService;
 		}
 		if (newId != null) {
 			DiagramHandler diagramHandler = CurrentDiagram.getInstance().getDiagramHandler();

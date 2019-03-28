@@ -73,6 +73,7 @@ public class PropertyCellEditor extends AbstractCellEditor implements TableCellE
 			comboBox.addItem("Entity");
 			comboBox.addItem("Value Object");
 			comboBox.addItem("Aggregate");
+			comboBox.addItem("Service");
 			comboBox.addItemListener(this);
 			editor = new DefaultCellEditor(comboBox);
 		}

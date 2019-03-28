@@ -5,7 +5,7 @@ import java.util.List;
 public class ExportDatabaseTask {
 	public static void createDeleteStatements(StringBuffer sql, List<IFieldComposite> fields) {
 		for (IFieldComposite fieldComposite : fields) {
-			if (fieldComposite.getType() != CompositeType.ValueObject) {
+			if (fieldComposite.requireDatabaseInformation()) {
 				sql
 					.append("DROP TABLE ")
 					.append(fieldComposite.getDatabaseName())

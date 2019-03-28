@@ -2,113 +2,59 @@
 <diagram program="umlet" version="13.3">
   <zoom_level>10</zoom_level>
   <element>
-    <id>DDDEntity</id>
-    <coordinates>
-      <x>16</x>
-      <y>250</y>
-      <w>300</w>
-      <h>400</h>
-    </coordinates>
-        <panel_attributes>Type\=\Entity
-Class Name\=\NewEntity
-Database Name\=\NEW_ENTITY
-Notes\=\Entity
-        </panel_attributes>
-    <additional_attributes></additional_attributes>
-  </element>
-  
-    <element>
-    <id>DDDValueObject</id>
-    <coordinates>
-      <x>320</x>
-      <y>250</y>
-      <w>300</w>
-      <h>400</h>
-    </coordinates>
-        <panel_attributes>Type\=\Value Object
-Class Name\=\NewValueObject
-Database Name\=\NEW_VALUE_OBJECT
-Notes\=\Value Object
-        </panel_attributes>
-    <additional_attributes></additional_attributes>
-  </element>
-  
-  <element>
     <id>DDDAggregate</id>
     <coordinates>
-      <x>170</x>
-      <y>16</y>
+      <x>10</x>
+      <y>0</y>
       <w>300</w>
-      <h>400</h>
+      <h>218</h>
     </coordinates>
-        <panel_attributes>Type\=\Aggregate
-Class Name\=\NewAggregate
-Database Name\=\NEW_Aggregate
-Notes\=\Aggregate
-        </panel_attributes>
+    <panel_attributes></panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
-  
   <element>
-  	<id>DDDBoundedContext</id>
+    <id>DDDEntity</id>
     <coordinates>
-      <x>120</x>
-      <y>500</y>
-      <w>400</w>
-      <h>400</h>
+      <x>320</x>
+      <y>0</y>
+      <w>300</w>
+      <h>218</h>
     </coordinates>
-    <panel_attributes>Context Name\=\Bounded Context
-    </panel_attributes>
+    <panel_attributes></panel_attributes>
     <additional_attributes></additional_attributes>
   </element>
-  
   <element>
-  	<id>DDDService</id>
-  	<coordinates>
-  		<x>40</x>
-  		<y>520</y>
-  		<w>80</w>
-  		<h>80</h>
-  	</coordinates>
-  	<panel_attributes></panel_attributes>
-  	<additional_attributes></additional_attributes>
+    <id>DDDValueObject</id>
+    <coordinates>
+      <x>10</x>
+      <y>230</y>
+      <w>300</w>
+      <h>218</h>
+    </coordinates>
+    <panel_attributes></panel_attributes>
+    <additional_attributes></additional_attributes>
   </element>
-  
-  
   <element>
-  	<id>DDDService</id>
-  	<coordinates>
-  		<x>40</x>
-  		<y>610</y>
-  		<w>80</w>
-  		<h>80</h>
-  	</coordinates>
-  	<panel_attributes></panel_attributes>
-  	<additional_attributes></additional_attributes>
+    <id>DDDService</id>
+    <coordinates>
+      <x>320</x>
+      <y>230</y>
+      <w>300</w>
+      <h>146</h>
+    </coordinates>
+    <panel_attributes></panel_attributes>
+    <additional_attributes></additional_attributes>
   </element>
-  
   <element>
-  	<id>DDDService</id>
-  	<coordinates>
-  		<x>40</x>
-  		<y>700</y>
-  		<w>80</w>
-  		<h>80</h>
-  	</coordinates>
-  	<panel_attributes></panel_attributes>
-  	<additional_attributes></additional_attributes>
-  </element>
-  
-  <element>
-  	<id>DDDService</id>
-  	<coordinates>
-  		<x>40</x>
-  		<y>790</y>
-  		<w>80</w>
-  		<h>80</h>
-  	</coordinates>
-  	<panel_attributes></panel_attributes>
-  	<additional_attributes></additional_attributes>
+    <id>DDDBoundedContext</id>
+    <coordinates>
+      <x>0</x>
+      <y>450</y>
+      <w>630</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes></panel_attributes>
+    <additional_attributes></additional_attributes>
   </element>
   
 </diagram>

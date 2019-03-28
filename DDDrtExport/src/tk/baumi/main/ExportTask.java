@@ -24,7 +24,7 @@ public class ExportTask {
 		createAbstracts(projectFolder, reporter);
 		for (IBoundedContext boundedContext : boundedContexts) {
 //			System.out.println("--" + boundedContext.getContextName() + "--");
-			ExportBoundedContextTask boundedContextTask = new ExportBoundedContextTask(boundedContext, projectFolder);
+			ExportJavaTask boundedContextTask = new ExportJavaTask(boundedContext, projectFolder);
 			boundedContextTask.setTextReporter(reporter);
 			boundedContextTask.doJavaExport();
 			// exportFieldComposites(boundedContext.getContainingComposites());
@@ -33,7 +33,7 @@ public class ExportTask {
 	
 	public static void createAbstracts(File projectFolder, ITextReporter reporter) {
 		String packageName = "tk.baumi.ddd";
-		File packageFolder = ExportBoundedContextTask.createFolders(packageName, projectFolder);
+		File packageFolder = ExportJavaTask.createFolders(packageName, projectFolder);
 		
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		createEntityClass(reporter, packageName, packageFolder, compilationUnit);
@@ -171,7 +171,7 @@ public class ExportTask {
 		ExportDatabaseTask.createDeleteStatements(sqlString, fieldComposites);
 
 		for (IFieldComposite fieldComposite : fieldComposites) {
-			if (fieldComposite.getType() != CompositeType.ValueObject) {
+			if (fieldComposite.requireDatabaseInformation()) {
 				ExportDatabaseTask.exportFieldCompositeToDBTable(sqlString, fieldComposite);
 			}
 		}

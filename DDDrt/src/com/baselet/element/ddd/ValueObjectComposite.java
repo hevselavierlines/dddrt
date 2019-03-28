@@ -54,7 +54,7 @@ public class ValueObjectComposite extends FieldComposite {
 		jMethods.put(method);
 
 		JSONObject entities = new JSONObject();
-		entities.put("name", "newValueObject");
+		entities.put("name", "NewValueObject");
 		entities.put("properties", jProperties);
 		entities.put("methods", jMethods);
 		jsonAttributes.put("entities", entities);
@@ -90,4 +90,13 @@ public class ValueObjectComposite extends FieldComposite {
 		return CompositeType.ValueObject;
 	}
 
+	@Override
+	public boolean showProperties() {
+		return true;
+	}
+
+	@Override
+	public boolean requireDatabaseInformation() {
+		return false;
+	}
 }

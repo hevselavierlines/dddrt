@@ -38,10 +38,12 @@ public class EntityComposite extends FieldComposite {
 		jsonAttributes = new JSONObject();
 		jProperties = new JSONArray();
 		JSONObject property = new JSONObject();
-		property.put("visibility", "-");
-		property.put("type", "UUID");
-		property.put("name", "unqueId");
-		property.put("idproperty", true);
+		/* protected static final String JSON_IDPROPERTY = "idproperty"; protected static final String JSON_NAME = "name"; protected static final String JSON_TYPE = "type"; protected static final String JSON_VISIBILITY = "visibility"; protected static final String JSON_DATABASE_NAME = "dbname"; */
+		property.put(FieldProperty.JSON_VISIBILITY, "-");
+		property.put(FieldProperty.JSON_TYPE, "UUID");
+		property.put(FieldProperty.JSON_NAME, "unqueId");
+		property.put(FieldProperty.JSON_DATABASE_NAME, "UNIQUE_ID");
+		property.put(FieldProperty.JSON_IDPROPERTY, true);
 		jProperties.put(property);
 
 		jMethods = new JSONArray();
@@ -53,7 +55,7 @@ public class EntityComposite extends FieldComposite {
 		jMethods.put(method);
 
 		JSONObject entities = new JSONObject();
-		entities.put("name", "newEntity");
+		entities.put("name", "New" + getType().name());
 		entities.put("properties", jProperties);
 		entities.put("methods", jMethods);
 		jsonAttributes.put("entities", entities);
@@ -87,6 +89,16 @@ public class EntityComposite extends FieldComposite {
 	@Override
 	public CompositeType getType() {
 		return CompositeType.Entity;
+	}
+
+	@Override
+	public boolean showProperties() {
+		return true;
+	}
+
+	@Override
+	public boolean requireDatabaseInformation() {
+		return true;
 	}
 
 }

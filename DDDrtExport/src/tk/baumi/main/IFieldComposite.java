@@ -13,4 +13,8 @@ public interface IFieldComposite extends IValidateable {
 	List<ExportMethod> getMethods();
 
 	CompositeType getType();
+	
+	boolean showProperties();
+	
+	boolean requireDatabaseInformation();
 }
