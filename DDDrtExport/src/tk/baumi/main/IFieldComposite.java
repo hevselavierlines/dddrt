@@ -17,4 +17,6 @@ public interface IFieldComposite extends IValidateable {
 	boolean showProperties();
 	
 	boolean requireDatabaseInformation();
+	
+	IBoundedContext getBoundedContext();
 }

@@ -77,7 +77,6 @@ import com.baselet.gui.command.RemoveElement;
 import at.mic.dddrt.db.DatabaseExportDialog;
 import at.mic.dddrt.db.DatabaseImportDialog;
 import tk.baumi.main.ExportTask;
-import tk.baumi.main.IBoundedContext;
 import tk.baumi.main.IDDDRelation;
 import tk.baumi.main.IFieldComposite;
 
@@ -242,13 +241,12 @@ public class MenuFactory {
 				}
 				else if (menuItem.equals(MenuConstants.EXPORT_DDD)) {
 					if (diagramHandler != null) {
-						List<IBoundedContext> boundedContexts = diagramHandler.getDrawPanel().getHelperAndSub(IBoundedContext.class);
 						// ExportTask.exportBoundedContextsToJava(boundedContexts);
 						List<IFieldComposite> fieldComposites = diagramHandler.getDrawPanel().getHelperAndSub(IFieldComposite.class);
 						List<IDDDRelation> relations = diagramHandler.getDrawPanel().getHelperAndSub(IDDDRelation.class);
 						DatabaseExportDialog exportDialog = new DatabaseExportDialog(CurrentGui.getInstance().getGui().getMainFrame());
 						exportDialog.setVisible(true);
-						exportDialog.setBoundedContexts(boundedContexts);
+						exportDialog.setFieldComposites(fieldComposites);
 						String sqlText = ExportTask.exportBoundedContextToDB(fieldComposites, relations);
 						exportDialog.setSQLText(sqlText);
 					}

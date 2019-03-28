@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/bcel-5.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DDDrtExport"/>
 	<classpathentry kind="lib" path="lib/ojdbc8.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DDDrtRepository"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

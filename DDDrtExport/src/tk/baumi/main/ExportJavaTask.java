@@ -1,13 +1,12 @@
 package tk.baumi.main;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.zip.ZipOutputStream;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -16,32 +15,23 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.Name;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.visitor.GenericVisitor;
-import com.github.javaparser.ast.visitor.VoidVisitor;
-
-import javassist.bytecode.annotation.MemberValue;
 
 public class ExportJavaTask {
-	private String contextName;
 	private IBoundedContext boundedContext;
-	private HashSet<String> packages;
 	private File projectFolder;
+	private IFieldComposite fieldComposite;
 	private ITextReporter textReporter;
 
-	public ExportJavaTask(IBoundedContext boundedContext, File projectFolder) {
-		this.boundedContext = boundedContext;
-		this.contextName = boundedContext.getContextName();
-		this.packages = new HashSet<String>();
+	public ExportJavaTask(File projectFolder, IFieldComposite fieldComposite) {
 		this.projectFolder = projectFolder;
+		this.fieldComposite = fieldComposite;
+		this.boundedContext = fieldComposite.getBoundedContext();
 	}
 
 	public void setTextReporter(ITextReporter textReporter) {
@@ -62,17 +52,38 @@ public class ExportJavaTask {
 	}
 
 	public void doJavaExport() {
-		for (IFieldComposite composite : boundedContext.getContainingComposites()) {
-			exportFieldCompositeToJava(composite);
-		}
+		exportFieldCompositeToJava(fieldComposite);
 	}
 	
-	
+	public void writeInZip(ZipOutputStream zos, String packageName) throws UnsupportedEncodingException, IOException {
+		String code = createJavaCode(fieldComposite, packageName);
+		zos.write(code.getBytes("UTF-8"));
+	}
 
-	private void exportFieldCompositeToJava(IFieldComposite field) {
+	public void exportFieldCompositeToJava(IFieldComposite field) {
 		String packageName = boundedContext.getPackageName(field);
 		File packageFolder = createFolders(packageName, projectFolder);
 
+		String code = createJavaCode(field, packageName);
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(new File(packageFolder, field.getName() + ".java"));
+			fos.write(code.getBytes("UTF-8"));
+			reportText("Wrote class: " + field.getName() + ".java");
+		} catch (Exception e) {
+			reportText(e.getMessage());
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private String createJavaCode(IFieldComposite field, String packageName) {
 		CompilationUnit compilationUnit = new CompilationUnit(packageName);
 		ClassOrInterfaceDeclaration myClass = compilationUnit.addClass(field.getName()).setPublic(true);
 		
@@ -179,22 +190,7 @@ public class ExportJavaTask {
 		prependCode.append(";\n\n");
 		prependCode.append("import tk.baumi.ddd.*;\n");
 		String code = prependCode.toString() + myClass.toString();
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(new File(packageFolder, field.getName() + ".java"));
-			fos.write(code.getBytes("UTF-8"));
-			reportText("Wrote class: " + field.getName() + ".java");
-		} catch (Exception e) {
-			reportText(e.getMessage());
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		return code;
 	}
 
 	private void createRetrievePropertiesMethod(ClassOrInterfaceDeclaration myClass,

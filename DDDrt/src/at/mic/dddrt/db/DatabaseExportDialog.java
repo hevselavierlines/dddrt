@@ -26,9 +26,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import tk.baumi.main.ExportTask;
-import tk.baumi.main.IBoundedContext;
+import tk.baumi.main.IFieldComposite;
 import tk.baumi.main.ITextReporter;
 
 public class DatabaseExportDialog extends JDialog implements ActionListener, ITextReporter {
@@ -44,7 +45,7 @@ public class DatabaseExportDialog extends JDialog implements ActionListener, ITe
 	private final JTextField fieldUser;
 	private final JLabel labelPassword;
 	private final JPasswordField fieldPassword;
-	private List<IBoundedContext> boundedContexts;
+	private List<IFieldComposite> fieldComposites;
 	private final JLabel labelFolder;
 	private final JTextField fieldFolder;
 	private final JPanel panelFolder;
@@ -143,8 +144,25 @@ public class DatabaseExportDialog extends JDialog implements ActionListener, ITe
 		}
 		else if (arg0.getSource().equals(buttonFolder)) {
 			JFileChooser fileChooser = new JFileChooser(fieldFolder.getText());
-			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			if (fileChooser.showOpenDialog(DatabaseExportDialog.this) == JFileChooser.APPROVE_OPTION) {
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooser.setFileFilter(new FileFilter() {
+
+				@Override
+				public String getDescription() {
+					return "Zip Archive (*.zip)";
+				}
+
+				@Override
+				public boolean accept(File f) {
+					if (f.getName().endsWith(".zip") || f.isDirectory()) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			});
+			if (fileChooser.showSaveDialog(DatabaseExportDialog.this) == JFileChooser.APPROVE_OPTION) {
 				fieldFolder.setText(fileChooser.getSelectedFile().getAbsolutePath());
 			}
 		}
@@ -157,7 +175,7 @@ public class DatabaseExportDialog extends JDialog implements ActionListener, ITe
 			@Override
 			public void run() {
 				setRunningState(true);
-				ExportTask.exportBoundedContextsToJava(boundedContexts, new File(fieldFolder.getText()), DatabaseExportDialog.this);
+				ExportTask.exportJavaProject(fieldComposites, new File(fieldFolder.getText()), DatabaseExportDialog.this);
 				Connection connection = null;
 				try {
 					Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -182,8 +200,8 @@ public class DatabaseExportDialog extends JDialog implements ActionListener, ITe
 		}).start();
 	}
 
-	public void setBoundedContexts(List<IBoundedContext> boundedContexts) {
-		this.boundedContexts = boundedContexts;
+	public void setFieldComposites(List<IFieldComposite> boundedContexts) {
+		fieldComposites = boundedContexts;
 	}
 
 	private void setRunningState(final boolean running) {
