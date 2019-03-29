@@ -51,6 +51,8 @@ public class DatabaseImportManager {
 														"            a.data_type, \r\n" +
 														"            a.data_length, \r\n" +
 														"            a.nullable, \r\n" +
+														"			 a.data_precision, \r\n" +
+														"			 a.data_scale, \r\n" +
 														"            CASE WHEN c.constraint_type = 'P' THEN 'Y' ELSE 'N' END as prim\r\n" +
 														"   FROM ALL_TAB_COLUMNS a \r\n" +
 														"   LEFT OUTER JOIN all_cons_columns b on a.owner = b.owner AND a.table_name = b.table_name AND a.column_name = b.column_name\r\n" +
@@ -61,12 +63,12 @@ public class DatabaseImportManager {
 		columnStatement.setString(2, table.getTableName());
 		ResultSet columnSet = columnStatement.executeQuery();
 		while (columnSet.next()) {
-			boolean primaryKey = columnSet.getBoolean(5);
+			boolean primaryKey = columnSet.getBoolean(7);
 			if (primaryKey) {
 				table.setPrimaryKey(true);
 			}
 			TableColumn column = new TableColumn(columnSet.getString(1), columnSet.getString(2), columnSet.getLong(3),
-					columnSet.getBoolean(4), primaryKey);
+					columnSet.getBoolean(4), columnSet.getInt(5), columnSet.getInt(6), primaryKey);
 			table.addColumn(column);
 		}
 		columnSet.close();

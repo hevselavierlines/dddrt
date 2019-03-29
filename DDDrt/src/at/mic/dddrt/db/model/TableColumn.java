@@ -6,35 +6,43 @@ public class TableColumn {
 	private final long length;
 	private final boolean nullable;
 	private final boolean primaryKey;
+	private final int precision;
+	private final int scale;
 	private ColumnRelation relation;
 
-	public TableColumn(String columnName, String columnType, long length, boolean nullable, boolean primaryKey) {
+	public TableColumn(String columnName, String columnType, long length, boolean nullable, int precision, int scale, boolean primaryKey) {
 		super();
 		this.columnName = columnName;
 		this.columnType = columnType;
 		this.length = length;
 		this.nullable = nullable;
 		this.primaryKey = primaryKey;
+		this.precision = precision;
+		this.scale = scale;
 	}
 
 	public String getColumnName() {
 		return columnName;
 	}
 
-	public static String convertType(String dbType) {
-		if ("NUMBER".equals(dbType)) {
-			return "long";
+	public String getColumnType() {
+		if ("NUMBER".equals(columnType)) {
+			if (scale > 0) {
+				return "double";
+			}
+			else if (precision > 9) {
+				return "long";
+			}
+			else {
+				return "int";
+			}
 		}
-		else if ("DATE".equals(dbType)) {
+		else if ("DATE".equals(columnType)) {
 			return "Date";
 		}
 		else {
 			return "String";
 		}
-	}
-
-	public String getColumnType() {
-		return convertType(columnType);
 	}
 
 	public long getLength() {
