@@ -33,7 +33,7 @@ public class EntityProperty extends FieldProperty {
 		try {
 			String visibility = "private";
 			String type = column.getColumnType();
-			String name = column.getColumnName();
+			String name = TableColumn.convertToCamelCase(column.getColumnName());
 			boolean idProperty = column.isIDColumn();
 			return new EntityProperty(visibility, type, name, idProperty, name);
 		} catch (Exception ex) {

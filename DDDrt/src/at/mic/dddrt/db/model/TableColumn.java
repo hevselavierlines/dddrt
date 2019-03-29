@@ -72,4 +72,26 @@ public class TableColumn {
 		}
 		return sb.toString();
 	}
+
+	public static String convertToCamelCase(String original) {
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean nextBig = false;
+		for (int i = 0; i < original.length(); i++) {
+			char character = original.charAt(i);
+			if (character == '_' || character == '-') {
+				nextBig = true;
+			}
+			else {
+				if (nextBig) {
+					character = Character.toUpperCase(character);
+					nextBig = false;
+				}
+				else {
+					character = Character.toLowerCase(character);
+				}
+				stringBuilder.append(character);
+			}
+		}
+		return stringBuilder.toString();
+	}
 }

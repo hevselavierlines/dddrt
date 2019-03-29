@@ -14,6 +14,7 @@ import com.baselet.generator.sorting.AlphabetLayout;
 import com.baselet.generator.sorting.SortableElement;
 
 import at.mic.dddrt.db.model.ColumnRelation;
+import at.mic.dddrt.db.model.TableColumn;
 
 public class DatabaseImport extends Command {
 	private final List<FieldComposite> elements;
@@ -46,7 +47,7 @@ public class DatabaseImport extends Command {
 				}
 			}
 			if (startTable != null && endTable != null) {
-				FieldProperty startProperty = startTable.getPropertyByName(relation.getOriginalColumn());
+				FieldProperty startProperty = startTable.getPropertyByName(TableColumn.convertToCamelCase(relation.getOriginalColumn()));
 				if (startProperty != null) {
 					DDDRelation dddRelation = DDDRelation.createRelation(startProperty, endTable, false);
 					startProperty.setRelation(dddRelation);
