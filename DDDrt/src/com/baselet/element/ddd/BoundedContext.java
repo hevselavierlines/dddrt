@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -362,7 +361,7 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 	public void dragEnd() {
 		checkFieldCompositesInsideBoundedContext();
 
-		validateNames();
+		// validateNames();
 		organiseElements();
 		borderStyle = BORDER_STYLE.NOTHING;
 		updateModelFromText();
@@ -383,19 +382,6 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 
 			}
 		}
-	}
-
-	public boolean validateNames() {
-		DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
-		HashMap<String, FieldComposite> boundedContextNames = new HashMap<String, FieldComposite>();
-		for (NewGridElement gridElement : drawPanel.getBoundedContextChildren(this)) {
-			if (gridElement instanceof FieldComposite) {
-				FieldComposite fieldComposite = (FieldComposite) gridElement;
-				FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
-				fieldComposite.setNameValidity(previous);
-			}
-		}
-		return true;
 	}
 
 	@Override

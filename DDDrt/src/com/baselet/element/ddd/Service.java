@@ -87,15 +87,10 @@ public class Service extends PropertiesGridElement {
 			}
 		}
 		// update old bounded context
-		if (boundedContext != null) {
-			boundedContext.validateNames();
-		}
 		boundedContext = rightContext;
 
 		// update new bounded context
-		if (boundedContext != null) {
-			boundedContext.validateNames();
-		}
+		drawPanel.validateNames();
 	}
 
 	public boolean isInBoundedContext(BoundedContext boundedContext) {

@@ -65,7 +65,6 @@ import tk.baumi.main.IFieldComposite;
 import tk.baumi.main.ValidationException;
 
 public abstract class FieldComposite extends PropertiesGridElement implements ActionListener, ICollapseListener, FocusListener, DocumentListener, Comparable<FieldComposite>, FieldTypeChange, IFieldComposite {
-
 	public static final String DATABASE_NAME = "Database Name";
 	public static final String DATABASE_TYPE = "Database Type";
 	private static final int ADD_BUTTON_HEIGHT = 25;
@@ -131,6 +130,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		nameValid = true;
 	}
 
+	@Override
 	public abstract boolean showProperties();
 
 	@Override
@@ -309,9 +309,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	protected void drawCommonContent(PropertiesParserState state) {
 		double zoomLevel = getZoom();
 		int elementWidth = getRectangle().width;
-		int elementHeight = getRectangle().height;
 		int realWidth = getRealRectangle().width;
-		int realHeight = getRealRectangle().height;
 		DrawHandler drawer = state.getDrawer();
 		drawer.setLayer(Layer.Foreground);
 		double originalFontSize = drawer.getFontSize();
@@ -414,7 +412,6 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		drawer.setLayer(Layer.Foreground);
 
 		validateNames();
-
 	}
 
 	public void validateNames() {
@@ -469,16 +466,19 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 				// update old bounded context
 				if (boundedContext != null) {
-					boundedContext.validateNames();
 					boundedContext.organiseElement(this);
+				}
+				else {
+					System.err.println("no bounded context");
 				}
 
 				boundedContext = rightContext;
 
 				// update new bounded context
-				if (boundedContext != null) {
-					boundedContext.validateNames();
-				}
+				drawPanel.validateNames();
+				// if (boundedContext != null) {
+				// boundedContext.validateNames();
+				// }
 			}
 		}
 	}
@@ -622,14 +622,6 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		return p;
 	}
 
-	private void getAbsolutePositionRecursively(java.awt.Component currentComponent, java.awt.Point point) {
-		if (currentComponent != null && !(currentComponent instanceof DrawPanel)) {
-			point.x += currentComponent.getBounds().x;
-			point.y += currentComponent.getBounds().y;
-			getAbsolutePositionRecursively(currentComponent.getParent(), point);
-		}
-	}
-
 	public FieldProperty getIDProperty() {
 		FieldProperty element = null;
 		for (int i = 0; i < propertiesPane.getComponents().length && element == null; i++) {
@@ -679,6 +671,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				this.boundedContext == boundedContext;
 	}
 
+	@Override
 	public BoundedContext getBoundedContext() {
 		return boundedContext;
 	}
@@ -712,14 +705,19 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	public void setNameValidity(FieldComposite previous) {
 		nameValid = previous == null;
 		if (previous != null) {
-			fieldName.setBackground(Color.WHITE);
 			fieldName.setForeground(Color.RED);
 			fieldName.setToolTipText("Duplicated name " + previous.getName());
 		}
 		else {
-			fieldName.setBackground(Color.WHITE);
-			fieldName.setForeground(Color.BLACK);
-			fieldName.setToolTipText(null);
+			boolean validateName = VariableNameHelper.validateVariableName(fieldName.getText());
+			if (validateName) {
+				fieldName.setForeground(Color.BLACK);
+				fieldName.setToolTipText(null);
+			}
+			else {
+				fieldName.setForeground(Color.RED);
+				fieldName.setToolTipText("Invalid name: " + fieldName.getText());
+			}
 		}
 	}
 
@@ -735,8 +733,15 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	}
 
 	private void validateFieldName() {
-		if (boundedContext != null) {
-			boundedContext.validateNames();
+		CurrentDiagram diagram = CurrentDiagram.getInstance();
+		if (diagram != null) {
+			DiagramHandler handler = diagram.getDiagramHandler();
+			if (handler != null) {
+				DrawPanel drawPanel = handler.getDrawPanel();
+				if (drawPanel != null) {
+					drawPanel.validateNames();
+				}
+			}
 		}
 	}
 

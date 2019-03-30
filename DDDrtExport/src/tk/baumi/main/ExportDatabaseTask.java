@@ -7,18 +7,18 @@ public class ExportDatabaseTask {
 		for (IFieldComposite fieldComposite : fields) {
 			if (fieldComposite.requireDatabaseInformation()) {
 				sql
-					.append("DROP TABLE ")
+					.append("DROP TABLE \"")
 					.append(fieldComposite.getDatabaseName())
-					.append(" CASCADE CONSTRAINTS")
+					.append("\" CASCADE CONSTRAINTS")
 					.append(";\n");
 			}
 		}
 	}
 
 	public static void exportFieldCompositeToDBTable(StringBuffer sql, IFieldComposite field) {
-		sql.append("CREATE TABLE ").append(field.getDatabaseName()).append('(').append("\n");
+		sql.append("CREATE TABLE \"").append(field.getDatabaseName()).append("\"(").append("\n");
 		for (ExportProperty property : field.getProperties()) {
-			sql.append('\t').append(property.getDatabaseName()).append(' ').append(property.getDatabaseType());
+			sql.append("\t\"").append(property.getDatabaseName()).append("\" ").append(property.getDatabaseType());
 			if (property.isPrimaryProperty()) {
 				sql.append(" PRIMARY KEY");
 			}

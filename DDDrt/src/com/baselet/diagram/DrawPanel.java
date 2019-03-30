@@ -14,6 +14,7 @@ import java.awt.print.Printable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -677,5 +678,15 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	public void removeRelation(DDDRelation relation) {
 		gridElements.remove(relation);
 		remove((Component) relation.getComponent());
+	}
+
+	public boolean validateNames() {
+		HashMap<String, FieldComposite> boundedContextNames = new HashMap<String, FieldComposite>();
+		for (NewGridElement gridElement : getHelperAndSub(FieldComposite.class)) {
+			FieldComposite fieldComposite = (FieldComposite) gridElement;
+			FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
+			fieldComposite.setNameValidity(previous);
+		}
+		return true;
 	}
 }

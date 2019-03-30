@@ -535,8 +535,16 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		}
 		else {
 			// elementName.setBackground(Color.WHITE);
-			elementName.setForeground(Color.BLACK);
-			elementName.setToolTipText(null);
+			boolean validateName = VariableNameHelper.validateVariableName(getPropertyName());
+			if (validateName) {
+				elementName.setForeground(Color.BLACK);
+				elementName.setToolTipText(null);
+			}
+			else {
+				elementName.setForeground(Color.RED);
+				elementName.setToolTipText("Invalid name: " + getPropertyName());
+			}
+
 		}
 	}
 
