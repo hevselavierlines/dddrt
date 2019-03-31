@@ -173,8 +173,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		updateCoordinates(null, 200);
 		properties = new PropertiesGridElement();
 		properties.addProperty("Name", elementName.getText(), false);
-		properties.addProperty("Visibility", getPropertyVisibility(), false);
-		properties.addProperty("Data Type", getPropertyType(), false);
 		properties.addProperty(FieldComposite.DATABASE_NAME, elementName.getText(), false);
 
 		setPropertyName("newProperty");
@@ -242,7 +240,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 	public void setPropertyType(String propertyType) {
 		elementType.setSelectedItem(propertyType);
-		properties.addProperty("Data Type", propertyType, true);
 	}
 
 	public void setIdProperty(boolean idProperty) {
@@ -281,7 +278,6 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 	public void setPropertyVisibility(String propertyVisibility) {
 		elementVisibility.setSelection(propertyVisibility);
-		properties.addProperty("Visibility", propertyVisibility, true);
 	}
 
 	@Override
@@ -449,6 +445,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 	public void setRelation(DDDRelation relation) {
 		relationLineRef = relation;
+		validateType();
 	}
 
 	@Override
@@ -511,6 +508,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 			// }
 			// dp.repaint();
 			// setSelection(false);
+			validateType();
 			repaint();
 		}
 		else if (source instanceof JTextField) {
@@ -527,24 +525,35 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		}
 	}
 
-	public void setNameValidity(FieldProperty previous) {
+	public boolean setNameValidity(FieldProperty previous, FieldProperty previousDB) {
+		StringBuffer errorMessage = new StringBuffer();
 		if (previous != null) {
-			// elementName.setBackground(Color.WHITE);
-			elementName.setForeground(Color.RED);
-			elementName.setToolTipText("Duplicated name " + previous.getPropertyName());
+			errorMessage.append("Duplicated Name: ").append(getPropertyName());
+		}
+		boolean validateName = VariableNameHelper.validateVariableName(getPropertyName());
+		if (!validateName) {
+			if (errorMessage.length() > 0) {
+				errorMessage.append(", ");
+			}
+			errorMessage.append("Invalid Name: ").append(getPropertyName());
+		}
+
+		if (previousDB != null) {
+			if (errorMessage.length() > 0) {
+				errorMessage.append(", ");
+			}
+			errorMessage.append("Duplicated Column Name: ").append("\"").append(getDatabaseName()).append("\"");
+		}
+
+		if (errorMessage.length() == 0) {
+			elementName.setForeground(Color.BLACK);
+			elementName.setToolTipText(null);
+			return true;
 		}
 		else {
-			// elementName.setBackground(Color.WHITE);
-			boolean validateName = VariableNameHelper.validateVariableName(getPropertyName());
-			if (validateName) {
-				elementName.setForeground(Color.BLACK);
-				elementName.setToolTipText(null);
-			}
-			else {
-				elementName.setForeground(Color.RED);
-				elementName.setToolTipText("Invalid name: " + getPropertyName());
-			}
-
+			elementName.setForeground(Color.RED);
+			elementName.setToolTipText(errorMessage.toString());
+			return false;
 		}
 	}
 
@@ -570,7 +579,7 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 	private void updateValidation() {
 		FieldComposite fc = getParentFieldComposite();
 		if (fc != null) {
-			fc.validateNames();
+			fc.validateElementNames();
 		}
 	}
 
@@ -630,5 +639,36 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 	public boolean isPrimaryProperty() {
 		return idProperty;
+	}
+
+	public boolean validateType() {
+		String currentPropertyType = getPropertyType();
+		boolean foundElement = false;
+		if (currentPropertyType != null) {
+			if (CurrentDiagram
+					.getInstance()
+					.getDiagramHandler() != null) {
+				addPropertyTypes();
+			}
+			else {
+				foundElement = true;
+			}
+			for (int i = 0; i < elementType.getItemCount() && !foundElement; i++) {
+				DataTypeItem item = elementType.getItemAt(i);
+				if (currentPropertyType.equals(item.toString())) {
+					foundElement = true;
+				}
+			}
+		}
+		if (foundElement) {
+			elementType.setForeground(Color.BLACK);
+			elementType.setToolTipText(null);
+			return true;
+		}
+		else {
+			elementType.setForeground(Color.RED);
+			elementType.setToolTipText("Invalid type: " + currentPropertyType);
+			return false;
+		}
 	}
 }

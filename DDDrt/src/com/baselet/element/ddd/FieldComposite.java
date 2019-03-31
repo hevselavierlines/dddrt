@@ -411,16 +411,26 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		drawer.drawRectangle(0, 0, realWidth, getRealRectangle().height);
 		drawer.setLayer(Layer.Foreground);
 
-		validateNames();
+		validateElementNames();
 	}
 
-	public void validateNames() {
+	public boolean validateElementNames() {
+		boolean validationState = true;
 		HashMap<String, FieldProperty> propertyNames = new HashMap<String, FieldProperty>();
+		HashMap<String, FieldProperty> databaseNames = new HashMap<String, FieldProperty>();
 		for (java.awt.Component comp : propertiesPane.getComponents()) {
 			if (comp instanceof FieldProperty) {
 				FieldProperty fieldProperty = (FieldProperty) comp;
 				FieldProperty previous = propertyNames.put(fieldProperty.getPropertyName(), fieldProperty);
-				fieldProperty.setNameValidity(previous);
+				FieldProperty previousDB = databaseNames.put(fieldProperty.getDatabaseName(), fieldProperty);
+				boolean newValidation = fieldProperty.setNameValidity(previous, previousDB);
+				if (!newValidation) {
+					validationState = false;
+				}
+				newValidation = fieldProperty.validateType();
+				if (!newValidation) {
+					validationState = false;
+				}
 			}
 		}
 
@@ -429,9 +439,13 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			if (comp instanceof FieldMethod) {
 				FieldMethod fieldMethod = (FieldMethod) comp;
 				FieldMethod previous = methodNames.put(fieldMethod.getMethodName(), fieldMethod);
-				fieldMethod.setNameValidity(previous);
+				boolean newValidation = fieldMethod.setNameValidity(previous);
+				if (!newValidation) {
+					validationState = false;
+				}
 			}
 		}
+		return validationState;
 	}
 
 	public void updateBoundedContextBorder() {
@@ -475,7 +489,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				boundedContext = rightContext;
 
 				// update new bounded context
-				drawPanel.validateNames();
+				drawPanel.validateFieldCompositeNames();
 				// if (boundedContext != null) {
 				// boundedContext.validateNames();
 				// }
@@ -664,6 +678,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	public void updateBoundedContext(BoundedContext boundedContext) {
 		this.boundedContext = boundedContext;
+		validateElementNames();
 	}
 
 	public boolean isInBoundedContext(BoundedContext boundedContext) {
@@ -702,22 +717,37 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		}
 	}
 
-	public void setNameValidity(FieldComposite previous) {
-		nameValid = previous == null;
-		if (previous != null) {
-			fieldName.setForeground(Color.RED);
-			fieldName.setToolTipText("Duplicated name " + previous.getName());
+	public boolean setNameValidity(FieldComposite previousClassName, FieldComposite previousDBName) {
+		nameValid = previousClassName == null;
+		StringBuffer errorMessage = new StringBuffer();
+		if (previousClassName != null) {
+			errorMessage.append("Duplicated Class Name: ").append("\"").append(fieldName.getText()).append("\"");
+		}
+		boolean validateName = VariableNameHelper.validateVariableName(fieldName.getText());
+		if (!validateName) {
+			if (errorMessage.length() > 0) {
+				errorMessage.append(", ");
+			}
+			errorMessage.append("Invalid Class Name: ").append("\"").append(fieldName.getText()).append("\"");
+		}
+
+		if (previousDBName != null) {
+			if (errorMessage.length() > 0) {
+				errorMessage.append(", ");
+			}
+			errorMessage.append("Duplicated Table Name: ").append("\"").append(getDatabaseName()).append("\"");
+		}
+
+		String error = errorMessage.toString();
+		if (error.length() == 0) {
+			fieldName.setToolTipText(null);
+			fieldName.setForeground(Color.BLACK);
+			return true;
 		}
 		else {
-			boolean validateName = VariableNameHelper.validateVariableName(fieldName.getText());
-			if (validateName) {
-				fieldName.setForeground(Color.BLACK);
-				fieldName.setToolTipText(null);
-			}
-			else {
-				fieldName.setForeground(Color.RED);
-				fieldName.setToolTipText("Invalid name: " + fieldName.getText());
-			}
+			fieldName.setToolTipText(error);
+			fieldName.setForeground(Color.RED);
+			return false;
 		}
 	}
 
@@ -739,7 +769,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			if (handler != null) {
 				DrawPanel drawPanel = handler.getDrawPanel();
 				if (drawPanel != null) {
-					drawPanel.validateNames();
+					drawPanel.validateFieldCompositeNames();
 				}
 			}
 		}

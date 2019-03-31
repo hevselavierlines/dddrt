@@ -40,7 +40,6 @@ import com.baselet.control.util.Utils;
 import com.baselet.element.NewGridElement;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.FieldComposite;
-import com.baselet.element.ddd.Service;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.old.element.Relation;
 import com.baselet.element.relation.DDDRelation;
@@ -217,11 +216,6 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		for (FieldComposite fieldComposite : getHelperAndSub(FieldComposite.class)) {
 			if (fieldComposite.isInBoundedContext(boundedContext)) {
 				ret.add(fieldComposite);
-			}
-		}
-		for (Service service : getHelper(Service.class)) {
-			if (service.isInBoundedContext(boundedContext)) {
-				ret.add(service);
 			}
 		}
 		return ret;
@@ -680,13 +674,27 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		remove((Component) relation.getComponent());
 	}
 
-	public boolean validateNames() {
-		HashMap<String, FieldComposite> boundedContextNames = new HashMap<String, FieldComposite>();
-		for (NewGridElement gridElement : getHelperAndSub(FieldComposite.class)) {
-			FieldComposite fieldComposite = (FieldComposite) gridElement;
-			FieldComposite previous = boundedContextNames.put(fieldComposite.getName(), fieldComposite);
-			fieldComposite.setNameValidity(previous);
+	public boolean validateFieldCompositeNames() {
+		boolean validationState = true;
+		HashMap<String, FieldComposite> javaClassNames = new HashMap<String, FieldComposite>();
+		HashMap<String, FieldComposite> databaseTableNames = new HashMap<String, FieldComposite>();
+		for (FieldComposite gridElement : getHelperAndSub(FieldComposite.class)) {
+			FieldComposite fieldComposite = gridElement;
+			FieldComposite previousClassName = javaClassNames.put(fieldComposite.getName(), fieldComposite);
+			FieldComposite previousDBName = null;
+			if (gridElement.requireDatabaseInformation()) {
+				previousDBName = databaseTableNames.put(fieldComposite.getDatabaseName(), fieldComposite);
+			}
+			boolean newValidationState = fieldComposite.setNameValidity(previousClassName, previousDBName);
+			if (!newValidationState) {
+				validationState = false;
+			}
+
+			newValidationState = fieldComposite.validateElementNames();
+			if (!newValidationState) {
+				validationState = false;
+			}
 		}
-		return true;
+		return validationState;
 	}
 }

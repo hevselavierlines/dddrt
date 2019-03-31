@@ -329,14 +329,25 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 		}
 	}
 
-	public void setNameValidity(FieldMethod previous) {
+	public boolean setNameValidity(FieldMethod previous) {
+		StringBuffer errorMessage = new StringBuffer();
 		if (previous != null) {
-			elementName.setForeground(Color.RED);
-			elementName.setToolTipText("Duplicated name " + previous.getMethodName());
+			errorMessage.append("Duplicated Name: ").append(getMethodName());
 		}
-		else {
+		boolean validateName = VariableNameHelper.validateVariableName(getMethodName());
+		if (!validateName) {
+			errorMessage.append("Invalid Name: ").append(getMethodName());
+		}
+
+		if (errorMessage.length() == 0) {
 			elementName.setForeground(Color.BLACK);
 			elementName.setToolTipText(null);
+			return true;
+		}
+		else {
+			elementName.setForeground(Color.RED);
+			elementName.setToolTipText("Invalid name: " + getMethodName());
+			return false;
 		}
 	}
 
@@ -372,7 +383,7 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 	private void updateValidation() {
 		FieldComposite fc = getParentFieldComposite();
 		if (fc != null) {
-			fc.validateNames();
+			fc.validateElementNames();
 		}
 	}
 

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.baselet.control.Main;
@@ -241,14 +242,23 @@ public class MenuFactory {
 				}
 				else if (menuItem.equals(MenuConstants.EXPORT_DDD)) {
 					if (diagramHandler != null) {
-						// ExportTask.exportBoundedContextsToJava(boundedContexts);
-						List<IFieldComposite> fieldComposites = diagramHandler.getDrawPanel().getHelperAndSub(IFieldComposite.class);
-						List<IDDDRelation> relations = diagramHandler.getDrawPanel().getHelperAndSub(IDDDRelation.class);
-						DatabaseExportDialog exportDialog = new DatabaseExportDialog(CurrentGui.getInstance().getGui().getMainFrame());
-						exportDialog.setVisible(true);
-						exportDialog.setFieldComposites(fieldComposites);
-						String sqlText = ExportTask.exportBoundedContextToDB(fieldComposites, relations);
-						exportDialog.setSQLText(sqlText);
+						DrawPanel drawPanel = diagramHandler.getDrawPanel();
+						if (drawPanel.validateFieldCompositeNames()) {
+							// ExportTask.exportBoundedContextsToJava(boundedContexts);
+							List<IFieldComposite> fieldComposites = drawPanel.getHelperAndSub(IFieldComposite.class);
+							List<IDDDRelation> relations = drawPanel.getHelperAndSub(IDDDRelation.class);
+							DatabaseExportDialog exportDialog = new DatabaseExportDialog(CurrentGui.getInstance().getGui().getMainFrame());
+							exportDialog.setVisible(true);
+							exportDialog.setFieldComposites(fieldComposites);
+							String sqlText = ExportTask.exportBoundedContextToDB(fieldComposites, relations);
+							exportDialog.setSQLText(sqlText);
+						}
+						else {
+							JOptionPane.showMessageDialog(CurrentGui.getInstance().getGui().getMainFrame(),
+									"Validation of the model failed. Please check it.",
+									"Validation Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
 			}
