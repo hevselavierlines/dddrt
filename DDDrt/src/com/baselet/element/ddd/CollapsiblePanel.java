@@ -132,6 +132,10 @@ public class CollapsiblePanel extends JLayeredPane {
 		toggleVisibility(isInvisible());
 	}
 
+	public void zoomCollapse() {
+		toggleVisibility(false);
+	}
+
 	protected void toggleVisibility(boolean visible) {
 		for (Component c : getComponents()) {
 			c.setVisible(visible);
@@ -190,5 +194,4 @@ public class CollapsiblePanel extends JLayeredPane {
 		border.setTitleFont(fontComposite);
 		setBorder(border);
 	}
-
 }

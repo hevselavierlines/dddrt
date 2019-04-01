@@ -313,6 +313,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	@Override
 	protected void drawCommonContent(PropertiesParserState state) {
 		double zoomLevel = getZoom();
+		if (zoomLevel <= 0.6 && (!propertiesPane.isCollapsed() || !methodsPane.isCollapsed())) {
+			propertiesPane.zoomCollapse();
+			methodsPane.zoomCollapse();
+		}
 		int elementWidth = getRectangle().width;
 		int realWidth = getRealRectangle().width;
 		DrawHandler drawer = state.getDrawer();
