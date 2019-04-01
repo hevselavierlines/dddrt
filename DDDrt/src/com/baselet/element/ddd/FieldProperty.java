@@ -425,8 +425,12 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 
 		p.x = rect.x;
 		p.y = rect.y;
-
-		p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + leftConnectionButton.getBounds().height / 2);
+		if (fieldComposite.arePropertiesCollapsed()) {
+			p.y += fieldComposite.zoom(getParent().getBounds().y + leftConnectionButton.getBounds().height / 2);
+		}
+		else {
+			p.y += fieldComposite.zoom(getBounds().y + getParent().getBounds().y + leftConnectionButton.getBounds().height / 2);
+		}
 		if (right) {
 			p.x += fieldComposite.zoom(getParent().getWidth() - rightConnectionButton.getBounds().width / 2);
 		}

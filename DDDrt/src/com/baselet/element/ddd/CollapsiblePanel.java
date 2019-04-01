@@ -21,7 +21,7 @@ public class CollapsiblePanel extends JLayeredPane {
 
 	private static final long serialVersionUID = 6477443706241182651L;
 	private boolean collapsed;
-	private String title;
+	private final String title;
 	private ElementPanelBorder border;
 	private final List<ICollapseListener> collapseListeners;
 	private Font fontComposite;
@@ -33,14 +33,15 @@ public class CollapsiblePanel extends JLayeredPane {
 		this.title = title;
 		border = new ElementPanelBorder(DEFAULT_TITLE_HEIGHT, 5);
 		setBorder(border);
-		// addMouseListener(mouseListener);
+		addMouseListener(mouseListener);
 		collapseListeners = new LinkedList<ICollapseListener>();
-		collapsed = false;
+		collapsed = true;
 		GridLayout gridLayout = new GridLayout(0, 1);
 		gridLayout.setHgap(0);
 		gridLayout.setVgap(0);
 		setLayout(gridLayout);
 		fontComposite = new Font(FieldComposite.FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE);
+		updateBorderTitle();
 	}
 
 	public void setTitleFont(Font font) {
@@ -67,14 +68,6 @@ public class CollapsiblePanel extends JLayeredPane {
 		}
 	};
 	private double currentZoomLevel = 1.0;
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		firePropertyChange("title", this.title, this.title = title);
-	}
 
 	@Override
 	public Component add(Component comp) {
@@ -144,15 +137,12 @@ public class CollapsiblePanel extends JLayeredPane {
 			c.setVisible(visible);
 		}
 		collapsed = !visible;
-		callCollapseListeners();
 		updateBorderTitle();
+		callCollapseListeners();
 	}
 
 	public void updateBorderTitle() {
-		String arrow = "";
-		if (getComponentCount() > 0) {
-			arrow = isInvisible() ? "\u25BC" : "\u25B2";
-		}
+		String arrow = isInvisible() ? "\u25BC" : "\u25B2";
 		border.setTitle(arrow + " " + title);
 		repaint();
 	}

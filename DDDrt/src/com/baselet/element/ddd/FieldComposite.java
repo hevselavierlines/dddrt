@@ -85,6 +85,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private final Font compositeFont;
 	private FieldProperty selection;
 	private TableCellTypeChange tableCellTypeChange;
+	private Object originalLayer;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -135,6 +136,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	@Override
 	public abstract boolean requireDatabaseInformation();
+
+	public boolean arePropertiesCollapsed() {
+		return propertiesPane.isCollapsed();
+	}
 
 	public void selectProperty(FieldProperty fieldProperty) {
 		OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
@@ -347,22 +352,28 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			propertiesPane.setZoomLevel(zoomLevel);
 			addHeight = propertiesPane.getFullHeight();
 			// addHeight = (int) (propertiesPane.getComponentCount() * FieldProperty.getProperty + propertiesPane.getTitleHeight() + 5);
-			for (java.awt.Component component : propertiesPane.getComponents()) {
-				if (component instanceof FieldProperty) {
-					FieldProperty fieldProperty = (FieldProperty) component;
-					fieldProperty.setZoomLevel(zoomLevel);
-					addHeight += fieldProperty.getFieldHeight();
+			if (!propertiesPane.isCollapsed()) {
+				for (java.awt.Component component : propertiesPane.getComponents()) {
+					if (component instanceof FieldProperty) {
+						FieldProperty fieldProperty = (FieldProperty) component;
+						fieldProperty.setZoomLevel(zoomLevel);
+						addHeight += fieldProperty.getFieldHeight();
+					}
 				}
+				propertyAddButton.setVisible(true);
+				addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
+				propertyAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
+				propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
+				// if (propertiesPane.isCollapsed()) {
+				// addHeight += propertiesPane.getTitleHeight();
+				// }
 			}
-			// if (propertiesPane.isCollapsed()) {
-			// addHeight += propertiesPane.getTitleHeight();
-			// }
+			else {
+				propertyAddButton.setVisible(false);
+				addButtonHeight = 0;
+			}
 			propertiesPane.setBounds(0, startHeight, elementWidth, addHeight);
 
-			propertyAddButton.setVisible(true);
-			addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
-			propertyAddButton.setIcon(new AddButton(addButtonHeight, addButtonHeight));
-			propertyAddButton.setBounds(10, startHeight + addHeight, elementWidth - 20, addButtonHeight);
 			startHeight += addHeight + addButtonHeight;
 		}
 		else {
@@ -373,12 +384,18 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		addHeight = methodsPane.getFullHeight();
 		methodsPane.setVisible(true);
 		methodsPane.setZoomLevel(zoomLevel);
-		for (java.awt.Component component : methodsPane.getComponents()) {
-			if (component instanceof FieldMethod) {
-				FieldMethod fieldMethod = (FieldMethod) component;
-				fieldMethod.setZoomLevel(zoomLevel);
-				addHeight += fieldMethod.getFieldHeight();
+		if (!methodsPane.isCollapsed()) {
+			for (java.awt.Component component : methodsPane.getComponents()) {
+				if (component instanceof FieldMethod) {
+					FieldMethod fieldMethod = (FieldMethod) component;
+					fieldMethod.setZoomLevel(zoomLevel);
+					addHeight += fieldMethod.getFieldHeight();
+				}
 			}
+			addButtonHeight = (int) (zoomLevel * ADD_BUTTON_HEIGHT);
+		}
+		else {
+			addButtonHeight = 0;
 		}
 		// addHeight = methodsPane.getComponentCount() * FieldMethod.HEIGHT + methodsPane.getTitleHeight() + 5;
 		// if (methodsPane.isCollapsed()) {
@@ -586,6 +603,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	@Override
 	public void collapseStateChange(boolean collapsed) {
 		updateModelFromText();
+		propertiesPane.doLayout();
+		for (FieldProperty fieldProperty : getPropertiesWithRelation()) {
+			fieldProperty.getRelation().createRelationLine();
+		}
 	}
 
 	@Override
