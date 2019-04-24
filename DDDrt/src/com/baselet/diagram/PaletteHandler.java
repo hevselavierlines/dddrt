@@ -26,4 +26,10 @@ public class PaletteHandler extends DiagramHandler {
 	protected void initStartupTextAndFileDrop() {
 		/* no startup and filedrop */
 	}
+
+	@Override
+	public boolean isRealDrawingArea() {
+		return false;
+	}
+
 }

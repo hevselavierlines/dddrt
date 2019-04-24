@@ -70,6 +70,7 @@ public abstract class BaseGUI {
 		}
 		if (e instanceof FieldComposite) {
 			FieldComposite fieldComp = (FieldComposite) e;
+			contextMenu.add(menuFactory.createMoveToBoundedContext(fieldComp, CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel()));
 			contextMenu.add(menuFactory.createCopyToBoundedContext(fieldComp, CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel()));
 		}
 		JMenuItem group = menuFactory.createGroup();

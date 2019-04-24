@@ -30,4 +30,10 @@ public class CustomPreviewHandler extends DiagramHandler {
 	protected void initStartupTextAndFileDrop() {
 		/* no startup and filedrop */
 	}
+
+	@Override
+	public boolean isRealDrawingArea() {
+		return false;
+	}
+
 }

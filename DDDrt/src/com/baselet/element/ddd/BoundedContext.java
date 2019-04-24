@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JTextField;
@@ -22,6 +24,7 @@ import com.baselet.control.enums.LineType;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
+import com.baselet.diagram.MainDrawPanel;
 import com.baselet.diagram.draw.DrawHandler;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ComponentSwing;
@@ -30,6 +33,7 @@ import com.baselet.element.PropertiesGridElement;
 import com.baselet.element.TableCellChangeBinding;
 import com.baselet.element.TableCellTextFieldBinding;
 import com.baselet.element.TablePropertyChangeListener;
+import com.baselet.element.UndoInformation;
 import com.baselet.element.facet.Facet;
 import com.baselet.element.facet.PropertiesParserState;
 import com.baselet.element.facet.Settings;
@@ -85,6 +89,10 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 
 		borderStyle = BORDER_STYLE.NOTHING;
 		bindings = new ArrayList<TableCellTextFieldBinding>(10);
+	}
+
+	public void updateElementsInside(int diffX, int diffY) {
+		organiseBoundedContextElements(60);
 	}
 
 	private JTextField createPackage(Font originalPackageNameFont, int i) {
@@ -365,6 +373,27 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		organiseElements();
 		borderStyle = BORDER_STYLE.NOTHING;
 		updateModelFromText();
+
+		updateParentPanel();
+	}
+
+	public Rectangle getDiffRectangle() {
+		UndoInformation undoInfo = undoStack.get(true);
+		Rectangle diffRectangle = null;
+		if (undoInfo != null) {
+			diffRectangle = undoInfo.getDiffRectangle(getGridSize(), true);
+			diffRectangle = diffRectangle.copyInverted();
+		}
+		return diffRectangle;
+	}
+
+	private void updateParentPanel() {
+		if (getHandler().getDrawPanel() != null) {
+			DrawPanel dp = getHandler().getDrawPanel();
+			if (dp instanceof MainDrawPanel) {
+				((MainDrawPanel) dp).updateBoundedContext(this);
+			}
+		}
 	}
 
 	protected void checkFieldCompositesInsideBoundedContext() {
@@ -468,5 +497,31 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 		} catch (NumberFormatException ex) {
 			// swallow exception as the user might type in an empty or a wrong number.
 		}
+	}
+
+	public int organiseBoundedContextElements(int startY) {
+		List<NewGridElement> elements = getHandler().getDrawPanel().getBoundedContextChildren(this);
+		Collections.sort(elements, new Comparator<NewGridElement>() {
+
+			@Override
+			public int compare(NewGridElement o1, NewGridElement o2) {
+				return o1.getRectangle().y - o2.getRectangle().y;
+			}
+		});
+		for (NewGridElement element : elements) {
+			int width = getRectangle().width;
+			Rectangle rect = element.getRectangle();
+			rect.x = getRectangle().x + 10;
+			rect.y = getRectangle().y + startY;
+			startY += rect.height + 10;
+			rect.width = width - 20;
+			// if (element instanceof FieldComposite) {
+			// ((FieldComposite) element).collapse();
+			// }
+			element.setRectangle(rect);
+			element.dragEnd();
+			element.updateModelFromText();
+		}
+		return startY;
 	}
 }

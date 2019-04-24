@@ -44,7 +44,7 @@ public class DiagramHandler {
 	private final DiagramFileHandler fileHandler;
 	private final FontHandler fontHandler;
 
-	protected DrawPanel drawpanel;
+	protected DrawPanel drawPanel;
 	private final Controller controller;
 	protected DiagramListener listener;
 	private String helptext;
@@ -62,7 +62,12 @@ public class DiagramHandler {
 		gridSize = Constants.DEFAULTGRIDSIZE;
 		isChanged = false;
 		enabled = true;
-		drawpanel = new DrawPanel(this);
+		if (isRealDrawingArea()) {
+			drawPanel = new MainDrawPanel(this);
+		}
+		else {
+			drawPanel = new DrawPanel(this);
+		}
 		initStartupTextAndFileDrop();
 		controller = new Controller(this);
 		fontHandler = new FontHandler(this);
@@ -72,6 +77,9 @@ public class DiagramHandler {
 		}
 		if (diagram != null) {
 			fileHandler.doOpen();
+		}
+		else {
+			drawPanel.initEmpty();
 		}
 
 		boolean extendedPopupMenu = false;
@@ -101,36 +109,36 @@ public class DiagramHandler {
 	protected void initStartupTextAndFileDrop() {
 		// If this is not a palette, create a StartupHelpText
 		if (!(this instanceof PaletteHandler)) {
-			StartUpHelpText startupHelpText = new StartUpHelpText(drawpanel);
+			StartUpHelpText startupHelpText = new StartUpHelpText(drawPanel);
 			if (Program.getInstance().getRuntimeType() != RuntimeType.BATCH) { // Batchmode doesn't need drag&drop. Also fixes Issue 81
 				new FileDrop(startupHelpText, new FileDropListener());
 			}
-			drawpanel.add(startupHelpText);
+			drawPanel.add(startupHelpText);
 		}
 	}
 
 	protected void initDiagramPopupMenu(boolean extendedPopupMenu) {
-		drawpanel.setComponentPopupMenu(new DiagramPopupMenu(extendedPopupMenu));
+		drawPanel.setComponentPopupMenu(new DiagramPopupMenu(extendedPopupMenu));
 	}
 
 	public void setEnabled(boolean en) {
 		if (!en && enabled) {
-			drawpanel.removeMouseListener(listener);
-			drawpanel.removeMouseMotionListener(listener);
+			drawPanel.removeMouseListener(listener);
+			drawPanel.removeMouseMotionListener(listener);
 			enabled = false;
 		}
 		else if (en && !enabled) {
-			drawpanel.addMouseListener(listener);
-			drawpanel.addMouseMotionListener(listener);
+			drawPanel.addMouseListener(listener);
+			drawPanel.addMouseMotionListener(listener);
 			enabled = true;
 		}
 	}
 
 	protected void setListener(DiagramListener listener) {
 		this.listener = listener;
-		drawpanel.addMouseListener(this.listener);
-		drawpanel.addMouseMotionListener(this.listener);
-		drawpanel.addMouseWheelListener(this.listener);
+		drawPanel.addMouseListener(this.listener);
+		drawPanel.addMouseMotionListener(this.listener);
+		drawPanel.addMouseWheelListener(this.listener);
 	}
 
 	public DiagramListener getListener() {
@@ -148,7 +156,7 @@ public class DiagramHandler {
 	}
 
 	public DrawPanel getDrawPanel() {
-		return drawpanel;
+		return drawPanel;
 	}
 
 	public DiagramFileHandler getFileHandler() {
@@ -179,7 +187,7 @@ public class DiagramHandler {
 	}
 
 	public void doSaveAs(String extension) {
-		if (drawpanel.getGridElements().isEmpty()) {
+		if (drawPanel.getGridElements().isEmpty()) {
 			Main.getInstance().displayError(ErrorMessages.ERROR_SAVING_EMPTY_DIAGRAM);
 		}
 		else {
@@ -208,9 +216,9 @@ public class DiagramHandler {
 
 	// reloads the diagram from file + updates gui
 	public void reload() {
-		drawpanel.removeAll();
+		drawPanel.removeAll();
 		fileHandler.doOpen();
-		drawpanel.updatePanelAndScrollbars();
+		drawPanel.updatePanelAndScrollbars();
 	}
 
 	// reloads palettes if the palette has been changed.
@@ -227,7 +235,7 @@ public class DiagramHandler {
 		if (askSaveIfDirty()) {
 			Main.getInstance().getDiagrams().remove(this);
 			CurrentGui.getInstance().getGui().close(this);
-			drawpanel.getSelector().deselectAll();
+			drawPanel.getSelector().deselectAll();
 
 			// update property panel to now selected diagram (or to empty if no diagram exists)
 			DiagramHandler newhandler = CurrentDiagram.getInstance().getDiagramHandler(); //
@@ -428,7 +436,7 @@ public class DiagramHandler {
 			getDrawPanel().updatePanelAndScrollbars();
 
 			// Set changed only if diagram is not empty (otherwise no element has been changed)
-			if (!drawpanel.getGridElements().isEmpty()) {
+			if (!drawPanel.getGridElements().isEmpty()) {
 				setChanged(true);
 			}
 
@@ -461,5 +469,9 @@ public class DiagramHandler {
 			((ComponentSwing) element.getComponent()).setHandler(this);
 		}
 		element.updateModelFromText(); // must be updated here because the new handler could have a different zoom level
+	}
+
+	public boolean isRealDrawingArea() {
+		return true;
 	}
 }

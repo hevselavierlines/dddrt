@@ -901,6 +901,11 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		return methods;
 	}
 
+	public void collapse() {
+		propertiesPane.zoomCollapse();
+		methodsPane.zoomCollapse();
+	}
+
 	@Override
 	public void updateValidationStatus(List<ValidationException> validationExceptions) {
 

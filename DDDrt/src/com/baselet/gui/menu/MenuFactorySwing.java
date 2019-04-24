@@ -43,6 +43,7 @@ import static com.baselet.control.constants.MenuConstants.VIDEO_TUTORIAL;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -53,15 +54,18 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import com.baselet.control.Main;
+import com.baselet.control.basics.geom.Rectangle;
 import com.baselet.control.constants.Constants;
 import com.baselet.control.constants.MenuConstants;
 import com.baselet.control.constants.SystemInfo;
+import com.baselet.control.enums.ElementId;
 import com.baselet.control.enums.Os;
 import com.baselet.control.util.RecentlyUsedFilesList;
 import com.baselet.diagram.CurrentDiagram;
 import com.baselet.diagram.DiagramHandler;
 import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.helper.ColorOwn;
+import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.FieldComposite;
 import com.baselet.element.interfaces.GridElement;
@@ -71,6 +75,7 @@ import com.baselet.gui.helper.PlainColorIcon;
 public class MenuFactorySwing extends MenuFactory {
 
 	private static final String COPY_TO_BOUNDED_CONTEXT = "Copy to bounded context";
+	private static final String MOVE_TO_BOUNDED_CONTEXT = "Move to bounded context";
 	private static MenuFactorySwing instance = null;
 
 	public static MenuFactorySwing getInstance() {
@@ -245,6 +250,100 @@ public class MenuFactorySwing extends MenuFactory {
 		return createJMenuItem(false, PROGRAM_HOMEPAGE, null);
 	}
 
+	public JMenu createMoveToBoundedContext(final FieldComposite fieldComp, DrawPanel drawPanel) {
+		JMenu bcMenu = new JMenu(MOVE_TO_BOUNDED_CONTEXT);
+
+		for (final BoundedContext bc : drawPanel.getHelper(BoundedContext.class)) {
+			if (!bc.equals(fieldComp.getBoundedContextUUID())) {
+				JMenuItem menuItemInt = new JMenuItem(bc.getContextName());
+				menuItemInt.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+						int startY = 60;
+						int defaultElementHeight = 120;
+						startY = bc.organiseBoundedContextElements(startY);
+
+						List<GridElement> selection = handler.getDrawPanel().getSelector().getSelectedElements();
+
+						for (int i = 0; i < selection.size(); i++) {
+							GridElement copy = selection.get(i);
+							int width = bc.getRectangle().width;
+							Rectangle rect = copy.getRectangle();
+							rect.x = bc.getRectangle().x + 10;
+							rect.y = bc.getRectangle().y + startY;
+							startY += defaultElementHeight;
+							rect.width = width - 20;
+							copy.setRectangle(rect);
+							copy.dragEnd();
+							copy.updateModelFromText();
+						}
+
+					}
+
+				});
+				bcMenu.add(menuItemInt);
+			}
+
+		}
+
+		JMenuItem menuItemNew = new JMenuItem("Create New");
+		bcMenu.addSeparator();
+		bcMenu.add(menuItemNew);
+		menuItemNew.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+				List<GridElement> selection = handler.getDrawPanel().getSelector().getSelectedElements();
+				int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = 0;
+				int height = 0;
+				for (GridElement element : selection) {
+					Rectangle rect = element.getRectangle();
+					if (rect.x < minX) {
+						minX = rect.x;
+					}
+					if (rect.y < minY) {
+						minY = rect.y;
+					}
+					if (rect.x + rect.width > maxX) {
+						maxX = rect.x + rect.width;
+					}
+					height += rect.height + 10;
+				}
+				height += 70;
+				Rectangle size = new Rectangle(minX, minY, maxX - minX, height);
+				BoundedContext bc = (BoundedContext) ElementFactorySwing.create(
+						ElementId.DDDBoundedContext,
+						size,
+						"",
+						null,
+						CurrentDiagram.getInstance().getDiagramHandler(),
+						null);
+
+				int startY = 60;
+				int defaultElementHeight = 120;
+				startY = bc.organiseBoundedContextElements(startY);
+				handler.getDrawPanel().addElement(bc);
+
+				for (int i = 0; i < selection.size(); i++) {
+					GridElement copy = selection.get(i);
+					int width = bc.getRectangle().width;
+					Rectangle rect = copy.getRectangle();
+					rect.x = bc.getRectangle().x + 10;
+					rect.y = bc.getRectangle().y + startY;
+					startY += defaultElementHeight;
+					rect.width = width - 20;
+					copy.setRectangle(rect);
+					copy.dragEnd();
+					copy.updateModelFromText();
+				}
+			}
+		});
+		return bcMenu;
+	}
+
 	public JMenu createCopyToBoundedContext(final FieldComposite fieldComp, DrawPanel drawPanel) {
 		JMenu bcMenu = new JMenu(COPY_TO_BOUNDED_CONTEXT);
 
@@ -256,12 +355,27 @@ public class MenuFactorySwing extends MenuFactory {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+						int startY = 60;
+						int defaultElementHeight = 120;
+						startY = bc.organiseBoundedContextElements(startY);
 						Duplicate duplicate = new Duplicate();
 						handler.getController().executeCommand(duplicate);
-						GridElement copy = duplicate.getCopies().get(0);
-						copy.setLocation(bc.getRectangle().x, bc.getRectangle().y);
-						copy.dragEnd();
+
+						for (int i = 0; i < duplicate.getCopies().size(); i++) {
+							GridElement copy = duplicate.getCopies().get(i);
+							int width = bc.getRectangle().width;
+							Rectangle rect = copy.getRectangle();
+							rect.x = bc.getRectangle().x + 10;
+							rect.y = bc.getRectangle().y + startY;
+							startY += defaultElementHeight;
+							rect.width = width - 20;
+							copy.setRectangle(rect);
+							copy.dragEnd();
+							copy.updateModelFromText();
+						}
+
 					}
+
 				});
 				bcMenu.add(menuItemInt);
 			}

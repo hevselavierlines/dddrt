@@ -53,7 +53,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	private final Point origin;
 	private JScrollPane _scr;
 	private final SelectorOld selector;
-	private final DiagramHandler handler;
+	protected final DiagramHandler handler;
 
 	private final List<GridElement> gridElements = new ArrayList<GridElement>();
 	private java.awt.Rectangle selectionRect;
@@ -104,6 +104,11 @@ public class DrawPanel extends JLayeredPane implements Printable {
 
 		relationLines = new LinkedList<RelationLine>();
 		this.repaint(); // repaint the drawpanel to be sure everything is visible (startuphelp etc)
+
+	}
+
+	public void initEmpty() {
+
 	}
 
 	@Override

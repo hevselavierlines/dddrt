@@ -185,6 +185,7 @@ public class PaletteEntityListener extends GridElementListener {
 		// After inserting the new entity we restore the old zoom level of both diagrams
 		currentDiagram.getHandler().setGridAndZoom(oldZoomDiagram, false);
 		handler.setGridAndZoom(oldZoomPalette, false);
+		e.dragEnd();
 		return e;
 	}
 
