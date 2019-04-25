@@ -183,7 +183,7 @@ public class GridElementListener extends UniversalListener {
 		// }
 		if (e instanceof FieldComposite) {
 			FieldComposite selectedField = (FieldComposite) e;
-			selectedField.getPropertyByPosition(mousePressedPoint);
+			selectedField.getPropertyByPosition(mousePressedPoint, me);
 		}
 
 		IS_DRAGGING = true;

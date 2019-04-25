@@ -2,10 +2,14 @@ package com.baselet.element.ddd;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -86,6 +90,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	private FieldProperty selection;
 	private TableCellTypeChange tableCellTypeChange;
 	private Object originalLayer;
+	private boolean ctrlPressed;
 
 	public FieldComposite() {
 		compositeFont = new Font(FieldComposite.FONT_NAME, Font.PLAIN, 15);
@@ -143,11 +148,27 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	public void selectProperty(FieldProperty fieldProperty) {
 		OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
-		deselectAll();
+		if (!ctrlPressed) {
+			deselectAll();
+		}
 		selection = fieldProperty;
+
 		fieldProperty.setSelection(true);
 		fieldProperty.repaint();
 		pane.switchToProperty(fieldProperty);
+	}
+
+	public List<FieldProperty> getSelectedFieldProperties() {
+		List<FieldProperty> ret = new LinkedList<FieldProperty>();
+		for (java.awt.Component property : propertiesPane.getComponents()) {
+			if (property instanceof FieldProperty) {
+				FieldProperty fieldProperty = (FieldProperty) property;
+				if (fieldProperty.isSelected()) {
+					ret.add(fieldProperty);
+				}
+			}
+		}
+		return ret;
 	}
 
 	public void deselectAll() {
@@ -160,7 +181,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 		}
 	}
 
-	public FieldProperty getPropertyByPosition(Point position) {
+	public FieldProperty getPropertyByPosition(Point position, MouseEvent event) {
 		position.x -= getRectangle().x;
 		position.y -= getRectangle().y;
 		deselectAll();
@@ -256,6 +277,26 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 		TableCellTextFieldBinding.createBinding(getTableModel(), fieldName, "Class Name");
 		tableCellTypeChange = new TableCellTypeChange(getTableModel(), "Type", this);
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent ke) {
+				switch (ke.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						if (ke.getKeyCode() == KeyEvent.VK_CONTROL) {
+							ctrlPressed = true;
+						}
+						break;
+
+					case KeyEvent.KEY_RELEASED:
+						if (ke.getKeyCode() == KeyEvent.VK_CONTROL) {
+							ctrlPressed = false;
+						}
+						break;
+				}
+				return false;
+			}
+		});
 	}
 
 	protected abstract Color getBackgroundColor();
@@ -635,6 +676,37 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 			FieldProperty property = addPropertyFromDatabaseColumn(column);
 			property.setRemovedListener(this);
 			propertiesPane.add(property);
+		}
+	}
+
+	public void setName(String name) {
+		fieldName.setText(name);
+	}
+
+	public void removeAllFieldProperties() {
+		propertiesPane.removeAll();
+	}
+
+	public void addFieldProperty(FieldProperty fieldProperty) {
+		fieldProperty.setRemovedListener(this);
+		propertiesPane.add(fieldProperty);
+	}
+
+	public void addFieldProperties(List<FieldProperty> properties) {
+		for (FieldProperty fieldProperty : properties) {
+			JSONObject jsonObject = fieldProperty.exportToJSON();
+			ValueObjectProperty vop = ValueObjectProperty.createFromJSON(jsonObject);
+			addFieldProperty(vop);
+		}
+	}
+
+	public void removeFieldProperties(List<FieldProperty> properties) {
+		for (FieldProperty fieldProperty : properties) {
+			for (java.awt.Component comp : propertiesPane.getComponents()) {
+				if (comp == fieldProperty) {
+					propertiesPane.remove(comp);
+				}
+			}
 		}
 	}
 

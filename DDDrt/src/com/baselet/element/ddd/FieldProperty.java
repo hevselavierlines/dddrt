@@ -69,6 +69,10 @@ public abstract class FieldProperty extends FieldElement implements ActionListen
 		return HEIGHT + 3;
 	}
 
+	public boolean isSelected() {
+		return selection;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();

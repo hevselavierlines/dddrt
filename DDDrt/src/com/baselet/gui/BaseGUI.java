@@ -70,8 +70,13 @@ public abstract class BaseGUI {
 		}
 		if (e instanceof FieldComposite) {
 			FieldComposite fieldComp = (FieldComposite) e;
-			contextMenu.add(menuFactory.createMoveToBoundedContext(fieldComp, CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel()));
-			contextMenu.add(menuFactory.createCopyToBoundedContext(fieldComp, CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel()));
+			DrawPanel drawPanel = CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel();
+			contextMenu.add(menuFactory.createMoveToBoundedContext(fieldComp, drawPanel));
+			contextMenu.add(menuFactory.createCopyToBoundedContext(fieldComp, drawPanel));
+			JMenuItem extractItem = menuFactory.createExtract(fieldComp, drawPanel);
+			if (extractItem != null) {
+				contextMenu.add(extractItem);
+			}
 		}
 		JMenuItem group = menuFactory.createGroup();
 		contextMenu.add(group);

@@ -16,6 +16,10 @@ import at.mic.dddrt.db.model.TableColumn;
 public class EntityProperty extends FieldProperty {
 	private static final long serialVersionUID = 6298444413188448662L;
 
+	public static EntityProperty createFromName(String name, String type) {
+		return new EntityProperty("private", type, name, false, name);
+	}
+
 	public static EntityProperty createFromJSON(JSONObject property) {
 		try {
 			String visibility = property.getString(JSON_VISIBILITY);

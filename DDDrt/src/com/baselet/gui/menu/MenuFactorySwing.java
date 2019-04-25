@@ -67,8 +67,11 @@ import com.baselet.diagram.DrawPanel;
 import com.baselet.diagram.draw.helper.ColorOwn;
 import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.ddd.BoundedContext;
+import com.baselet.element.ddd.EntityProperty;
 import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.FieldProperty;
 import com.baselet.element.interfaces.GridElement;
+import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.helper.PlainColorIcon;
 
@@ -373,12 +376,57 @@ public class MenuFactorySwing extends MenuFactory {
 							copy.dragEnd();
 							copy.updateModelFromText();
 						}
-
 					}
-
 				});
 				bcMenu.add(menuItemInt);
 			}
+		}
+		return bcMenu;
+	}
+
+	public JMenuItem createExtract(final FieldComposite fieldComp, DrawPanel drawPanel) {
+		final List<FieldProperty> properties = fieldComp.getSelectedFieldProperties();
+		JMenuItem bcMenu = null;
+		if (properties.size() > 0) {
+			bcMenu = new JMenuItem("Extract to Value Object");
+			bcMenu.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Rectangle rect = fieldComp.getRectangle();
+					rect.y += 10;
+					FieldComposite valueObjectComp = (FieldComposite) ElementFactorySwing.create(
+							ElementId.DDDValueObject,
+							rect,
+							"",
+							null,
+							CurrentDiagram.getInstance().getDiagramHandler(),
+							null);
+					DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+					DrawPanel drawPanel = handler.getDrawPanel();
+					drawPanel.addElement(valueObjectComp);
+					valueObjectComp.removeAllFieldProperties();
+					valueObjectComp.addFieldProperties(properties);
+					fieldComp.removeFieldProperties(properties);
+					String typeName = "ExtractedValueObject";
+					valueObjectComp.setName(typeName);
+
+					FieldProperty startProperty = EntityProperty.createFromName(typeName, typeName);
+					fieldComp.addFieldProperty(startProperty);
+					if (startProperty != null) {
+						DDDRelation dddRelation = DDDRelation.createRelation(startProperty, valueObjectComp, false);
+						startProperty.setRelation(dddRelation);
+						drawPanel.addRelation(dddRelation);
+						startProperty.setPropertyType(valueObjectComp.getName());
+					}
+
+					BoundedContext boundedContext = fieldComp.getBoundedContext();
+					if (boundedContext != null) {
+						valueObjectComp.updateBoundedContext(boundedContext);
+						boundedContext.organiseBoundedContextElements(60);
+					}
+				}
+			});
 		}
 		return bcMenu;
 	}
