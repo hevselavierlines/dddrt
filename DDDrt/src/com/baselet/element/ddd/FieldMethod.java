@@ -230,19 +230,6 @@ public class FieldMethod extends FieldElement implements ActionListener, Documen
 
 	public String validateParameters() {
 		try {
-			// SwingUtilities.invokeLater(new Runnable() {
-			//
-			// @Override
-			// public void run() {
-			// if (!getMethodParameters().startsWith("(")) {
-			// textParameters.setText("(" + textParameters.getText().replaceAll("\\(", ""));
-			// }
-			// if (!getMethodParameters().endsWith(")")) {
-			// textParameters.setText(textParameters.getText().replaceAll("\\)", "") + ")");
-			// }
-			// }
-			// });
-
 			Set<String> names = new HashSet<String>();
 			for (Parameter parameter : parseParameters()) {
 				boolean unique = names.add(parameter.name);

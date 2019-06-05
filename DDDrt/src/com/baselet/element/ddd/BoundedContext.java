@@ -45,6 +45,7 @@ import com.baselet.element.sticking.StickableMap;
 import com.baselet.element.sticking.StickingPolygon;
 import com.baselet.element.sticking.polygon.StickingPolygonGenerator;
 
+import tk.baumi.main.CompositeType;
 import tk.baumi.main.IBoundedContext;
 import tk.baumi.main.IFieldComposite;
 
@@ -505,7 +506,21 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 
 			@Override
 			public int compare(NewGridElement o1, NewGridElement o2) {
-				return o1.getRectangle().y - o2.getRectangle().y;
+				int ret = 0;
+				if (o1 instanceof IFieldComposite && o2 instanceof IFieldComposite) {
+					IFieldComposite fieldComposite1 = (IFieldComposite) o1;
+					IFieldComposite fieldComposite2 = (IFieldComposite) o2;
+					if (fieldComposite1.getType() == CompositeType.Service && fieldComposite2.getType() != CompositeType.Service) {
+						ret = -1;
+					}
+					else if (fieldComposite1.getType() != CompositeType.Service && fieldComposite2.getType() == CompositeType.Service) {
+						ret = 1;
+					}
+				}
+				if (ret == 0) {
+					ret = o1.getRectangle().y - o2.getRectangle().y;
+				}
+				return ret;
 			}
 		});
 		for (NewGridElement element : elements) {
@@ -515,9 +530,6 @@ public class BoundedContext extends PropertiesGridElement implements IBoundedCon
 			rect.y = getRectangle().y + startY;
 			startY += rect.height + 10;
 			rect.width = width - 20;
-			// if (element instanceof FieldComposite) {
-			// ((FieldComposite) element).collapse();
-			// }
 			element.setRectangle(rect);
 			element.dragEnd();
 			element.updateModelFromText();

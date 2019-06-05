@@ -495,7 +495,6 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 				}
 			}
 		}
-
 		HashMap<String, FieldMethod> methodNames = new HashMap<String, FieldMethod>();
 		for (java.awt.Component comp : methodsPane.getComponents()) {
 			if (comp instanceof FieldMethod) {
@@ -611,6 +610,10 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 	protected abstract FieldProperty createProperty();
 
 	protected abstract FieldMethod createMethod();
+
+	public void addMethod(FieldMethod method) {
+		methodsPane.add(method);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

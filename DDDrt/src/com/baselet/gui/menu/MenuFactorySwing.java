@@ -69,11 +69,14 @@ import com.baselet.element.ElementFactorySwing;
 import com.baselet.element.ddd.BoundedContext;
 import com.baselet.element.ddd.EntityProperty;
 import com.baselet.element.ddd.FieldComposite;
+import com.baselet.element.ddd.FieldMethod;
 import com.baselet.element.ddd.FieldProperty;
 import com.baselet.element.interfaces.GridElement;
 import com.baselet.element.relation.DDDRelation;
 import com.baselet.gui.command.Duplicate;
 import com.baselet.gui.helper.PlainColorIcon;
+
+import tk.baumi.main.ExportProperty;
 
 public class MenuFactorySwing extends MenuFactory {
 
@@ -253,6 +256,78 @@ public class MenuFactorySwing extends MenuFactory {
 		return createJMenuItem(false, PROGRAM_HOMEPAGE, null);
 	}
 
+	private void moveSelectionTo(final BoundedContext bc) {
+		DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+		int startY = 60;
+		int defaultElementHeight = 120;
+		startY = bc.organiseBoundedContextElements(startY);
+
+		List<GridElement> selection = handler.getDrawPanel().getSelector().getSelectedElements();
+
+		for (int i = 0; i < selection.size(); i++) {
+			GridElement copy = selection.get(i);
+			int width = bc.getRectangle().width;
+			Rectangle rect = copy.getRectangle();
+			rect.x = bc.getRectangle().x + 10;
+			rect.y = bc.getRectangle().y + startY;
+			startY += defaultElementHeight;
+			rect.width = width - 20;
+			copy.setRectangle(rect);
+			copy.dragEnd();
+			copy.updateModelFromText();
+		}
+	}
+
+	public JMenuItem createAddCRUD(final FieldComposite fieldComp) {
+		JMenuItem menuItem = new JMenuItem("create CRUD methods");
+		menuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				createCRUDMethods(fieldComp);
+			}
+		});
+		return menuItem;
+	}
+
+	private void createCRUDMethods(final FieldComposite fieldComp) {
+		FieldMethod readMethod = new FieldMethod();
+		readMethod.setMethodVisibility("#");
+		readMethod.setMethodName("read");
+		readMethod.setMethodType(fieldComp.getName());
+		FieldMethod deleteMethod = new FieldMethod();
+		deleteMethod.setMethodVisibility("#");
+		deleteMethod.setMethodName("delete");
+		deleteMethod.setMethodType("void");
+		FieldMethod createMethod = new FieldMethod();
+		createMethod.setMethodVisibility("#");
+		createMethod.setMethodName("create");
+		createMethod.setMethodType("void");
+		FieldMethod updateMethod = new FieldMethod();
+		updateMethod.setMethodVisibility("#");
+		updateMethod.setMethodName("update");
+		updateMethod.setMethodType("void");
+		FieldProperty idProperty = fieldComp.getIDProperty();
+		if (idProperty != null) {
+			StringBuffer idParameter = new StringBuffer();
+			idParameter.append("(_").append(idProperty.getPropertyName()).append(": ").append(idProperty.getPropertyType()).append(")");
+			readMethod.setMethodParameters(idParameter.toString());
+			deleteMethod.setMethodParameters(idParameter.toString());
+		}
+		StringBuffer allParameters = new StringBuffer("(");
+		for (ExportProperty property : fieldComp.getProperties()) {
+			allParameters.append(property.getName()).append(": ").append(property.getType()).append(",");
+		}
+		allParameters.deleteCharAt(allParameters.length() - 1);
+		createMethod.setMethodParameters(allParameters.toString());
+		updateMethod.setMethodParameters(allParameters.toString());
+		fieldComp.addMethod(createMethod);
+		fieldComp.addMethod(updateMethod);
+		fieldComp.addMethod(deleteMethod);
+		fieldComp.addMethod(readMethod);
+		fieldComp.updateModelFromText();
+	}
+
 	public JMenu createMoveToBoundedContext(final FieldComposite fieldComp, DrawPanel drawPanel) {
 		JMenu bcMenu = new JMenu(MOVE_TO_BOUNDED_CONTEXT);
 
@@ -263,26 +338,7 @@ public class MenuFactorySwing extends MenuFactory {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
-						int startY = 60;
-						int defaultElementHeight = 120;
-						startY = bc.organiseBoundedContextElements(startY);
-
-						List<GridElement> selection = handler.getDrawPanel().getSelector().getSelectedElements();
-
-						for (int i = 0; i < selection.size(); i++) {
-							GridElement copy = selection.get(i);
-							int width = bc.getRectangle().width;
-							Rectangle rect = copy.getRectangle();
-							rect.x = bc.getRectangle().x + 10;
-							rect.y = bc.getRectangle().y + startY;
-							startY += defaultElementHeight;
-							rect.width = width - 20;
-							copy.setRectangle(rect);
-							copy.dragEnd();
-							copy.updateModelFromText();
-						}
-
+						moveSelectionTo(bc);
 					}
 
 				});
@@ -298,11 +354,15 @@ public class MenuFactorySwing extends MenuFactory {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BoundedContext bc = createNewBoundedContext();
+				moveSelectionTo(bc);
+			}
+
+			private BoundedContext createNewBoundedContext() {
 				DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
-				List<GridElement> selection = handler.getDrawPanel().getSelector().getSelectedElements();
 				int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = 0;
 				int height = 0;
-				for (GridElement element : selection) {
+				for (GridElement element : handler.getDrawPanel().getSelector().getSelectedElements()) {
 					Rectangle rect = element.getRectangle();
 					if (rect.x < minX) {
 						minX = rect.x;
@@ -324,24 +384,10 @@ public class MenuFactorySwing extends MenuFactory {
 						null,
 						CurrentDiagram.getInstance().getDiagramHandler(),
 						null);
-
 				int startY = 60;
-				int defaultElementHeight = 120;
 				startY = bc.organiseBoundedContextElements(startY);
 				handler.getDrawPanel().addElement(bc);
-
-				for (int i = 0; i < selection.size(); i++) {
-					GridElement copy = selection.get(i);
-					int width = bc.getRectangle().width;
-					Rectangle rect = copy.getRectangle();
-					rect.x = bc.getRectangle().x + 10;
-					rect.y = bc.getRectangle().y + startY;
-					startY += defaultElementHeight;
-					rect.width = width - 20;
-					copy.setRectangle(rect);
-					copy.dragEnd();
-					copy.updateModelFromText();
-				}
+				return bc;
 			}
 		});
 		return bcMenu;
@@ -393,42 +439,44 @@ public class MenuFactorySwing extends MenuFactory {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Rectangle rect = fieldComp.getRectangle();
-					rect.y += 10;
-					FieldComposite valueObjectComp = (FieldComposite) ElementFactorySwing.create(
-							ElementId.DDDValueObject,
-							rect,
-							"",
-							null,
-							CurrentDiagram.getInstance().getDiagramHandler(),
-							null);
-					DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
-					DrawPanel drawPanel = handler.getDrawPanel();
-					drawPanel.addElement(valueObjectComp);
-					valueObjectComp.removeAllFieldProperties();
-					valueObjectComp.addFieldProperties(properties);
-					fieldComp.removeFieldProperties(properties);
-					String typeName = "ExtractedValueObject";
-					valueObjectComp.setName(typeName);
-
-					FieldProperty startProperty = EntityProperty.createFromName(typeName, typeName);
-					fieldComp.addFieldProperty(startProperty);
-					if (startProperty != null) {
-						DDDRelation dddRelation = DDDRelation.createRelation(startProperty, valueObjectComp, false);
-						startProperty.setRelation(dddRelation);
-						drawPanel.addRelation(dddRelation);
-						startProperty.setPropertyType(valueObjectComp.getName());
-					}
-
-					BoundedContext boundedContext = fieldComp.getBoundedContext();
-					if (boundedContext != null) {
-						valueObjectComp.updateBoundedContext(boundedContext);
-						boundedContext.organiseBoundedContextElements(60);
-					}
+					extractPropertiesToValueObject(fieldComp, properties);
 				}
 			});
 		}
 		return bcMenu;
+	}
+
+	private void extractPropertiesToValueObject(final FieldComposite fieldComp, final List<FieldProperty> properties) {
+		Rectangle rect = fieldComp.getRectangle();
+		rect.y += 10;
+		FieldComposite valueObjectComp = (FieldComposite) ElementFactorySwing.create(
+				ElementId.DDDValueObject,
+				rect,
+				"",
+				null,
+				CurrentDiagram.getInstance().getDiagramHandler(),
+				null);
+		DiagramHandler handler = CurrentDiagram.getInstance().getDiagramHandler();
+		DrawPanel drawPanel = handler.getDrawPanel();
+		drawPanel.addElement(valueObjectComp);
+		valueObjectComp.removeAllFieldProperties();
+		valueObjectComp.addFieldProperties(properties);
+		fieldComp.removeFieldProperties(properties);
+		valueObjectComp.setName("ExtractedValueObject");
+		FieldProperty startProperty = EntityProperty.createFromName("extractedValueObject", "ExtractedValueObject");
+		fieldComp.addFieldProperty(startProperty);
+		if (startProperty != null) {
+			DDDRelation dddRelation = DDDRelation.createRelation(startProperty, valueObjectComp, false);
+			startProperty.setRelation(dddRelation);
+			drawPanel.addRelation(dddRelation);
+			startProperty.setPropertyType(valueObjectComp.getName());
+		}
+
+		BoundedContext boundedContext = fieldComp.getBoundedContext();
+		if (boundedContext != null) {
+			valueObjectComp.updateBoundedContext(boundedContext);
+			boundedContext.organiseBoundedContextElements(60);
+		}
 	}
 
 	public JMenuItem createRateProgram() {

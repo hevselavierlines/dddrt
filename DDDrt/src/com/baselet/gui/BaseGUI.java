@@ -77,6 +77,8 @@ public abstract class BaseGUI {
 			if (extractItem != null) {
 				contextMenu.add(extractItem);
 			}
+
+			contextMenu.add(menuFactory.createAddCRUD(fieldComp));
 		}
 		JMenuItem group = menuFactory.createGroup();
 		contextMenu.add(group);

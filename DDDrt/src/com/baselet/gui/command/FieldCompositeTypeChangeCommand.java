@@ -12,19 +12,23 @@ import com.baselet.element.relation.DDDRelation;
 public class FieldCompositeTypeChangeCommand extends Command {
 	private final FieldComposite originalFieldComposite;
 	private FieldComposite newFieldComposite;
-	private final ElementId elementId;
+	private final ElementId newElementType;
 
 	public FieldCompositeTypeChangeCommand(FieldComposite fieldComposite, ElementId newId) {
 		originalFieldComposite = fieldComposite;
-		elementId = newId;
+		newElementType = newId;
 	}
 
 	@Override
 	public void execute(DiagramHandler handler) {
+		changeType(handler, originalFieldComposite, newElementType);
+	}
+
+	private void changeType(DiagramHandler handler, FieldComposite originalFieldComposite, ElementId newElementType) {
 		DrawPanel drawPanel = handler.getDrawPanel();
 		newFieldComposite = (FieldComposite) ElementFactorySwing
 				.create(
-						elementId,
+						newElementType,
 						originalFieldComposite.getRectangle(),
 						originalFieldComposite.getPanelAttributes(),
 						originalFieldComposite.getAdditionalAttributes(),
@@ -33,12 +37,10 @@ public class FieldCompositeTypeChangeCommand extends Command {
 		for (DDDRelation relation : relations) {
 			relation.changeFieldComposite(originalFieldComposite, newFieldComposite);
 		}
-
 		drawPanel.addElement(newFieldComposite);
 		drawPanel.removeElement(originalFieldComposite);
 		drawPanel.getSelector().deselectAll();
 		drawPanel.getSelector().select(newFieldComposite);
-
 		newFieldComposite.updateBoundedContext(originalFieldComposite.getBoundedContext());
 	}
 
