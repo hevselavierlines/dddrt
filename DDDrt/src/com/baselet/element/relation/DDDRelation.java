@@ -44,7 +44,7 @@ public class DDDRelation extends Relation implements IDDDRelation {
 		updateModelFromText();
 	}
 
-	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite, boolean collection) {
+	public static DDDRelation createRelation(FieldProperty startProperty, FieldComposite endComposite, boolean manyToManyRelation) {
 		java.awt.Point startPoint = startProperty.getAbsolutePosition(false);
 		java.awt.Point endPoint = endComposite.getAbsolutePosition(false);
 		if (startPoint.x < endPoint.x) {
@@ -53,29 +53,28 @@ public class DDDRelation extends Relation implements IDDDRelation {
 		if (startPoint.y > endPoint.y + endComposite.getRectangle().height / 2) {
 			endPoint = endComposite.getAbsolutePosition(true);
 		}
-
-		int minX = Math.min(startPoint.x, endPoint.x);
-		int minY = Math.min(startPoint.y, endPoint.y);
-
-		int maxX = Math.max(startPoint.x, endPoint.x);
-		int maxY = Math.max(startPoint.y, endPoint.y);
-		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-		String relationText = "lt=<-\nm1=1\nm2=*";
-		if (collection) {
-			relationText = "lt=<-\nm1=*\nm2=*";
-		}
+		Rectangle boundingRectangle = createBoundingRectangle(startPoint, endPoint);
 		DDDRelation dddRelation = (DDDRelation) ElementFactorySwing.create(
 				ElementId.DDDRelation,
-				rect,
-				relationText,
+				boundingRectangle,
+				manyToManyRelation ? "lt=<-\nm1=*\nm2=*" : "lt=<-\nm1=1\nm2=*",
 				null,
 				CurrentDiagram.getInstance().getDiagramHandler(),
 				null);
 		dddRelation.startProperty = startProperty;
 		dddRelation.endComposite = endComposite;
-		dddRelation.collection = collection;
+		dddRelation.collection = manyToManyRelation;
 		dddRelation.createRelationLine();
 		return dddRelation;
+	}
+
+	public static Rectangle createBoundingRectangle(java.awt.Point startPoint, java.awt.Point endPoint) {
+		int minX = Math.min(startPoint.x, endPoint.x);
+		int minY = Math.min(startPoint.y, endPoint.y);
+		int maxX = Math.max(startPoint.x, endPoint.x);
+		int maxY = Math.max(startPoint.y, endPoint.y);
+		Rectangle rect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+		return rect;
 	}
 
 	@Override

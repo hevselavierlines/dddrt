@@ -36,6 +36,43 @@ import com.baselet.gui.command.TextFieldChange;
 public class FieldMethod extends FieldElement implements ActionListener, DocumentListener, FocusListener, PopupMenuListener {
 	private static final long serialVersionUID = -6900199799847961884L;
 
+	public static class Builder {
+		/* readMethod.setMethodVisibility("#"); readMethod.setMethodName("read"); readMethod.setMethodType(fieldComp.getName()); */
+		private final String visibility;
+		private final String name;
+		private final String type;
+		private final List<String> parameters;
+
+		public Builder(String visibility, String name, String type) {
+			this.visibility = visibility;
+			this.name = name;
+			this.type = type;
+			parameters = new LinkedList<String>();
+		}
+
+		public Builder addParameter(String type, String name) {
+			parameters.add(name);
+			parameters.add(type);
+			return this;
+		}
+
+		public FieldMethod build() {
+			StringBuilder parameterList = new StringBuilder();
+			parameterList.append('(');
+			for (int i = 0; i < parameters.size(); i += 2) {
+				parameterList.append(parameters.get(i));
+				parameterList.append(": ");
+				parameterList.append(parameters.get(i + 1));
+				parameterList.append(", ");
+			}
+			if (parameters.size() > 0) {
+				parameterList.delete(parameterList.length() - 2, parameterList.length());
+			}
+			parameterList.append(')');
+			return new FieldMethod(visibility, type, name, parameterList.toString());
+		}
+	}
+
 	public final static int DEFAULT_HEIGHT = 40;
 	public final static int DEFAULT_HALF_HEIGHT = DEFAULT_HEIGHT / 2;
 	public final static int DEFAULT_FONT_SIZE = 12;

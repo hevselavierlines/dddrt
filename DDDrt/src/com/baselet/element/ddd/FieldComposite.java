@@ -544,7 +544,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 					boundedContext.organiseElement(this);
 				}
 				else {
-					System.err.println("no bounded context");
+
 				}
 
 				boundedContext = rightContext;
@@ -613,6 +613,7 @@ public abstract class FieldComposite extends PropertiesGridElement implements Ac
 
 	public void addMethod(FieldMethod method) {
 		methodsPane.add(method);
+		method.setRemovedListener(this);
 	}
 
 	@Override

@@ -291,40 +291,23 @@ public class MenuFactorySwing extends MenuFactory {
 	}
 
 	private void createCRUDMethods(final FieldComposite fieldComp) {
-		FieldMethod readMethod = new FieldMethod();
-		readMethod.setMethodVisibility("#");
-		readMethod.setMethodName("read");
-		readMethod.setMethodType(fieldComp.getName());
-		FieldMethod deleteMethod = new FieldMethod();
-		deleteMethod.setMethodVisibility("#");
-		deleteMethod.setMethodName("delete");
-		deleteMethod.setMethodType("void");
-		FieldMethod createMethod = new FieldMethod();
-		createMethod.setMethodVisibility("#");
-		createMethod.setMethodName("create");
-		createMethod.setMethodType("void");
-		FieldMethod updateMethod = new FieldMethod();
-		updateMethod.setMethodVisibility("#");
-		updateMethod.setMethodName("update");
-		updateMethod.setMethodType("void");
+		FieldMethod.Builder readMethod = new FieldMethod.Builder("#", "read", fieldComp.getName());
+		FieldMethod.Builder deleteMethod = new FieldMethod.Builder("#", "delete", "void");
+		FieldMethod.Builder createMethod = new FieldMethod.Builder("#", "create", "void");
+		FieldMethod.Builder updateMethod = new FieldMethod.Builder("#", "update", "void");
 		FieldProperty idProperty = fieldComp.getIDProperty();
 		if (idProperty != null) {
-			StringBuffer idParameter = new StringBuffer();
-			idParameter.append("(_").append(idProperty.getPropertyName()).append(": ").append(idProperty.getPropertyType()).append(")");
-			readMethod.setMethodParameters(idParameter.toString());
-			deleteMethod.setMethodParameters(idParameter.toString());
+			readMethod.addParameter(idProperty.getPropertyType(), idProperty.getPropertyName());
+			deleteMethod.addParameter(idProperty.getPropertyType(), idProperty.getPropertyName());
 		}
-		StringBuffer allParameters = new StringBuffer("(");
 		for (ExportProperty property : fieldComp.getProperties()) {
-			allParameters.append(property.getName()).append(": ").append(property.getType()).append(",");
+			createMethod.addParameter(property.getType(), property.getName());
+			updateMethod.addParameter(property.getType(), property.getName());
 		}
-		allParameters.deleteCharAt(allParameters.length() - 1);
-		createMethod.setMethodParameters(allParameters.toString());
-		updateMethod.setMethodParameters(allParameters.toString());
-		fieldComp.addMethod(createMethod);
-		fieldComp.addMethod(updateMethod);
-		fieldComp.addMethod(deleteMethod);
-		fieldComp.addMethod(readMethod);
+		fieldComp.addMethod(createMethod.build());
+		fieldComp.addMethod(updateMethod.build());
+		fieldComp.addMethod(deleteMethod.build());
+		fieldComp.addMethod(readMethod.build());
 		fieldComp.updateModelFromText();
 	}
 
@@ -465,13 +448,20 @@ public class MenuFactorySwing extends MenuFactory {
 		valueObjectComp.setName("ExtractedValueObject");
 		FieldProperty startProperty = EntityProperty.createFromName("extractedValueObject", "ExtractedValueObject");
 		fieldComp.addFieldProperty(startProperty);
+		createRelation(valueObjectComp, drawPanel, startProperty);
+		updateBoundedContext(fieldComp, valueObjectComp);
+	}
+
+	private void createRelation(FieldComposite valueObjectComp, DrawPanel drawPanel, FieldProperty startProperty) {
 		if (startProperty != null) {
 			DDDRelation dddRelation = DDDRelation.createRelation(startProperty, valueObjectComp, false);
 			startProperty.setRelation(dddRelation);
 			drawPanel.addRelation(dddRelation);
 			startProperty.setPropertyType(valueObjectComp.getName());
 		}
+	}
 
+	private void updateBoundedContext(final FieldComposite fieldComp, FieldComposite valueObjectComp) {
 		BoundedContext boundedContext = fieldComp.getBoundedContext();
 		if (boundedContext != null) {
 			valueObjectComp.updateBoundedContext(boundedContext);
